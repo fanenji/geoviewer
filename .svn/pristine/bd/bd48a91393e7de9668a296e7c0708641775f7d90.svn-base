@@ -1,0 +1,33 @@
+
+.loadData {
+    background-image:url("/geoviewer/img/silk/application_get.png");
+}
+
+.showLegend {
+    background-image:url("/geoviewer/stili/default/icons/legend.png") !important;
+}
+
+
+
+.olControlAttribution {
+    font-size: smaller;
+    left: 5px;
+    bottom: 2px;
+    position: absolute;
+    display: block;
+}
+
+#titolo {
+    color:#295758;
+    font-weight:bold;
+    font-size: 24px;
+    font-family: tahoma,arial,verdana,sans-serif;
+    border-color:#78bec0;
+}
+
+.x-panel-tl .x-panel-header {
+    color: #295758;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: tahoma,arial,verdana,sans-serif;
+}

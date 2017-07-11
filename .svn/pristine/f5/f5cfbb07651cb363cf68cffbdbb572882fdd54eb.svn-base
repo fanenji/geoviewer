@@ -1,0 +1,84 @@
+Ext.application({
+    name: 'ambienteinliguria',
+
+    launch: function() {
+        var idRichiesta = CWN2.Util.getUrlParam('idRichiesta');
+        //http://dts-parodis.datasiel.net/geoviewer/pages/apps/qpg/statistica.html?idRichiesta=QPG_C4B50B28536384608790A9E18F6FB8FE_20150326_094919
+
+        var toolbar = {
+            "itemGroups": [
+                {
+                    "items": [
+                        { "name": "pan" },
+                        { "name": "zoomin" },
+                        { "name": "zoomout" },
+                        //{ "name": "fitall" },
+                        { "name": "zoomToInitialExtent" },
+                        { "name": "zoomprevious" },
+                        { "name": "zoomnext" }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "name": "infowms",
+                            "options": {
+                                hideFeatureList: true
+                            }
+
+                        },
+                        //{"name": "routeplanner", "options": { "flagLimitaTerritorioLigure": "true" }},
+                        {"type": "combo", "name": "geocoder"}
+                    ]
+                }
+            ]
+        };
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    //"displayProjection": "EPSG:3003",
+                    "restrictedExtent": "830036,5402959,1123018,5597635"
+                },
+                "layout": {
+                    "header": {
+                        "html": "<div><table><tr><td><img src='img/headerSfondoStatistica.png' ></td><td>&nbsp;&nbsp;</td><td id='headerSfondo2' style='vertical-align: middle; '><div id='titolo' >Cartogrammi Statistici</div></td></tr></table></div>",
+                        "height": 150,
+                        "style": { "background-color": "#475677" }
+                    },
+                    "statusBar": true,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east"
+                    },
+                    "widgets": [
+                        { "name": "Scale" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": toolbar
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base", "visible": true },
+                { "type": "rl_ortofoto_2013" },
+                { "type": "google_roadmap" },
+                { "type": "bing_aerial"}
+            ]
+        };
+
+
+
+        CWN2.app.load({
+            appConfig: config,
+            qpgRequest: idRichiesta,
+            loadBaseLayers: true,
+            debug: true,
+            setMapTitle: 'titolo'
+        });
+
+    } //eo launch
+});
+
+
+
+

@@ -1,0 +1,221 @@
+Sencha Cmd v4.0.1.45
+[INF] 
+[INF] init-plugin:
+[INF] 
+[INF] cmd-root-plugin.init-properties:
+[INF] 
+[INF] init-properties:
+[INF] 
+[INF] init-sencha-command:
+[INF] 
+[INF] init:
+[INF] 
+[INF] app-build-impl:
+[INF] 
+[INF] -before-init-local:
+[INF] 
+[INF] -init-local:
+[INF] 
+[INF] -after-init-local:
+[INF] 
+[INF] init-local:
+[INF] 
+[INF] find-cmd-in-path:
+[INF] 
+[INF] find-cmd-in-environment:
+[INF] 
+[INF] find-cmd-in-shell:
+[INF] 
+[INF] init-cmd:
+[INF]      [echo] Using Sencha Cmd from E:\progetti\CartoWebNet2\tools\Sencha\Cmd\4.0.1.45 for E:\progetti\CartoWebNet2\ExtJsBuild\builder\build.xml
+[INF] 
+[INF] -before-init:
+[INF] 
+[INF] -init:
+[INF] Initializing Sencha Cmd ant environment
+[INF] Adding antlib taskdef for com/sencha/command/compass/ant/antlib.xml
+[INF] 
+[INF] -after-init:
+[INF] 
+[INF] -before-init-defaults:
+[INF] 
+[INF] -init-defaults:
+[INF] 
+[INF] -after-init-defaults:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] init:
+[INF] 
+[INF] -before-build:
+[INF] 
+[INF] refresh:
+[INF] 
+[INF] -before-refresh:
+[INF] 
+[INF] -init:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] -detect-app-build-properties:
+[INF] Loading app json manifest...
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\packages\ext-theme-base\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\packages\ext-theme-base\overrides
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\packages\ext-theme-neutral\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\packages\ext-theme-neutral\overrides
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\packages\ext-theme-classic\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\ext\packages\ext-theme-classic\overrides
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\builder\app
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\builder\app.js
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\builder\GeoExt2\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\build\temp\production\builder\sencha-compiler\app
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\build\temp\production\builder\sencha-compiler\app
+[INF] Concatenating output to file E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/sencha-compiler/cmd-packages.js
+[INF] Adding external reference : @full-page => @overrides
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\ExtJsBuild\build\temp\production\builder\sencha-compiler\cmd-packages.js
+[INF] Adding external reference : Ext.util.Observable => E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/sencha-compiler/cmd-packages.js
+[INF] 
+[INF] -refresh-app:
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.js
+[INF] Appending content to E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.js
+[INF] Appending content to E:\progetti\CartoWebNet2\ExtJsBuild\builder/bootstrap.json
+[INF] 
+[INF] -refresh:
+[INF] 
+[INF] -after-refresh:
+[INF] 
+[INF] resolve:
+[INF] 
+[INF] js:
+[INF] 
+[INF] -before-js:
+[INF] 
+[INF] -init:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] -detect-app-build-properties:
+[INF] 
+[INF] -compile-js:
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\tools\Sencha\Cmd\4.0.1.45\plugins\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\tools\Sencha\Cmd\4.0.1.45\plugins\ext\src
+[INF] Loading classpath entry E:\progetti\CartoWebNet2\tools\Sencha\Cmd\4.0.1.45\plugins\ext\4.2\src
+[INF] Building optimized concatenated output..
+[INF] Compressing data with YuiJavascriptCompressor
+[INF] Concatenating output to file E:\progetti\CartoWebNet2\ExtJsBuild/build/production/builder/app.js
+[INF] 
+[INF] -js:
+[INF] 
+[INF] -after-js:
+[INF] 
+[INF] resources:
+[INF] 
+[INF] -before-resources:
+[INF] 
+[INF] -before-inherit-resources:
+[INF] 
+[INF] -before-copy-resources:
+[INF] 
+[INF] -init:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] -resources:
+[INF] merging resources into E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder\resources
+[INF] merged 0 resources into E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder\resources
+[INF] merging resources into E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder
+[INF] merged 0 resources into E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder
+[INF] 
+[INF] -after-copy-resources:
+[INF] 
+[INF] -after-inherit-resources:
+[INF] 
+[INF] -after-resources:
+[INF] 
+[INF] sass:
+[INF] 
+[INF] -before-sass:
+[INF] 
+[INF] -compass-compile-theme-package:
+[INF] 
+[INF] -init:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] -compile-sass:
+[INF] writing sass content to E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/sass/builder-all.scss
+[INF] appending sass content to E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/sass/builder-all.scss
+[INF] appending sass content to E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/sass/builder-all.scss
+[INF] executing compass using system installed ruby runtime
+overwrite builder-all.css 
+[INF]      [echo] Compressing E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder\resources\builder-all.css to E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder\resources\builder-all.css
+[INF] srcfile: E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder\resources\builder-all.css (569148 bytes)
+[INF] outfile: E:\progetti\CartoWebNet2\ExtJsBuild\build\production\builder\resources\builder-all.css
+[INF] Compressed size 235465 bytes. Saved 333683 bytes (58 %)
+[INF] 
+[INF] -compass-compile-theme-folders:
+[INF] 
+[INF] -compass-compile-sass-dir:
+[INF] 
+[INF] -compass-compile:
+[INF] 
+[INF] -sass:
+[INF] 
+[INF] -after-sass:
+[INF] 
+[INF] slice:
+[INF] 
+[INF] -before-slice:
+[INF] 
+[INF] -slice-images:
+[INF] 
+[INF] -init:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] -detect-app-build-properties:
+[INF] 
+[INF] -slice-app-theme:
+[INF] 
+[INF] -init:
+[INF] 
+[INF] -init-compiler:
+[INF] 
+[INF] -compile-slicer-sass:
+[INF] writing sass content to E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/slicer-temp/builder-example.scss
+[INF] 
+[INF] -compass-compile-slicer-css:
+[INF] executing compass using system installed ruby runtime
+identical builder-example.css 
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/sass/example/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/sass/example/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/sass/example/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/sass/example/bootstrap.js
+[INF] Appending concatenated output to file E:\progetti\CartoWebNet2\ExtJsBuild\builder/sass/example/bootstrap.js
+[INF]      [echo] Capture theme image to E:\progetti\CartoWebNet2\ExtJsBuild/build/temp/production/builder/slicer-temp/theme-capture.png
+[INF] Capturing theme image
+[INF] loading page E%3A/progetti\CartoWebNet2\ExtJsBuild\builder/sass/example/theme.html
+Capturing screenshot
+Saving slicer widget manifest
+Capture complete
+
+[INF] Capture complete
+[INF]      [echo] Slicing theme images to E:\progetti\CartoWebNet2\ExtJsBuild/build/production/builder/resources
+[INF] Slicing images...
+[ERR] 
+[ERR] BUILD FAILED
+[ERR] java.lang.IllegalArgumentException: Unknown image type 0
+[ERR] 	at com.sencha.command.environment.AppOrPacka
+[ERR] geEnvironment.execute(AppOrPackageEnvironment.java:399)
+[ERR] 
+[ERR] Total time: 19 seconds
+[ERR] The following error occurred while executing this line:
+E:\progetti\CartoWebNet2\ExtJsBuild\builder\.sencha\app\build-impl.xml:321: The following error occurred while executing this line:
+E:\progetti\CartoWebNet2\ExtJsBuild\builder\.sencha\app\slice-impl.xml:208: The following error occurred while executing this line:
+E:\progetti\CartoWebNet2\ExtJsBuild\builder\.sencha\app\slice-impl.xml:209: The following error occurred while executing this line:
+E:\progetti\CartoWebNet2\ExtJsBuild\builder\.sencha\app\slice-impl.xml:91: java.lang.IllegalArgumentException: Unknown image type 0

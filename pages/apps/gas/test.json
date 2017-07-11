@@ -1,0 +1,14 @@
+{"type": "FeatureCollection", "features": [
+    {
+        "type": "Feature",
+        "properties": {
+            "ID": 1,
+            "NOME": "pippo",
+            "POSTI_LIBERI": "3"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [7.931137, 43.90601]
+        }
+    }
+]}

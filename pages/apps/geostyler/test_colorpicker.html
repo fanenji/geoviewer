@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>MY EXAMPLES</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="colorField.css">
+
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script>
+    <script type="text/javascript" src="colorField.js"></script>
+    <script type="text/javascript">
+
+        Ext.onReady(function () {
+
+
+            var fg = new Ext.ux.ColorField({
+                fieldLabel: 'Foreground Color',
+                value: '#000000',
+                msgTarget: 'qtip'
+            });
+            var bg = new Ext.ux.ColorField({
+                fieldLabel: 'Background Color',
+                value: '#FFFF12',
+                msgTarget: 'qtip'
+            });
+            fg.on('select', function (field, color) {
+                Ext.select('body').setStyle('color', color);
+            });
+            bg.on('select', function (field, color) {
+                Ext.select('body').setStyle('background', color);
+            });
+            var form = new Ext.FormPanel({
+                border: false,
+                width: 300,
+                renderTo: 'test1',
+                bodyStyle: {
+                    'background': 'transparent'
+                },
+                items: [{
+                            xtype: 'fieldset',
+                            autoHeight: true,
+                            border: false,
+                            items: [fg, bg]
+                        }]
+            });
+            var fb = new Ext.ux.ColorField({
+                fieldLabel: 'Fallback Picker',
+                value: '#FFFFFF',
+                msgTarget: 'qtip',
+                fallback: true
+            });
+            var form = new Ext.FormPanel({
+                border: false,
+                width: 300,
+                renderTo: 'test2',
+                bodyStyle: {
+                    'background': 'transparent'
+                },
+                items: [{
+                            xtype: 'fieldset',
+                            autoHeight: true,
+                            border: false,
+                            items: [fb]
+                        }]
+            });
+            Ext.QuickTips.init();
+
+
+        });
+    </script>
+
+</head>
+<body>
+<h1>Test for ExtJs</h1>
+<div id="test1"/>
+<div id="test2"/>
+
+
+</body>
+</html>

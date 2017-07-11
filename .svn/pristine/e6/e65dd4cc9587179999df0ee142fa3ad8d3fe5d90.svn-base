@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<div id="scelta" width="600" height="30">
+    <form name="form" action="javascript:carica();">
+        Codice catalogo:
+        <input type="text" name="codice" size="10">
+<!--        <input type="submit" value="carica"> -->
+    </form>
+</div>
+<iframe id="map_1" src="gs_ms_1.html" width="800" height="800">
+
+</iframe>
+
+<iframe id="map_2" src="gs_ms_2.html" width="800" height="800">
+
+</iframe>
+
+<script>
+    var idMap = decodeURIComponent(getUrlParam('id'));
+    if (idMap !== "null") {
+        document.forms[0].codice.value = idMap;
+
+    }
+
+    function carica() {
+        document.getElementById('map_1').contentWindow.gs_ms.app.loadMap(document.forms[0].codice.value);
+        document.getElementById('map_2').contentWindow.gs_ms.app.loadMap(document.forms[0].codice.value);
+    }
+
+    function getUrlParam (paramName) {
+        var results = new RegExp("[\\?&]" + paramName + "=([^&#]*)").exec(window.location.href);
+        return results ? decodeURIComponent(results[1]) : null;
+    }
+
+</script>
+</body>
+</html>

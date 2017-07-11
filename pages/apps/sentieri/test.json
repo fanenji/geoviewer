@@ -1,0 +1,30 @@
+{ "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [8.931137, 44.40601]
+            },
+            "properties": {
+                "label": "prova",
+                "tooltip": "prova tt",
+                "width": 48,
+                "height": 55
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [8.921137, 44.41601]
+            },
+            "properties": {
+                "label": "prova 2",
+                "tooltip": "prova 2 tt",
+                "width": 32,
+                "height": 37
+            }
+        }
+    ]
+}

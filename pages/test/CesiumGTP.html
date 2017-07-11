@@ -1,0 +1,34 @@
+<script src="/geoviewer/lib/Cesium/Build/CesiumUnminified/Cesium.js" type="text/javascript"></script>
+<script src="/geoviewer/lib/GeoserverTerrainProvider.js" type="text/javascript"></script>
+<body>
+<canvas id="cesiumContainer"></canvas>
+<script>
+    var canvas = document.getElementById('cesiumContainer');
+    var scene = new Cesium.Scene({canvas: canvas});
+    var primitives = scene.primitives;
+    var globe = new Cesium.Globe(Cesium.Ellipsoid.WGS84);
+    scene.globe=globe;
+
+    var terrainProvider = new Cesium.GeoserverTerrainProvider({
+        url : "http://geoportale.regione.liguria.it/geoserver/elevation/wms",
+        layerName: "L3783",
+        styleName:"SRTM2Color",
+        waterMask:true
+    });
+    globe.terrainProvider = terrainProvider;
+    var hand = new Cesium.ScreenSpaceEventHandler(canvas);
+    // return altitude with double click in console.log!!
+    hand.setInputAction(
+        function (movement) {
+            if(movement.position != null) {
+                var cartesian = scene.camera.pickEllipsoid(movement.position, ellipsoid);
+                if (cartesian) {
+                    var cartographic = ellipsoid.cartesianToCartographic(cartesian);
+                    cartographic.height=globe.getHeight(cartographic);
+                    console.log("lat= "+(cartographic.latitude*180/Math.PI)+"°; long="+(cartographic.longitude*180/Math.PI)+"°; altitude="+cartographic.height+" meters")
+                }
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
+    );
+</script>
+</body>

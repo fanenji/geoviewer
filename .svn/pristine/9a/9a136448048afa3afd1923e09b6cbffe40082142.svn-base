@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+
+<html lang="it">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8">
+
+    <title>GeoStyler</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+    <link rel="stylesheet" type="text/css" href="colorField.css">
+
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script>
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+    <script src="/geoviewer/lib/Cwn2/deploy-config-ese.js"></script>
+
+    <script type='text/javascript' src="https://x2js.googlecode.com/hg/xml2json.js"></script>
+
+</head>
+<body>
+
+<script>
+
+Ext.application({
+
+    name: 'GeoStyler',
+
+    geoServerFontList: [],
+
+    x2js: null,
+
+    getStyles: function(idMap) {
+        if (!idMap) {
+            return;
+        }
+
+        var me = this;
+
+        GeoStyler.app.x2js = new X2JS({
+            arrayAccessFormPaths : [
+//          "StyledLayerDescriptor.NamedLayer",
+//          "StyledLayerDescriptor.NamedLayer.UserStyle",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.TextSymbolizer.Font.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PointSymbolizer.Graphic.Mark.Fill.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PointSymbolizer.Graphic.Mark.Stroke.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.LineSymbolizer.Stroke.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.LineSymbolizer.Stroke.GraphicStroke.Graphic.Mark.Stroke.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.LineSymbolizer.Stroke.GraphicStroke.Graphic.Mark.Fill.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Stroke.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Fill.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Fill.GraphicFill.Graphic.Mark.Stroke.CssParameter",
+                "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Fill.GraphicFill.Graphic.Mark.Fill.CssParameter"
+            ]
+        });;
+
+
+        CWN2.Util.ajaxRequest({
+            type: "JSON",
+            url: "/geoservices/REST/geoserver/font_list",
+            callBack: function(fontList,response) {
+                GeoStyler.app.geoServerFontList = fontList.data;
+            }
+        });
+
+        Ext.each(CWN2.app.map.layerManager.overlayLayersConfig, function(layer) {
+            if (layer.idMap != idMap) {
+                CWN2.app.map.layerManager.setLayerVisible(layer.name,false);
+            }
+            if (layer.geomType === "VECTOR") {
+                CWN2.Util.ajaxRequest({
+                    type: "XML",
+                    url: "/geoservices/REST/geoserver/geoserver_sld?id=" + layer.id,
+                    callBack: function(sld,response) {
+                        var sldStr = response.responseText.replace(/sld:/g, "").replace(/gml:/g, "").replace(/ogc:/g, ""); //.replace('<ogc:Filter','<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"'); //.replace(/ogc:/g, "");
+                        layer.sld = GeoStyler.app.x2js.xml_str2json(sldStr);
+                        if (!layer.sld) {
+                            CWN2.Util.msgBox("Attenzione: Non sono riuscito a caricare il file sld: " + layer.id);
+                        }
+                    }
+                });
+            }
+        });
+
+    },
+
+    launch: function() {
+
+        var idMap = decodeURIComponent(CWN2.Util.getUrlParam('id'));
+        if (idMap === "null") {
+            idMap = null;
+        }
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    "restrictedExtent": "830036,5402959,1123018,5597635"
+                },
+                "layout": {
+                    "statusBar": true,
+                    "legend": null,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east",
+                        "collapsed": false
+                    },
+                    "widgets": [
+                        { "name": "Scale" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": {
+                        "itemGroups": [
+                            {
+                                "items": [
+                                    { "name": "pan" },
+                                    { "name": "zoomin" },
+                                    { "name": "zoomout" },
+                                    { "name": "fitall" },
+                                    { "name": "zoomToInitialExtent" },
+                                    { "name": "zoomprevious" },
+                                    { "name": "zoomnext" }
+                                ]
+                            },
+                            {
+                                "name": "avanzate",
+                                "items": [
+                                    {"name": "infowms" },
+                                    {"name": "removelayers" },
+                                    {"name": "find", "panels": [{ "type": "layer", "name": "Livello" }]},
+                                    {"type": "combo", "name": "geocoder"},
+                                    {"name": "geostyler", "options": { "idMap": idMap }}
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base" , "visible": true},
+                { "type": "bing_aerial"},
+                { "type": "rl_ortofoto_2013" }
+            ],
+            "layers": []
+        };
+
+        CWN2.Globals.NO_GWC_CACHE = true;
+
+        CWN2.app.load({
+            appConfig: config,
+            divID: "cwn2_map",
+            callBack: this.getStyles,
+            callBackArgs: idMap,
+            idMap: idMap,
+            flagGeoserver: true,
+            geoserverUrl: "http://geoservizi.datasiel.net:8080/",
+            debug: true
+        });
+
+    } //eo launch
+
+});
+
+var p_g = function() {
+    print_symb('POINT / Graphic',9,0);
+}
+var p_w = function() {
+    print_symb('POINT / WKN',8,0);
+}
+var l_s = function() {
+    print_symb('LINE / SIMPLE',6,0);
+}
+var l_w = function() {
+    print_symb('LINE / WKN',7,0);
+}
+var pol_s = function() {
+    print_symb('POLYGON / Fill Simple + Stroke Simple',4,0);
+}
+var pol_g = function() {
+    print_symb('POLYGON / Fill Graphics',3,0);
+}
+var pol_h = function() {
+    print_symb('POLYGON / Fill Hatch',2,0);
+}
+var multi = function() {
+    print_symb('MULTICLASSE',3,0);
+}
+
+
+var print_symb = function(title,layer,rule) {
+    console.log(CWN2.app.map.layerManager.overlayLayersConfig[layer].legend.label + ' - ' + CWN2.app.map.layerManager.overlayLayersConfig[layer].name)
+    console.log('---------------------------------')
+    console.log(JSON.stringify(CWN2.app.map.layerManager.overlayLayersConfig[layer].sld.StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule[0], null, 2));
+    console.log('---------------------------------')
+    console.log(CWN2.app.map.layerManager.overlayLayersConfig[layer].sld)
+    console.log('---------------------------------')
+}
+
+</script>
+
+</body>
+</html>

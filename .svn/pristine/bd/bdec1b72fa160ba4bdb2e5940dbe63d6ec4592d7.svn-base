@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+
+<html lang="it">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8">
+
+    <title>GeoStyler</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+    <link rel="stylesheet" type="text/css" href="colorField.css">
+
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script>
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+    <script src="/geoviewer/lib/Cwn2/deploy-config-ese.js"></script>
+
+    <script type='text/javascript' src="https://x2js.googlecode.com/hg/xml2json.js"></script>
+
+</head>
+<body>
+
+<script>
+
+var x2js = new X2JS({
+        arrayAccessFormPaths : [
+//                "StyledLayerDescriptor.NamedLayer",
+//                "StyledLayerDescriptor.NamedLayer.UserStyle",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.TextSymbolizer.Font.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PointSymbolizer.Graphic.Mark.Fill.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PointSymbolizer.Graphic.Mark.Stroke.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.LineSymbolizer.Stroke.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.LineSymbolizer.Stroke.GraphicStroke.Graphic.Mark.Stroke.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.LineSymbolizer.Stroke.GraphicStroke.Graphic.Mark.Fill.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Stroke.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Fill.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Fill.GraphicFill.Graphic.Mark.Stroke.CssParameter",
+            "StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule.PolygonSymbolizer.Fill.GraphicFill.Graphic.Mark.Fill.CssParameter"
+        ]
+    });
+
+
+/*
+var filter = new OpenLayers.Format.CQL().read("CODICE_TIPO_PROCEDURA = 2 AND CODICE_TIPO_VIA = 1");
+var ogcFilter = new OpenLayers.Format.Filter.v1_0_0().write(filter);
+var jsonFilter = x2js.xml2json(ogcFilter);
+var xmlFilter = x2js.json2xml_str(jsonFilter);
+
+var filter = new OpenLayers.Format.Filter.v1_0_0();
+var ogcFilter = filter.read(ogcFilter);
+
+var convFilter = new X2JS().json2xml(jsonFilter)
+var ogcFilter2 = filter.read(convFilter);
+*/
+
+
+
+
+filterCQL2json = function(cqlFilter) {
+    return new X2JS().xml2json(new OpenLayers.Format.Filter.v1_0_0().write(new OpenLayers.Format.CQL().read(cqlFilter)));
+}
+
+filterJson2CQL = function(jsonFilter) {
+    var xmlFilter = new X2JS().json2xml(jsonFilter);
+    var ogcFilter = new OpenLayers.Format.Filter.v1_0_0().read(xmlFilter);
+    var cqlFilter = new OpenLayers.Format.CQL().write(ogcFilter);
+    return cqlFilter;
+}
+
+var sldStr = '<?xml version="1.0" encoding="UTF-8"?><StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0"><NamedLayer><Name>4594</Name><UserStyle><Name>4594</Name><FeatureTypeStyle><Name>name</Name><Rule><Name>R0</Name><Title>POINT / Graphic</Title><Filter><Or><And><PropertyIsEqualTo><PropertyName>CODICE_TIPO_PROCEDURA</PropertyName><Literal>2</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName>CODICE_TIPO_VIA</PropertyName><Literal>1</Literal></PropertyIsEqualTo></And><PropertyIsEqualTo><PropertyName>CODICE_TIPO_PROCEDURA</PropertyName><Literal>1</Literal></PropertyIsEqualTo></Or></Filter><MinScaleDenominator>1000.0</MinScaleDenominator><MaxScaleDenominator>1000000.0</MaxScaleDenominator><PointSymbolizer><Graphic><ExternalGraphic><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geoportale.regione.liguria.it/geoservices/geoserver_sld/sld/img/alien.png"/><Format>image/png</Format></ExternalGraphic><Size>12</Size></Graphic></PointSymbolizer></Rule><Rule><Name>LABEL</Name><Title/><MaxScaleDenominator>100000.0</MaxScaleDenominator><TextSymbolizer><Label><PropertyName>NUMERO_PRATICA</PropertyName></Label><Font><CssParameter name="font-family">Verdana</CssParameter><CssParameter name="font-size">8</CssParameter><CssParameter name="font-style">normal</CssParameter><CssParameter name="font-weight">normal</CssParameter></Font><LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>1</AnchorPointX><AnchorPointY>1</AnchorPointY></AnchorPoint><Displacement><DisplacementX>5</DisplacementX><DisplacementY>5</DisplacementY></Displacement></PointPlacement></LabelPlacement><Halo><Radius>3</Radius><Fill><CssParameter name="fill">#F5FFFA</CssParameter></Fill></Halo><Fill><CssParameter name="fill">#000000</CssParameter></Fill></TextSymbolizer></Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>';
+var sldJson = x2js.xml_str2json(sldStr);
+var filterJson = sldJson.StyledLayerDescriptor.NamedLayer.UserStyle.FeatureTypeStyle.Rule[0].Filter;
+var filterXml = x2js.json2xml(filterJson)
+
+var cqlFilter = filterJson2CQL(filterJson)
+var jsonFilter = filterCQL2json(cqlFilter)
+var xmlFilter = x2js.json2xml_str(jsonFilter);
+
+//console.log(CQL2json("(CODICE_TIPO_PROCEDURA = 2 AND CODICE_TIPO_VIA = 1) OR CODICE_TIPO_PROCEDURA = 1"));
+
+
+
+
+</script>
+
+</body>
+</html>

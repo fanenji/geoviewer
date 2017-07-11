@@ -1,0 +1,350 @@
+Ext.application({
+    name: 'ambienteinliguria',
+
+    launch: function() {
+
+
+        //http://dts-parodis.datasiel.net/geoviewer/pages/apps/polis/statistica.html?idRichiesta=79227770358004&Provincia=010&Comune=001&Azione=IR
+
+
+
+
+        function insertCoordinate(x,y) {
+            window.location.href = CWN2.Globals.POLIS_INSERT_COORD_MODULE + "IdRichiesta=" + idRichiesta + "&X=" + parseFloat(x).toFixed(0) + "&Y=" + parseFloat(y).toFixed(0);
+        }
+
+        function ritorna(idRichiesta) {
+            var chiamante = CWN2.app.configuration.agRequest.chiamante;
+            if (chiamante.indexOf("?") > -1) {
+                window.location = chiamante + "&idRichiesta=" + idRichiesta;
+            } else {
+                window.location = chiamante + "?idRichiesta=" + idRichiesta;
+            }
+        }
+
+        function confermaFiltro(type,geom,evt) {
+            Ext.MessageBox.show({
+                title: 'Conferma',
+                msg: 'Confermi?',
+                buttonText: {yes: "Conferma",no: "Annulla"},
+                fn: function(btn) {
+                    filtro(type,geom,evt,btn);
+                },
+                animateTarget: 'mb4',
+                icon: Ext.MessageBox.QUESTION
+            });
+        }
+
+        function filtro(type,geom,evt,btn) {
+            switch (btn) {
+                case "yes":
+                    insertFiltro(type,geom,evt)
+                    break;
+                case "no":
+                    evt.feature.layer.removeAllFeatures();
+                    break;
+            }
+        }
+
+        function insertFeature(items) {
+            var data = {
+                "modalita": "FILTRO",
+                "filterType": "feature",
+                "applicazione": CWN2.app.configuration.agRequest.applicazione,
+                "idAlfaGis": CWN2.app.configuration.agRequest.idAlfaGis
+            }
+            data.idField = CWN2.app.configuration.agRequest.livelli[0].idField;
+            data.valori = [];
+            Ext.each(items, function(item) {
+                data.valori.push(item.data.ID);
+            });
+            callInsertService(data)
+        }
+
+        function insertFiltro(type,geom,evt) {
+            var data = {
+                "modalita": "FILTRO",
+                "filterType": type,
+                "applicazione": CWN2.app.configuration.agRequest.applicazione,
+                "idAlfaGis": CWN2.app.configuration.agRequest.idAlfaGis
+            }
+            if (type === "circle") {
+                var bounds =  geom.bounds.transform(new OpenLayers.Projection(CWN2.app.map.projection), new OpenLayers.Projection(CWN2.app.configuration.application.mapOptions.displayProjection));
+                data.x = bounds.getCenterLonLat().lon;
+                data.y = bounds.getCenterLonLat().lat;
+                data.radius = parseInt(bounds.getWidth()/2);
+            } else {
+                var points = geom.transform(new OpenLayers.Projection(CWN2.app.map.projection), new OpenLayers.Projection(CWN2.app.configuration.application.mapOptions.displayProjection)).components[0].components;
+                points[points.length-1] = points[0];
+                data.coords = []
+                Ext.each(points, function(point) {
+                    data.coords.push(parseInt(point.x));
+                    data.coords.push(parseInt(point.y));
+                });
+                data.coords = data.coords.join(",");
+            }
+            callInsertService(data)
+        }
+
+        function callInsertService(data) {
+            CWN2.loadingScreen = Ext.getBody().mask('Caricamento Filtro', 'loadingscreen');
+            CWN2.Util.ajaxRequest({
+                type: "JSON",
+                url: CWN2.Globals.RL_AG_REQUEST_CONFIG_SERVICE,
+                callBack: function(response) {
+                    CWN2.app.removeLoadingScreen();
+                    var exception = {};
+                    if (!response ) {
+                        exception.message = response.responseText;
+                        exception.level = 2;
+                        CWN2.Util.handleException(exception);
+                        return;
+                    }
+                    if (response.success === false) {
+                        exception.message = response.message;
+                        exception.level = 2;
+                        CWN2.Util.handleException(exception);
+                        return;
+                    }
+                    ritorna(response.data.idRichiesta);
+                },
+                jsonData: data,
+                disableException: true
+            });
+        }
+
+        var toolbar = {
+            "itemGroups": [
+                {
+                    "items": [
+                        { "name": "pan" },
+                        { "name": "zoomin" },
+                        { "name": "zoomout" },
+                        //{ "name": "fitall" },
+                        { "name": "zoomToInitialExtent" },
+                        { "name": "zoomprevious" },
+                        { "name": "zoomnext" }
+                    ]
+                },
+                {
+                    "items": [
+                        { "name": "measureline" },
+                        { "name": "measurearea" }
+                    ]
+                },
+                {
+                    "items": [
+                        {"name": "infowms" },
+                        {"name": "transparency" },
+                        {"name": "loadlayers",
+                            "panels": [
+                                {
+                                    "type": "mapTree",
+                                    "name": "Repertorio Cartografico",
+                                    "options": {
+                                        "treeServiceUrl": "http://geoportale.regione.liguria.it/geoservices/REST/config/rep_carto_tree/03"
+                                    }
+                                },
+                                {
+                                    "type": "mapTree",
+                                    "name": "Canali Tematici",
+                                    "options":
+                                    {
+                                        "treeServiceUrl": "/geoservices/REST/config/ag_app_canali_tree/ECO3/"
+                                    }
+                                }
+                            ]
+                        },
+                        {"name": "removelayers" },
+                        {"name": "find", "panels": [{ "type": "layer", "name": "Livello" }]},
+                        //{"name": "routeplanner", "options": { "flagLimitaTerritorioLigure": "true" }},
+                        {"type": "combo", "name": "geocoder"}
+                    ]
+                }
+            ]
+        };
+
+        var bottoniFiltro = [
+            {"name": "selectfeature",
+                "options": {
+                    "idLayer": "",
+                    "iconCls": "selezioneOggetti",
+                    "radius": 5,
+                    "preProcessing": function(button,agRequest) {
+                        var codLayers = [];
+                        Ext.each(agRequest.livelli, function(layer) {
+                            codLayers.push(layer.codiceLivello)
+                        });
+                        button.options.idLayer = codLayers.join(",");
+                    },
+                    "callBacks": {
+                        "submit": function(items,btn) {
+                            insertFeature(items);
+                        },
+                        "cancel": function(items,btn) {
+                            btn.getEl().dom.click();
+                        }
+                    }
+                }
+            },
+            {
+                "name": "drawRegularPolygon",
+                "options": {
+                    "id": "drawCircle",
+                    "type": "circle",
+                    "tooltip": "Inserisci un cerchio",
+                    "iconCls": "selezioneCerchio",
+                    "singleFeature": true,
+                    "callback" :  function(geom,evt) {
+                        confermaFiltro("circle",geom,evt);
+                    }
+                }
+            },
+            {
+                "name": "drawRegularPolygon",
+                "options": {
+                    "id": "drawRectangle",
+                    "type": "rectangle",
+                    "tooltip": "Inserisci un rettangolo",
+                    "iconCls": "selezioneRettangolo",
+                    "singleFeature": true,
+                    "callback" :  function(geom,evt) {
+                        confermaFiltro("rectangle",geom,evt);
+                    }
+                }
+            },
+            {
+                "name": "drawPolygon",
+                "options": {
+                    "singleFeature": true,
+                    "iconCls": "selezionePoligono",
+                    "callback" :  function(geom,evt) {
+                        confermaFiltro("polygon",geom,evt);
+                    }
+                }
+            },
+            {
+                "name": "generic",
+                "options": {
+                    "id": "annulla-filtro",
+                    "iconCls": "selezioneAnnulla",
+                    "tooltip": "Annulla",
+                    "callback" :  function() {
+                        ritorna("");
+                    }
+                }
+            }
+        ];
+
+        var bottoniCoordinate = [
+            {
+                "name": "coordinate",
+                "options": {
+                    "pressed": true,
+                    "projection": "EPSG:3003",
+                    "callBacks": {
+                        "submit": function(geom) {
+                            insertCoordinate(geom.x,geom.y);
+                        },
+                        "cancel": function(geom) {
+                            Ext.MessageBox.confirm(
+                                CWN2.I18n.get('Conferma'),
+                                CWN2.I18n.get('Sei sicuro?'),
+                                function(btn) {
+                                    if (btn === "yes") {
+                                        insertCoordinate("","");
+                                    }
+                                }
+                            );
+                        }
+                    }
+                }
+            }
+        ];
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    //"displayProjection": "EPSG:3003",
+                    "restrictedExtent": "830036,5402959,1123018,5597635"
+                },
+                "layout": {
+                    "header": {
+                        "html": "<div><table><tr><td><img src='http://geoportale.regione.liguria.it/geoviewer/img/ambienteinliguria.gif' ></td><td>&nbsp;&nbsp;</td><td><div id='titolo'></div></td></tr></table></div>",
+                        "height": 125,
+                        "style": {
+                            "background-color": "#ffffff"
+                        }
+                    },
+                    "statusBar": true,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east"
+                    },
+                    "widgets": [
+                        { "name": "Scale" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": toolbar,
+                    "ag_toolbar": {
+                        "COORDINATE": CWN2.MapCatalogueLoader.ag_bottoni_coordinate("EPSG:3003"), //bottoniCoordinate
+                        "FILTRO": CWN2.MapCatalogueLoader.ag_bottoni_filtro(), //bottoniFiltro,
+                        "LIGHT_FILTRO": CWN2.MapCatalogueLoader.ag_bottoni_filtro(), //bottoniFiltro,
+                    }
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base" },
+                { "type": "rl_ortofoto_2013" },
+                { "type": "rl_carte_base" },
+                { "type": "google_roadmap", "visible": true },
+                { "type": "google_satellite"}
+            ]
+        };
+
+        var idRichiesta = CWN2.Util.getUrlParam('idRichiesta');
+        var codProv = CWN2.Util.getUrlParam('Provincia');
+        var codCom = CWN2.Util.getUrlParam('Comune');
+        var azione = CWN2.Util.getUrlParam('Azione');
+
+        var idMap = (azione==="IR")? 947 : (azione==="NIR")? 940 : null;
+        var comune = codProv + codCom;
+
+        var idRequest = (idMap)? null : idRichiesta;
+
+        var findOptions = {
+            maxZoomLevel: 17
+        };
+
+        // Se valorizzato idMap significa che devo gestire il caso di acquisizione coordinate per IR/NIR che non usa ALFA_GIS
+        // Imposto findOptions e aggiungo bottone coordinate
+        if (idMap) {
+            findOptions = {
+                layers: ["L1428"],
+                fields: "CODICE_COMUNE",
+                values: comune,
+                zoomLevel: null
+            };
+            toolbar.itemGroups[2].items.push(bottoniCoordinate[0]);
+        }
+
+
+
+        CWN2.app.load({
+            appConfig: config,
+            idRequest: idRequest,
+            idMap: idMap,
+            loadBaseLayers: true,
+            debug: false,
+            findOptions: findOptions,
+            app: 'polis',
+            //callBack: findComune,
+            setMapTitle: 'titolo'
+        });
+
+    } //eo launch
+});
+
+
+
+

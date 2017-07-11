@@ -1,0 +1,45 @@
+
+// costruzione mappa leaflet
+var map = ldMaps.map('map', {});
+
+// caricamento WMS tiled
+/*var tiled = L.tileLayer.wms('http://geoservizi.regione.liguria.it/geoserver/M735/wms?', {
+    layers: 'L1429',
+    format: 'image/png8',
+
+    tiled: true,
+    TILESORIGIN:'-20037508,-20037508',
+    FORMAT_OPTIONS:'antialias:text',
+    transparent: true,
+    SRS:'EPSG:3857'
+}).addTo(map);*/
+
+
+
+var untiled = new ldMaps.UntiledWms('http://geoservizi.regione.liguria.it/geoserver/M735/wms?', {
+    'layers': 'L1429',
+    'transparent': true,
+    'format': 'image/png8'
+});
+untiled.addTo(map);
+
+var tiled = new L.tileLayer.wms('http://geoservizi.regione.liguria.it/geoserver/M56/wms?', {
+    'layers': 'L3',
+    'tiled': true,
+    'transparent': true,
+    'format': 'image/png8'
+});
+tiled.addTo(map);
+
+
+
+
+// caricamento json
+/*
+var jsonLayer = loadJson({
+  url: 'http://geoservizi.regione.liguria.it:8080/geoserver/scuoladigitale/wfs',
+  layerName: 'V_SCUOLE_2014_COMPL'
+});
+*/
+
+

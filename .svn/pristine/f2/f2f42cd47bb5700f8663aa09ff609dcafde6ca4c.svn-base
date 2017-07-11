@@ -1,0 +1,56 @@
+
+.loadData {
+    background-image:url("/geoviewer/img/silk/application_get.png");
+}
+
+.showLegend {
+    background-image:url("/geoviewer/stili/default/icons/legend.png") !important;
+}
+
+.dragFeature {
+    background-image:url("/geoviewer/stili/default/icons/dragFeature.png") !important;
+}
+
+.selectFeature {
+    background-image:url("/geoviewer/stili/default/icons/select.png") !important;
+}
+
+.insertFeature {
+    background-image:url("/geoviewer/stili/default/icons/load_layers.png") !important;
+}
+
+.validate {
+    background-image:url("/geoviewer/stili/default/icons/accept.png") !important;
+}
+
+.unvalidate {
+    background-image:url("/geoviewer/stili/default/icons/cancel.png") !important;
+}
+
+.dereference {
+    background-image:url("/geoviewer/stili/default/icons/delete.png") !important;
+}
+
+
+.olControlAttribution {
+    font-size: smaller;
+    left: 5px;
+    bottom: 2px;
+    position: absolute;
+    display: block;
+}
+
+#titolo {
+    color:#295758;
+    font-weight:bold;
+    font-size: 24px;
+    font-family: tahoma,arial,verdana,sans-serif;
+    border-color:#78bec0;
+}
+
+.x-panel-tl .x-panel-header {
+    color: #295758;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: tahoma,arial,verdana,sans-serif;
+}

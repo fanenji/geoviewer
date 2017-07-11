@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+   Progetto ANT per la build delle librerie base
+   in particolare
+-->
+<project name="build_base_libs" default="build" basedir=".">
+   <!--
+      The <property> tag defines variables we
+      are using to store the path to different
+      files and tools required and input/output
+      directories. You use those variables by
+      like this: ${variable}
+   -->
+    <property name="PROJ4J_BUILD_DIR"      value="lib" />
+   <property name="YUI_COMPRESSOR" value="E:\progetti\CartoWebNet2\tools\yuicompressor\yuicompressor-2.4.2.jar" />
+
+
+   <!--
+      The <target> tags defines an ant task.
+      You have to give it a unique name and
+      list other task (if any) this task
+      depends on. Ant will run those task first.
+
+      This task below is the default task defined
+      in the <project> tag. It will run all the
+      dependents.
+   -->
+   <target name="build" depends="concat_proj4js, compress_proj4js" />
+   <!--
+      This is the "create JavaScript bundles" task
+      used to create concatenated files for each
+      category defined and a main application bundle
+      which contains all the code we need in one file.
+   -->
+
+   <target name="concat_proj4js">
+       <echo>concat_proj4js...</echo>
+        <!-- cwn2-noext-debug.js -->
+       <concat destfile="${PROJ4J_BUILD_DIR}/proj4js-debug.js">
+          <filelist dir="${PROJ4J_BUILD_DIR}"
+            files="proj4js-combined.js,
+            defs.js"
+          />
+       </concat>
+       <echo>concat_proj4js Done!!!</echo>
+   </target>
+
+   <target name="compress_proj4js" depends="concat_proj4js">
+       <echo>Compressing proj4js...</echo>
+        <apply executable="java" parallel="false">
+           <fileset dir="${PROJ4J_BUILD_DIR}" includes="proj4js-debug.js"/>
+           <arg line="-jar"/>
+           <arg path="${YUI_COMPRESSOR}"/>
+           <srcfile/>
+           <arg line="-o"/>
+           <mapper type="glob" from="*.js" to="${PROJ4J_BUILD_DIR}/proj4js-min.js"/>
+           <targetfile/>
+        </apply>
+       <echo>Compression Done!!!</echo>
+    </target>
+
+
+</project>

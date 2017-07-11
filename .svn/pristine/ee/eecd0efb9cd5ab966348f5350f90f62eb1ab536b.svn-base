@@ -1,0 +1,119 @@
+/**
+ *
+ * Class: CWN2.SimpleLegendPanel
+ *
+ * Pannello contenente la legenda di tipo ?simple?.
+ *
+ * Estende Ext.Panel
+ *
+ */
+
+Ext.define('CWN2.SimpleLegendPanel', {
+
+    extend: 'Ext.panel.Panel',
+
+    /**
+     *
+     * Constructor: CWN2.SimpleLegendPanel
+     * Costruisce il pannello legenda.
+     *
+     * Parameters:
+     * flagBtn - {Boolean} Indica se è richiamato dal bottone simpleLegend
+     *
+     * Return:
+     * {CWN2.SimpleLegendPanel}
+     *
+     */
+
+    constructor: function(flagBtn) {
+        /*global CWN2:false, window:false, OpenLayers:false, Ext:false, GeoExt:false */
+        "use strict";
+        CWN2.Util.log("CWN2.SimpleLegendPanel");
+
+        var legendConfig = CWN2.app.configuration.application.layout.legend,
+            panelId = (flagBtn) ? "cwn2-legend-panel-btn" : "cwn2-legend-panel";
+
+        var pos,
+            collapsed,
+            collapsible,
+            overlayGrid,
+            baseGrid;
+
+        if (legendConfig) {
+            pos = legendConfig.position || "east";
+            collapsed = (flagBtn) ? false : legendConfig.collapsed || false;
+            collapsible = (!flagBtn);
+        }
+
+        overlayGrid = new CWN2.SimpleLegendGridPanel("overlay");
+        baseGrid = new CWN2.SimpleLegendGridPanel("base");
+
+
+        // Gestisco l'update della legenda sull'evento "zoomend" della mappa
+        CWN2.app.map.events.register("zoomend",
+            CWN2.app.map,
+            function(e) {
+                overlayGrid.getView().refresh();
+                baseGrid.getView().refresh();
+            }
+        );
+
+        var items = [overlayGrid, baseGrid];
+
+        // Se presente configurazione QPG carico il pannello QPG
+        if (CWN2.app.configuration.qpgRequest) {
+            var tematismi = CWN2.app.configuration.qpgRequest.tematismi;
+            if (tematismi.length === 1) {
+                var layerConfig = tematismi[0].layerConfig;
+                items.push({
+                    xtype: "panel",
+                    bodyStyle: "padding:5px",
+                    autoScroll: true,
+                    items: [
+                        {
+                            xtype: "dataview",
+                            store: new Ext.data.Store({
+                                data: layerConfig.classes,
+                                fields: [
+                                    {name: "icon", mapping: "legendIcon"},
+                                    {name: "label", mapping: "legendLabel"}
+                                ]
+                            }),
+                            tpl: new Ext.XTemplate(
+                                '<table width=100% border=0>',
+                                '<tpl for=".">',
+                                '<tr>',
+                                '<td width=30><img src="{icon}"></td>',
+                                '<td>{label}</td>',
+                                '</tpl>'
+                            ),
+                            autoHeight: true,
+                            multiSelect: false,
+                            itemSelector: "div.thumb-wrap",
+                            emptyText: ""
+                        }
+                    ]
+                });
+            }
+        }
+
+        var config = {
+            id: panelId,
+            width: 230,
+            autoScroll: true,
+            height: 100,
+            region: pos,
+            border: false,
+            collapsible: collapsible,
+            collapsed: collapsed,
+            items: items
+        };
+
+        CWN2.SimpleLegendPanel.superclass.constructor.call(this, config);
+
+    }
+});
+
+	
+
+

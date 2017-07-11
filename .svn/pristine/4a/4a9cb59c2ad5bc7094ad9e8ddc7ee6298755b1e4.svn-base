@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+   The <project> tag defines the ant project and
+   the default build task to run initiated. It
+   also defines the base directory which is set
+   to the current folder this file lives in.
+-->
+<project name="Geoviewer" default="build" basedir=".">
+   <!--
+      The <property> tag defines variables we
+      are using to store the path to different
+      files and tools required and input/output
+      directories. You use those variables by
+      like this: ${variable}
+   -->
+   <property name="BUILD_DIR"      value="." />
+   <property name="SOURCE_DIR"     value="src" />
+   <property name="BUTTONS_DIR"     value="src/buttons" />
+   <property name="WIDGETS_DIR"     value="src/widgets" />
+   <property name="CONTROLS_DIR"     value="src/controls" />
+   <property name="YUI_COMPRESSOR" value="C:\tools\yuicompressor\yuicompressor-2.4.2.jar" />
+
+
+   <!--
+      The <target> tags defines an ant task.
+      You have to give it a unique name and
+      list other task (if any) this task
+      depends on. Ant will run those task first.
+
+      This task below is the default task defined
+      in the <project> tag. It will run all the
+      dependents.
+   -->
+   <target name="build" depends="cwn2_debug, delete_temp_files, compress_javascript " />
+   <!--
+      This is the "create JavaScript bundles" task
+      used to create concatenated files for each
+      category defined and a main application bundle
+      which contains all the code we need in one file.
+   -->
+   <target name="cwn2_debug">
+      <echo>cwn2_debug...</echo>
+       <!-- ToolbarButtons.js -->
+       <concat destfile="${SOURCE_DIR}/toolbar_buttons.js">
+          <fileset dir="${BUTTONS_DIR}" casesensitive="yes">
+             <include name="*.js"/>
+          </fileset>
+       </concat>
+       <!-- Widgets.js -->
+       <concat destfile="${SOURCE_DIR}/widgets.js">
+          <fileset dir="${WIDGETS_DIR}" casesensitive="yes">
+             <include name="*.js"/>
+          </fileset>
+       </concat>
+       <!-- controls.js -->
+       <concat destfile="${SOURCE_DIR}/controls.js">
+          <fileset dir="${CONTROLS_DIR}" casesensitive="yes">
+             <include name="*.js"/>
+          </fileset>
+       </concat>
+      <!-- cwn2-debug.js -->
+      <concat destfile="${BUILD_DIR}/cwn2-debug.js">
+         <filelist dir="${SOURCE_DIR}"
+            files="CWN2.js,
+            Util.js,
+            I18n.js"
+         />
+         <fileset dir="${SOURCE_DIR}"
+            includes="*.js"
+            excludes="Cwn2.js,
+            Util.js,
+            I18n.js"
+         />
+
+      </concat>
+      <echo>cwn2_debug Done!!!</echo>
+   </target>
+
+
+    <target name="compress_javascript" depends="cwn2_debug">
+       <echo>Compressing JavaScript Files...</echo>
+        <apply executable="java" parallel="false">
+           <fileset dir="${BUILD_DIR}" includes="cwn2-debug.js"/>
+           <arg line="-jar"/>
+           <arg path="${YUI_COMPRESSOR}"/>
+           <srcfile/>
+           <arg line="-o"/>
+           <mapper type="glob" from="*.js" to="${BUILD_DIR}/cwn2.js"/>
+           <targetfile/>
+        </apply>
+       <echo>Compression Done!!!</echo>
+    </target>
+
+    <target name="delete_temp_files" depends="cwn2_debug">
+       <echo>Deleting Temp Files...</echo>
+        <delete file="${SOURCE_DIR}/toolbar_buttons.js"/>
+        <delete file="${SOURCE_DIR}/controls.js"/>
+        <delete file="${SOURCE_DIR}/widgets.js"/>
+       <echo>Delete Done!!!</echo>
+    </target>
+
+
+
+</project>

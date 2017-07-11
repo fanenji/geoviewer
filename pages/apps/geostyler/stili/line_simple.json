@@ -1,0 +1,99 @@
+{
+  "StyledLayerDescriptor": {
+    "NamedLayer": {
+      "Name": "4587",
+      "UserStyle": {
+        "Name": "4587",
+        "FeatureTypeStyle": {
+          "Name": "name",
+          "Rule": [
+            {
+              "Name": "R0",
+              "Title": "LINE / SIMPLE",
+              "LineSymbolizer": {
+                "Stroke": {
+                  "CssParameter": [
+                    {
+                      "_name": "stroke",
+                      "__text": "#00ff04"
+                    },
+                    {
+                      "_name": "stroke-opacity",
+                      "__text": "0.43"
+                    },
+                    {
+                      "_name": "stroke-width",
+                      "__text": "4"
+                    },
+                    {
+                      "_name": "stroke-dasharray",
+                      "__text": "5.0 3.0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "Name": "LABEL",
+              "MaxScaleDenominator": "100000.0",
+              "TextSymbolizer": {
+                "Label": {
+                  "PropertyName": "NUMERO_PRATICA"
+                },
+                "Font": {
+                  "CssParameter": [
+                    {
+                      "_name": "font-family",
+                      "__text": "Verdana"
+                    },
+                    {
+                      "_name": "font-size",
+                      "__text": "8"
+                    },
+                    {
+                      "_name": "font-style",
+                      "__text": "normal"
+                    },
+                    {
+                      "_name": "font-weight",
+                      "__text": "normal"
+                    }
+                  ]
+                },
+                "LabelPlacement": {
+                  "LinePlacement": {
+                    "PerpendicularOffset": "0.0"
+                  }
+                },
+                "Halo": {
+                  "Radius": "3",
+                  "Fill": {
+                    "CssParameter": {
+                      "_name": "fill",
+                      "__text": "#F5FFFA"
+                    }
+                  }
+                },
+                "Fill": {
+                  "CssParameter": {
+                    "_name": "fill",
+                    "__text": "#000000"
+                  }
+                },
+                "VendorOption": {
+                  "_name": "followLine",
+                  "__text": "true"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "_xmlns": "http://www.opengis.net/sld",
+    "_xmlns:sld": "http://www.opengis.net/sld",
+    "_xmlns:ogc": "http://www.opengis.net/ogc",
+    "_xmlns:gml": "http://www.opengis.net/gml",
+    "_version": "1.0.0"
+  }
+}

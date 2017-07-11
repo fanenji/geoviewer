@@ -1,0 +1,111 @@
+{
+  "StyledLayerDescriptor": {
+    "NamedLayer": {
+      "Name": "4590",
+      "UserStyle": {
+        "Name": "4590",
+        "FeatureTypeStyle": {
+          "Name": "name",
+          "Rule": [
+            {
+              "Name": "R0",
+              "Title": "POLYGON / Fill Hatch",
+              "PolygonSymbolizer": {
+                "Fill": {
+                  "GraphicFill": {
+                    "Graphic": {
+                      "Mark": {
+                        "WellKnownName": "shape://times",
+                        "Stroke": {
+                          "CssParameter": {
+                            "_name": "stroke",
+                            "__text": "#990099"
+                          }
+                        }
+                      },
+                      "Size": "16"
+                    }
+                  }
+                },
+                "Stroke": {
+                  "CssParameter": [
+                    {
+                      "_name": "stroke",
+                      "__text": "#FF0000"
+                    },
+                    {
+                      "_name": "stroke-width",
+                      "__text": "2"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "Name": "LABEL",
+              "Title": "",
+              "MaxScaleDenominator": "100000.0",
+              "TextSymbolizer": {
+                "Label": {
+                  "PropertyName": "NUMERO_PRATICA"
+                },
+                "Font": {
+                  "CssParameter": [
+                    {
+                      "_name": "font-family",
+                      "__text": "Verdana"
+                    },
+                    {
+                      "_name": "font-size",
+                      "__text": "8"
+                    },
+                    {
+                      "_name": "font-style",
+                      "__text": "normal"
+                    },
+                    {
+                      "_name": "font-weight",
+                      "__text": "normal"
+                    }
+                  ]
+                },
+                "LabelPlacement": {
+                  "PointPlacement": {
+                    "AnchorPoint": {
+                      "AnchorPointX": "0",
+                      "AnchorPointY": "1"
+                    },
+                    "Displacement": {
+                      "DisplacementX": "-5",
+                      "DisplacementY": "5"
+                    }
+                  }
+                },
+                "Halo": {
+                  "Radius": "3",
+                  "Fill": {
+                    "CssParameter": {
+                      "_name": "fill",
+                      "__text": "#F5FFFA"
+                    }
+                  }
+                },
+                "Fill": {
+                  "CssParameter": {
+                    "_name": "fill",
+                    "__text": "#000000"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "_xmlns": "http://www.opengis.net/sld",
+    "_xmlns:sld": "http://www.opengis.net/sld",
+    "_xmlns:ogc": "http://www.opengis.net/ogc",
+    "_xmlns:gml": "http://www.opengis.net/gml",
+    "_version": "1.0.0"
+  }
+}

@@ -1,0 +1,4 @@
+.geoStylerRasterSave {
+    background-image:url("/geoviewer/img/silk/disk.png");
+}
+

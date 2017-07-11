@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+
+    <title>Migrazione ExtJS 4</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+
+    <!--         <script type="text/jvascript" src="/geoviewer/lib/ExtJs4/ext-all-debug.js"></script> -->
+    <!--         <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script> -->
+    <!--         <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script> -->
+
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script>
+
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+
+    <script src="gs_ms_config.js"></script>
+
+</head>
+<body>
+
+<script>
+
+Ext.application({
+
+    name: 'gs_ms',
+
+    init: function() {
+        CWN2.loadingScreen = Ext.getBody().mask('Caricamento Applicazione', 'loadingscreen');
+    },
+
+    loadMap: function(idMap) {
+        CWN2.app.loadMap({
+           idMap: idMap,
+           flagGeoserver: true
+       })
+    },
+
+    sincronize: function() {
+        if (parent.document.forms[0].codice.value) {
+            CWN2.app.loadMap({
+                idMap: parent.document.forms[0].codice.value,
+                flagGeoserver: true
+            })
+        }
+    },
+
+    launch: function() {
+
+        CWN2.app.load({
+            appConfig: config,
+            callBack: this.sincronize,
+            divID: "cwn2_map",
+            debug: false
+        });
+
+    } //eo launch
+
+});
+
+
+</script>
+
+<div id="cwn2_map"></div>
+</body>
+</html>

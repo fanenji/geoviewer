@@ -1,0 +1,119 @@
+{
+  "StyledLayerDescriptor": {
+    "NamedLayer": {
+      "Name": "4589",
+      "UserStyle": [
+        {
+          "Name": "4589",
+          "FeatureTypeStyle": {
+            "Name": "name",
+            "Rule": [
+              {
+                "Name": "R0",
+                "Title": "POINT / WKN",
+                "PointSymbolizer": {
+                  "Graphic": {
+                    "Mark": {
+                      "WellKnownName": "circle",
+                      "Fill": {
+                        "CssParameter": [
+                          {
+                            "_name": "fill",
+                            "__text": "#FFFF00"
+                          },
+                          {
+                            "_name": "fill-opacity",
+                            "__text": "0.43"
+                          }
+                        ]
+                      },
+                      "Stroke": {
+                        "CssParameter": [
+                          {
+                            "_name": "stroke",
+                            "__text": "#0000ff"
+                          },
+                          {
+                            "_name": "stroke-opacity",
+                            "__text": "0.43"
+                          },
+                          {
+                            "_name": "stroke-width",
+                            "__text": "4"
+                          }
+                        ]
+                      }
+                    },
+                    "Size": "14"
+                  }
+                }
+              },
+              {
+                "Name": "LABEL",
+                "Title": "",
+                "MaxScaleDenominator": "10000.0",
+                "TextSymbolizer": {
+                  "Label": {
+                    "PropertyName": "NUMERO_PRATICA"
+                  },
+                  "Font": {
+                    "CssParameter": [
+                      {
+                        "_name": "font-family",
+                        "__text": "Verdana"
+                      },
+                      {
+                        "_name": "font-size",
+                        "__text": "8"
+                      },
+                      {
+                        "_name": "font-style",
+                        "__text": "normal"
+                      },
+                      {
+                        "_name": "font-weight",
+                        "__text": "normal"
+                      }
+                    ]
+                  },
+                  "LabelPlacement": {
+                    "PointPlacement": {
+                      "AnchorPoint": {
+                        "AnchorPointX": "1",
+                        "AnchorPointY": "1"
+                      },
+                      "Displacement": {
+                        "DisplacementX": "5",
+                        "DisplacementY": "5"
+                      }
+                    }
+                  },
+                  "Halo": {
+                    "Radius": "3",
+                    "Fill": {
+                      "CssParameter": {
+                        "_name": "fill",
+                        "__text": "#F5FFFA"
+                      }
+                    }
+                  },
+                  "Fill": {
+                    "CssParameter": {
+                      "_name": "fill",
+                      "__text": "#000000"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "_xmlns": "http://www.opengis.net/sld",
+    "_xmlns:sld": "http://www.opengis.net/sld",
+    "_xmlns:ogc": "http://www.opengis.net/ogc",
+    "_xmlns:gml": "http://www.opengis.net/gml",
+    "_version": "1.0.0"
+  }
+}

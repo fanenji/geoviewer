@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+
+
+<html>
+    <head> 
+        <title>Test MapProxy</title>
+
+        <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+        <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+
+        <!--         <script type="text/jvascript" src="/geoviewer/lib/ExtJs4/ext-all-debug.js"></script> -->
+        <!--         <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script> -->
+        <!--         <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script> -->
+
+        <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script>
+
+        <script src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+        <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+        <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+
+        <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+
+	</head>
+	<body>
+
+		<script>
+
+        Ext.application({
+
+            name: 'Test_MapProxy',
+
+            init: function() {
+                CWN2.loadingScreen = Ext.getBody().mask('Caricamento Applicazione','loadingscreen');
+            },
+
+            launch: function() {
+                var config = {
+                    "application": {
+                        "mapOptions": {
+                            "restrictedExtent": "830036,5402959,1123018,5597635"
+                        },
+                        "layout": {
+                            "type": "viewport",
+                            "legend": {
+                                "type": "simple",
+                                "position": "east",
+                                "collapsed": false
+                            },
+                            "statusBar": true,
+                            "widgets": [
+                                {
+                                    "id": 1,
+                                    "type": "widget",
+                                    "name": "Scale"
+                                },
+                                {
+                                    "id": 2,
+                                    "type": "widget",
+                                    "name": "CoordinateReadOut"
+                                }
+                            ],
+                            "toolbar": {
+                                "itemGroups": [
+                                    {
+                                        "name": "navigazione",
+                                        "items": [
+                                            { "name": "pan" },
+                                            { "name": "zoomin" },
+                                            { "name": "zoomout" },
+                                            { "name": "fitall" },
+                                            { "name": "zoomToInitialExtent" },
+                                            { "name": "zoomprevious" },
+                                            { "name": "zoomnext" }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "baseLayers": [
+                        { "type": "no_base" },
+                        { "type": "bing_aerial", "visible": false},
+                        { "type": "OSM" },
+                        { "type": "bing_road" },
+                        { "type": "bing_hybrid" },
+                        { "type": "google_roadmap" },
+                        { "type": "google_hybrid" },
+                        { "type": "google_terrain" },
+                        { "type": "google_satellite" },
+                        { "type": "rl_ortofoto_2010" },
+                        {
+                            "type": "MapProxyTMS",
+                            "url": "http://mapproxy.regione.liguria.it/mapproxy/1361/tms/",
+                            "name": "L3463/webmercator",
+                            "visible": false,
+                            "maxZoomLevel": 18,
+                            "projection": "EPSG:3857",
+                            "attribution": "Immagine di proprietà AGEA",
+                            "legend": {
+                                "label": "Ortofoto AGEA 2007",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            }
+                        },
+                        {
+                            "type": "MapProxyTMS",
+                            "url": "http://mapproxy.regione.liguria.it/mapproxy/1587/tms/",
+                            "name": "L4101/webmercator",
+                            "visible": false,
+                            "minScale": 10000,
+                            "maxScale": 0,
+                            "maxZoomLevel": 18,
+                            "projection": "EPSG:3857",
+                            "attribution": "Regione Liguria",
+                            "legend": {
+                                "label": "CTR 1:5000",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            }
+                        },
+                        {
+                            "type": "MapProxyTMS",
+                            "url": "http://mapproxy.regione.liguria.it/mapproxy/1407/tms/",
+                            "name": "L3627/webmercator",
+                            "visible": false,
+                            "minScale": 20000,
+                            "maxScale": 0,
+                            "maxZoomLevel": 16,
+                            "projection": "EPSG:3857",
+                            "attribution": "Regione Liguria",
+                            "legend": {
+                                "label": "CTR 1:10000",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            }
+                        },
+                        {
+                            "type": "MapProxyTMS",
+                            "url": "http://mapproxy.regione.liguria.it/mapproxy/7/tms/",
+                            "name": "L2073/webmercator",
+                            "visible": false,
+                            "maxScale": 0,
+                            "maxZoomLevel": 16,
+                            "projection": "EPSG:3857",
+                            "attribution": "Regione Liguria",
+                            "legend": {
+                                "label": "CTR 1:25000",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            }
+                        },
+                        {
+                            "type": "MapProxyTMS",
+                            "url": "http://mapproxy.regione.liguria.it/mapproxy/1623/tms/",
+                            "name": "C1623/webmercator",
+                            "visible": true,
+                            "maxScale": 0,
+                            "maxZoomLevel": 18,
+                            "projection": "EPSG:3857",
+                            "attribution": "Regione Liguria",
+                            "legend": {
+                                "label": "Carte di Base",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            }
+                        }
+                    ],
+                    "layers": [
+                        {
+                            "wmsParams": {
+                                "url": "http://mapproxy.regione.liguria.it/mapproxy/1623/service?",
+                                "name": "C1623",
+                                "transparent": true,
+                                "format": "image/png"
+                            },
+                            "type": "WMS",
+                            "name": "C1623",
+                            "projection": "EPSG:3857",
+                            "geomType": "RASTER",
+                            "geomSubType": "RASTER",
+                            "legend": {
+                                "label": "Carte di Base WMS",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "wmsParams": {
+                                "url": "http://mapproxy.regione.liguria.it/mapproxy/1407/service?",
+                                "name": "L3627_cascade",
+                                "transparent": true,
+                                "format": "image/png"
+                            },
+                            "type": "WMS",
+                            "name": "L3627_cascade",
+                            "projection": "EPSG:3857",
+                            "geomType": "RASTER",
+                            "geomSubType": "RASTER",
+                            "legend": {
+                                "label": "CTR 1:10000 MapProxy WMS Cascade",
+                                "icon": "/geoviewer/img/legend/raster.gif"
+                            },
+                            "visible": false
+                        }
+                    ]
+
+                };
+
+                // inizializzo la applicazione
+                CWN2.app.load({
+                    appConfig: config,
+                    divID: "cwn2_map",
+                    callBack: null,
+                    proxy: "/geoviewer/services/proxy/proxy.asp?url=",
+                    debug:true
+                });
+
+            }
+        });
+
+
+		</script>
+	</body>
+</html>

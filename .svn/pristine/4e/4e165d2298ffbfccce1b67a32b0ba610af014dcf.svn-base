@@ -1,0 +1,6260 @@
+/**
+*
+* Namespace: ldMaps
+*
+* Namespace ldMaps, contiene tutti gli oggetti della libreria
+*
+*/
+var ldMaps = {};
+
+
+ldMaps.map = function (div,options) {
+    //TODO refactoring vedi https://github.com/mapbox/mapbox.js/blob/mb-pages/src/map.js
+    //TODO defaults
+    //TODO lettura options
+    // - idMap: lettura configurazione e caricamento livelli
+    // -
+
+    var map = new L.Map(div, {
+        layers: [
+            new L.TileLayer(
+                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+                }
+            )
+        ]
+    });
+    map.setView([44.3, 8.7], 9);
+
+
+    return map;
+};
+
+
+ldMaps.InfoWmsManager = function() {
+    return {
+        activate: function (map,config) {
+
+            // GESTIONE getFeatureInfo
+            map.on('click', function(e) {
+                // Build the URL for a GetFeatureInfo
+                var url = getFeatureInfoUrl(
+                    map,
+                    untiled,
+                    e.latlng,
+                    {
+                        'info_format': 'application/json',
+                        'propertyName': 'COD_PROV'
+                    }
+                );
+
+                // chiamata ajax
+                $.ajax({
+                    url: url,
+                    dataType: 'json',
+                    success: loadData
+                });
+
+                function loadData(data) {
+                    var feature = data.features[0];
+                    if (feature) {
+                        L.popup()
+                            .setLatLng(e.latlng)
+                            .setContent(L.Util.template("<h2>{COD_PROV}</h2>", feature.properties))
+                            .openOn(map);
+                    }
+                }
+            });
+
+            /**
+             * Return the WMS GetFeatureInfo URL for the passed map, layer and coordinate.
+             * Specific parameters can be passed as params which will override the
+             * calculated parameters of the same name.
+             */
+            function getFeatureInfoUrl(map, layer, latlng, params) {
+
+                //TODO passare come parametro RDMap che contiene
+                // i parametri che adesso sono in layer
+                //
+                var point = map.latLngToContainerPoint(latlng, map.getZoom()),
+                    size = map.getSize(),
+                    bounds = map.getBounds(),
+                    sw = map.options.crs.project(bounds.getSouthWest()),
+                    ne = map.options.crs.project(bounds.getNorthEast());
+
+                var defaultParams = {
+                    request: 'GetFeatureInfo',
+                    service: 'WMS',
+                    srs: 'EPSG:3857',
+                    styles: '',
+                    version: layer._wmsVersion,
+                    format: layer.options.format,
+                    bbox: sw.x + ',' + sw.y + ',' + ne.x + ',' + ne.y,
+                    height: size.y,
+                    width: size.x,
+                    layers: layer.options.layers,
+                    query_layers: layer.options.layers,
+                    info_format: 'text/html'
+                };
+
+                params = L.Util.extend(defaultParams, params || {});
+                params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
+                params[params.version === '1.3.0' ? 'j' : 'y'] = point.y;
+
+                //TODO gestione PROXY
+                return '/geoservices/proxy/proxy.jsp?url=' + layer._url + L.Util.getParamString(params, layer._url, true);
+
+            }
+        }
+    }
+
+}
+
+
+//TODO caricamento mappa RL vedi ldMaps.Application.prototype.loadMap
+
+ldMaps.UntiledWms = L.Layer.extend({
+    'defaultWmsParams': {
+        'service': 'WMS',
+        'request': 'GetMap',
+        'version': '1.3.0',
+        'layers': '',
+        'styles': '',
+        'transparent': true
+    },
+
+    'options': {
+        'crs': null,
+        'uppercase': false,
+        'attribution': '',
+        'opacity': 1,
+        'isBack': false,
+        'minZoom': 0,
+        'maxZoom': 18
+    },
+
+    'initialize': function(url, options) {
+        this._url = url;
+
+        // Move WMS parameters to params object
+        var params = {};
+        for (var opt in options) {
+            if (!(opt in this.options)) {
+                params[opt] = options[opt];
+                delete options[opt];
+            }
+        }
+        L.setOptions(this, options);
+        this.wmsParams = L.extend({}, this.defaultWmsParams, params);
+    },
+
+    'setParams': function(params) {
+        L.extend(this.wmsParams, params);
+        this.update();
+    },
+
+    'getAttribution': function() {
+        return this.options.attribution;
+    },
+
+    'onAdd': function() {
+        this.update();
+    },
+
+    'onRemove': function(map) {
+        if (this._currentOverlay) {
+            map.removeLayer(this._currentOverlay);
+            delete this._currentOverlay;
+        }
+        if (this._currentUrl) {
+            delete this._currentUrl;
+        }
+    },
+
+    'getEvents': function() {
+        return {
+            'moveend': this.update
+        };
+    },
+
+    'update': function() {
+        if (!this._map) {
+            return;
+        }
+        // Determine image URL and whether it has changed since last update
+        this.updateWmsParams();
+        var url = this.getImageUrl();
+        if (this._currentUrl == url) {
+            return;
+        }
+        this._currentUrl = url;
+
+        // Keep current image overlay in place until new one loads
+        // (inspired by esri.leaflet)
+        var bounds = this._map.getBounds();
+        var overlay = L.imageOverlay(url, bounds, {'opacity': 0});
+        overlay.addTo(this._map);
+        overlay.once('load', _swap, this);
+        function _swap() {
+            if (!this._map) {
+                return;
+            }
+            if (overlay._url != this._currentUrl) {
+                this._map.removeLayer(overlay);
+                return;
+            } else if (this._currentOverlay) {
+                this._map.removeLayer(this._currentOverlay);
+            }
+            this._currentOverlay = overlay;
+            overlay.setOpacity(
+                this.options.opacity ? this.options.opacity : 1
+            );
+            if (this.options.isBack === true) {
+                overlay.bringToBack();
+            }
+            if (this.options.isBack === false) {
+                overlay.bringToFront();
+            }
+        }
+        if ((this._map.getZoom() < this.options.minZoom) ||
+            (this._map.getZoom() > this.options.maxZoom)){
+            this._map.removeLayer(overlay);
+        }
+    },
+
+    'setOpacity': function(opacity) {
+        this.options.opacity = opacity;
+        if (this._currentOverlay) {
+            this._currentOverlay.setOpacity(opacity);
+        }
+    },
+
+    'bringToBack': function() {
+        this.options.isBack = true;
+        if (this._currentOverlay) {
+            this._currentOverlay.bringToBack();
+        }
+    },
+
+    'bringToFront': function() {
+        this.options.isBack = false;
+        if (this._currentOverlay) {
+            this._currentOverlay.bringToFront();
+        }
+    },
+
+    // See L.TileLayer.WMS: onAdd() & getTileUrl()
+    'updateWmsParams': function(map) {
+        if (!map) {
+            map = this._map;
+        }
+        // Compute WMS options
+        var bounds = map.getBounds();
+        var size = map.getSize();
+        var wmsVersion = parseFloat(this.wmsParams.version);
+        var crs = this.options.crs || map.options.crs;
+        var projectionKey = wmsVersion >= 1.3 ? 'crs' : 'srs';
+        var nw = crs.project(bounds.getNorthWest());
+        var se = crs.project(bounds.getSouthEast());
+
+        // Assemble WMS parameter string
+        var params = {
+            'width': size.x,
+            'height': size.y
+        };
+        params[projectionKey] = crs.code;
+        params.bbox = (
+            wmsVersion >= 1.3 && crs === L.CRS.EPSG4326 ?
+                [se.y, nw.x, nw.y, se.x] :
+                [nw.x, se.y, se.x, nw.y]
+        ).join(',');
+
+        L.extend(this.wmsParams, params);
+    },
+
+    'getImageUrl': function() {
+        var uppercase = this.options.uppercase || false;
+        var pstr = L.Util.getParamString(this.wmsParams, this._url, uppercase);
+        return this._url + pstr;
+    }
+});
+
+ldMaps.loadJson = function(options) {
+    var url = options.url,
+        layerName = options.layerName;
+
+    var layer;
+    if (layerName) {
+        var parameters = {
+            service: 'WFS',
+            version: '2.0.0',
+            request: 'GetFeature',
+            srsName: 'EPSG:4326',
+            outputFormat: 'text/javascript',
+            format_options: 'callback: getJson',
+            typeName: layerName
+        };
+        url += L.Util.getParamString(parameters)
+    }
+
+    $.ajax({
+        url: url,
+        dataType: 'jsonp',
+        jsonpCallback: 'getJson',
+        success: loadData
+    });
+
+    function loadData(data) {
+        layer = L.geoJson(data, {
+            //TODO gestione configurazione tooltip/popup
+            onEachFeature: function(feature, marker) {
+                var tooltipTemplate = '{DENOMINAZIONE}';
+                var popupTemplate = '<h2>{DENOMINAZIONE}</h2><p>{INDIRIZZO} <br />{CAP} {COMUNE}</p>';
+                marker.bindPopup(L.Util.template(popupTemplate, feature.properties));
+                marker.options.title = L.Util.template(tooltipTemplate, feature.properties);
+            }
+            //TODO gestione stile
+            //style: function (feature) {
+            //  return {color: feature.properties.color};
+            //},
+        }).addTo(map);
+        map.fitBounds(layer.getBounds());
+        jsonLayer = layer;
+    }
+}
+
+
+//---------------------------------------------------------------------------//
+
+
+/**
+ *
+ * Class: ldMaps.Util
+ *
+ * Namespace contenente metodi di utilità
+ *
+ *
+ */
+
+ldMaps.Util = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false, Ext:false, GeoExt:false , jQuery:false, $:false , console:false  , opera:false  , google:false  */
+    "use strict";
+
+    //TODO rivedere
+    //TODO eliminare OpenLayers
+	/*
+	*  PROPRIETA' PRIVATE 
+	*/
+	
+	/*
+	*  METODI PRIVATI 
+	*/
+
+    //  Ritorna il valore di un parametro nella queryString
+    function getUrlParam(paramName) {
+
+        ldMaps.Util.log("ldMaps.Util.getUrlParam");
+
+        var results = new RegExp("[\\?&]" + paramName + "=([^&#]*)").exec(window.location.href);
+//        if (!results) { return 0; }
+//        return results[1] || 0;
+
+        return results? decodeURIComponent(results[1]) : null;
+
+    }
+
+    //  Ritorna il valore di un parametro nella queryString
+    function getUrlParamFromString(url,paramName) {
+
+        ldMaps.Util.log("ldMaps.Util.getUrlParam");
+
+        var results = new RegExp("[\\?&]" + paramName + "=([^&#]*)").exec(url);
+        if (!results) { return 0; }
+        return results[1] || 0;
+
+    }
+
+    function assert(condition, error){
+            if (!condition){
+            throw error;
+        }
+    }
+
+    // Gestione Exception
+    // level:
+    // - 0 = warning (non viene mandato messaggio all'utente
+    // - 1 = errore
+    // - 2 = errore bloccante
+    function handleException(exception){
+
+        ldMaps.Util.log(exception.message,exception.level);
+
+        if (exception.level>0)
+        {
+            ldMaps.Util.messageBox(exception.message);
+        }
+
+    }
+
+
+
+    // Scrive un messaggio sulla console
+    // level:
+    // - undefined = info
+    // - 0 = warn
+    // - 1/2 = error
+
+    function log(message,level) {
+
+        if (!ldMaps.debug) {
+            return;
+        }
+
+        var action = "log";
+
+        switch (level) {
+            case undefined:
+                action = "info";
+                break;
+            case 0:
+                action = "warn";
+                break;
+            case 1: case 2:
+                action = "error";
+                break;
+        }
+
+        // console di firebug e IE8
+        try {
+            console[action]( message );
+        } catch(e) {
+            // console di opera
+            try {
+                opera.postError(message);
+            }
+            // nessuna console
+            catch (e2) {
+                // apertura finestra
+                //var win = window.open("", "log", "status=yes, toolbar=yes, menubar=no, width=400, height=400, resizable=yes, scrollbars=yes");
+                //win.document.write(message + "<br>");
+            }
+        }
+    }
+
+    //  Manda un alert di avviso all'utente
+    function messageBox(msg) {
+        if (Ext) {
+            Ext.MessageBox.show({
+              title: '',
+              msg: msg,
+              buttons: {ok: 'OK'}
+            });
+        } else {
+            window.alert(msg);
+        }
+    }
+
+    // Funzione per caricare un oggetto json remoto con protocollo JSONP.
+    function getJSONP(url,urlParams,callBack) {
+
+        ldMaps.Util.log("ldMaps.Util.getJSONP");
+
+        // funzione richiamata in caso di errore http
+        function onErrorCB(jqXHR, textStatus, errorThrown) {
+            throw {
+                name: "BadAjaxCall",
+                message: "ldMaps.Util.getJSONP - Non sono riuscito a caricare la url:\n" + url + "\nErrore: " + jqXHR.status + " - " + textStatus + " - " + errorThrown,
+                level: 1
+            };
+        }
+
+        $.ajax({
+            url: url,
+            dataType: "jsonp",
+            data: urlParams,
+            contentType: "application/javascript",
+            type: "GET"
+        }).done(function(json) {
+            try {
+                callBack(json);
+            }
+            catch (exception) {
+                ldMaps.Util.handleException(exception);
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.statusText !== "OK") {
+                try {
+                    onErrorCB(jqXHR, textStatus, errorThrown);
+                }
+                catch (exception) {
+                    ldMaps.Util.handleException(exception);
+                }
+            }
+        });
+
+    }
+
+    // Funzione per caricare un oggetto json remoto in maniera sincrona o asincrona.
+    function getJSON(url,urlParams,aSync,callBack,args) {
+
+        ldMaps.Util.log("ldMaps.Util.getJSON");
+
+
+        function onErrorCB(textStatus, errorThrown, url) {
+            throw {
+                name: "BadAjaxCall",
+                message: "ldMaps.Util.getJSON: " + url + " - " + errorThrown,
+                level: 1
+            };
+        }
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function(json) {
+                try {
+                    callBack(json,args);
+                }
+                catch (exception) {
+                    ldMaps.Util.handleException(exception);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                try {
+                    onErrorCB(textStatus,errorThrown,url);
+                }
+                catch (exception) {
+                    ldMaps.Util.handleException(exception);
+                }
+
+            },
+            data: urlParams,
+            async: aSync
+        });
+
+    }
+
+    // Funzione per caricare un oggetto xml remoto in maniera sincrona o asincrona.
+    function getXML(url,urlParams,aSync,callBack,args) {
+
+        ldMaps.Util.log("ldMaps.Util.getXML");
+
+
+        function onErrorCB(textStatus, errorThrown, url) {
+            throw {
+                name: "BadAjaxCall",
+                message: "ldMaps.Util.getXML: " + url + " - " + errorThrown,
+                level: 1
+            };
+        }
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "xml",
+            beforeSend: function (xhr, settings) {
+                try { xhr.responseType = "msxml-document"; } catch(err){}
+            },
+            success: function(data) {
+                try {
+                    callBack(data,args);
+                }
+                catch (exception) {
+                    ldMaps.Util.handleException(exception);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                try {
+                    onErrorCB(textStatus,errorThrown,url);
+                }
+                catch (exception) {
+                    ldMaps.Util.handleException(exception);
+                }
+
+            },
+            data: urlParams,
+            async: aSync
+        });
+
+    }
+
+    // Funzione per fare il parsing xml
+    // ritorna un xmlDoc
+    function parseXML(xmlString) {
+
+        ldMaps.Util.log("ldMaps.Util.parseXML");
+        try {
+            var xmlDoc = null;
+            if (window.DOMParser && window.XSLTProcessor) {
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(xmlString,"text/xml");
+            } else {
+//                xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc = new ActiveXObject("Msxml2.DOMDocument.3.0");
+                xmlDoc.async = false;
+                xmlDoc.loadXML(xmlString);
+            }
+            return xmlDoc;
+        } catch (exception) {
+            throw {
+                name: "xmlTransformation",
+                message: "ldMaps.Util.parseXml: errore parsing xml - " + exception.message ,
+                level: 1
+            };
+        }
+    }
+    // Controlla se un punto appartiene al BBOX del territorio ligure
+    function isPointInLig(x,y){
+
+        ldMaps.Util.log("ldMaps.findManager.isPointInLig");
+
+       if (!x || !y) {
+           return false;
+       }
+        var minX = 7.4,
+            minY = 43.7,
+            maxX = 10.1,
+            maxY = 44.8;
+
+        return (x > minX) && (x < maxX) && (y > minY) && (y < maxY);
+
+    }
+
+    // controlla che il punto ricada dentro la finestra di maxExtent
+    function isPointInMaxExtent(lat,lon,map,epsg) {
+
+        if (!map) {
+            return true;
+        }
+        if (!map.restrictedExtent) {
+            return true;
+        }
+
+        var pointEpsg = epsg || "EPSG:4326";
+
+        var point = new OpenLayers.LonLat(lon,lat);
+        if (map.projection !== pointEpsg) {
+            point.transform(
+                new OpenLayers.Projection(pointEpsg),
+                map.getProjectionObject()
+            );
+        }
+
+        var minX = map.restrictedExtent.left,
+            minY = map.restrictedExtent.bottom,
+            maxX = map.restrictedExtent.right,
+            maxY = map.restrictedExtent.top,
+            x = point.lon,
+            y = point.lat;
+
+        return (x > minX) && (x < maxX) && (y > minY) && (y < maxY);
+
+    }
+
+    // Trasforma un bound in forma string da un sistema di coordinate ad un altro
+    function transformStrBounds(fromProjStr,toProjStr,boundsStr){
+
+        ldMaps.Util.log("ldMaps.Util.transformStrBounds");
+
+        var fromProj = new OpenLayers.Projection(fromProjStr),
+            toProj = new OpenLayers.Projection(toProjStr);
+
+        var boundStrIn = boundsStr;
+        // Hack per shift lungo asse Y e y
+        if (fromProjStr === "EPSG:3003") {
+            var boundArray = boundStrIn.split(",");
+            boundArray[0] = parseInt(boundArray[0]) - parseInt(40);
+            boundArray[2] = parseInt(boundArray[2]) - parseInt(40);
+            boundArray[1] = parseInt(boundArray[1]) + parseInt(170);
+            boundArray[3] = parseInt(boundArray[3]) + parseInt(170);
+            boundStrIn = boundArray.join(",");
+        }
+        var bounds = new OpenLayers.Bounds.fromString(boundStrIn);
+        return bounds.transform(fromProj, toProj).toString();
+
+    }
+
+    // Clona un oggetto JS
+    function cloneObj(inObj){
+        return jQuery.extend({}, inObj);
+    }
+
+	// Public API
+	return {
+	
+        /**
+        *  Function: getUrlParam
+        *
+        *  Ritorna il valore di un parametro nella queryString
+        *
+        *  Parameters:
+        *  paramName - {String} Nome del parametro
+        *
+        *  Returns:
+        *  {String} Valore del parametro (se non trovato ritorna 0)
+        *
+        */
+
+		getUrlParam : getUrlParam,
+
+        /**
+        *  Function: getUrlParam
+        *
+        *  Ritorna il valore di un parametro nella queryString
+        *
+        *  Parameters:
+         *  url - {String} Stringa contenente la URL
+         *  paramName - {String} Nome del parametro
+        *
+        *  Returns:
+        *  {String} Valore del parametro (se non trovato ritorna 0)
+        *
+        */
+
+        getUrlParamFromString : getUrlParamFromString,
+
+        /**
+         *  Function: log
+         *
+         *  Scrive un messaggio sulla console
+         *
+         *  Parameters:
+         *  msg - {String} Messaggio da scrivere
+         *
+         */
+
+		log : log,
+
+        /**
+         *  Function: messageBox
+         *
+         *  Manda un alert di avviso all'utente
+         *
+         *  Parameters:
+         *  msg - {string} Messaggio da scrivere sull'alert
+         *
+         */
+
+        messageBox : messageBox,
+
+        /**
+         *  Function: assert
+         *
+         *  Assert per i controlli.
+         *
+         *  Controlla che l'espressione passata sia vera, altrimenti effettua la throw dell'errore
+         *
+         *  Parameters:
+         *  test - {Expression} Condizione da verificare
+         *  error - {Object} Oggetto errore
+         *
+         */
+
+        assert : assert,
+
+        /**
+         * Function: handleException
+         *
+         * Gestione exception
+         *
+         * Parameters:
+         * exception - {Object} Oggetto exception
+         *
+         */
+        handleException: handleException,
+
+        /**
+        * Function: getJSON
+        *
+        * Funzione per caricare un oggetto json remoto in maniera sincrona o asincrona.
+        *
+        * Ritorna un oggetto javascript contentente la deserializzazione del json
+        *
+        * Parameters:
+        * url - {String} Url del file o del servizio
+        * urlParams - {Object} Oggetto map contenente i parametri da passare. Vedi http://api.jquery.com/jQuery.ajax/
+        * aSync - {Boolean} Flag che indica se effettuare una richiesta asincrona
+        * callBack {Function} Funzione da richiamare dopo il caricamento
+        * args - {Object/Array} Aregomento o Array degli argumuments opzionali dal passare alla funzione di callback
+        *
+        * Returns:
+        * {object} L'oggetto contenente la deserializzazione del JSON
+        *
+        */
+		getJSON: getJSON,
+
+        /**
+        * Function: parseXML
+        *
+        * Funzione per fare il parsing di una stringa xml
+        *
+        * Ritorna un oggetto doc xml
+        *
+        * Parameters:
+        * xmlString - {String} Stringa xml
+        *
+        * Returns:
+        * {object} Oggetto xmlDoc
+        *
+        */
+        parseXML: parseXML,
+
+
+        /**
+        * Function: getXML
+        *
+        * Funzione per caricare un oggetto xml remoto in maniera sincrona o asincrona.
+        *
+        * Ritorna un oggetto javascript contentente la deserializzazione del xml
+        *
+        * Parameters:
+        * url - {String} Url del file o del servizio
+        * urlParams - {Object} Oggetto map contenente i parametri da passare. Vedi http://api.jquery.com/jQuery.ajax/
+        * aSync - {Boolean} Flag che indica se effettuare una richiesta asincrona
+        * callBack {Function} Funzione da richiamare dopo il caricamento
+        * args - {Object/Array} Aregomento o Array degli argumuments opzionali dal passare alla funzione di callback
+        *
+        * Returns:
+        * {object} L'oggetto contenente la deserializzazione del JSON
+        *
+        */
+        getXML: getXML,
+        /**
+         * Function: getJSONP
+         *
+         * Funzione per caricare un oggetto json remoto utilizzando il protocollo JSONP.
+         *
+         * Ritorna un oggetto javascript contentente la deserializzazione del json
+         *
+         * Parameters:
+         * url - {String} Url del file o del servizio
+         * urlParams - {Object} Oggetto map contenente i parametri da passare. Vedi http://api.jquery.com/jQuery.ajax/
+         * callBack {Function} Funzione da richiamare dopo il caricamento
+         *
+         * Returns:
+         * {object} L'oggetto contenente la deserializzazione del JSON
+         *
+         */
+        getJSONP: getJSONP,
+
+
+        /**
+        *
+        * Function: isPointInLig
+        *
+        * Controlla se un punto appartenga al BBOX del territorio ligure
+        *
+        * Parameters:
+        * x - {number} Coordinata X
+        * y - {number} Coordinata Y
+        *
+        * Returns:
+        * {boolean} true/false
+        *
+        */
+		isPointInLig: isPointInLig,
+
+
+        /**
+         *
+         * Function: isPointInMaxExtent
+         *
+         * Controlla se un punto è all'interno del maxExtent della mappa
+         *
+         * Parameters:
+         * lat - {number} Latitudine WGS84
+         * lon - {number} Longitudine WGS84
+         *
+         * Returns:
+         * {boolean} true/false
+         *
+        */
+        isPointInMaxExtent: isPointInMaxExtent,
+
+        /**
+         * Function: transformStrBounds
+         *
+         * Trasforma un bound in forma string da un sistema di coordinate ad un altro
+         *
+         * Parameters:
+         * fromProjStr - {string} Codice EPSG del sistema di coordinate di partenza (es: "EPSG:3003")
+         * toProjStr - {string} Codice EPSG del sistema di coordinate di arrivo
+         *
+         * Returns:
+         * {string} Stringa del bound con coordinate separate da virgole
+         *
+         */
+        transformStrBounds: transformStrBounds,
+
+        /**
+         * Function: cloneObj
+         *
+         * Clona oggetto JS (deep copy)
+         *
+         * Parameters:
+         * inObj - {Object} Oggetto da clonare
+         * Returns: {Object} Oggetto clonato
+         *
+         */
+        cloneObj: cloneObj,
+
+        /**
+         * Function: toArray
+         *
+         * Converte Oggetto in Array
+         *
+         * Parameters:
+         * obj - {Object} Oggetto da clonare
+         *
+         * Returns:
+         * {Array} Array
+         *
+         */
+        toArray: function(obj) {
+            return Array.prototype.slice.call(obj);
+        },
+
+        /**
+         * Function: bind
+         *
+         * Effettua la bind di una funzione ad uno scope
+         *
+         * Parameters:
+         * scope - {Object} Oggetto da utilizzare come scope
+         * fn - {Function} Funzione su cui effettuare la bind
+         *
+         * Returns:
+         * {Function} Funzione con bind effettuato
+         *
+         */
+        bind: function(scope, fn) {
+            return function() {
+                return fn.apply(scope, ldMaps.Util.toArray(arguments));
+            };
+        },
+
+        /**
+         * Function: getArrayElementByAttribute
+         *
+         * Ritorna un elemento di un array contenente un attributo con un determinato valore
+         *
+         * Parameters:
+         * array - {Array} array su cui cercare l'elemento
+         * attributo - {string} Nome dell'attributo dell'elemento
+         * value - {string} Valore dell'attributo
+         *
+         * Returns:
+         * {Object} Oggetto
+         *
+         */
+        getArrayElementByAttribute: function(array,attribute,value) {
+            if (!array) {
+                return null;
+            }
+
+            var i,
+                len = array.length;
+
+            for (i = 0; i < len; i++) {
+                if (array[i][attribute] === value) {
+                    return array[i];
+                }
+            }
+
+            return null;
+        },
+        /**
+         * Function: geoCode
+         *
+         * Effettua il geocode di un indirizzo utilizzando i servizi google
+         *
+         * Parameters:
+         * address - {string} Indirizzo
+         * properties - {Object} oggetto contenente le proprietà da aggiungere all'oggetto properties della feature
+         * callback - {function} funzione di callback
+         *
+         * Returns:
+         * {GeoJSON Object}
+         *
+         */
+        geoCode: function(address,properties,callback) {
+
+            var geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({ "address": address }, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+
+                    var x = results[0].geometry.location.lng();
+                    var y = results[0].geometry.location.lat();
+                    var feature = { "type": "FeatureCollection",
+                         "features": [
+                             { "type": "Feature",
+                                 "geometry": {"type": "Point", "coordinates": [x, y]},
+                                 "properties": {
+                                     "address" : address
+                                 }
+                             }
+                         ]
+                    };
+                    if (properties) {
+                        for (var p in properties) {
+                            if (properties.hasOwnProperty(p)) {
+                                feature.features[0].properties[p] = properties[p];
+                            }
+                        }
+                    }
+                    callback(feature);
+                } else {
+                    if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
+                        ldMaps.Util.messageBox("Indirizzo '" + address + "' non trovato");
+                    } else {
+                        ldMaps.Util.handleException({
+                            name: "BadGeocoding",
+                            message: "Errore di geocoding: " + status,
+                            level: 1
+                        });
+                    }
+                }
+            });
+
+        },
+
+        /**
+         * Function: unescapeHtmlEntities
+         *
+         * Decodifica caratteri html da una stringa contenente caratteri speciali codificati :
+         * &amp; (&)
+         * &quot; (")
+         * &lt; (<)
+         * &gt; (>)
+         *
+         * Parameters:
+         * encodedString - {String} Stringa da decodificare
+         *
+         * Returns:
+         * {String} - Stringa decodificata
+         *
+         * */
+        unescapeHtmlEntities: function(encodedString) {
+            encodedString= encodedString.replace(/\&amp;/g,'&');
+            encodedString= encodedString.replace(/\&quot;/g,'\"');
+            encodedString= encodedString.replace(/\&lt;/g,'<');
+            encodedString= encodedString.replace(/\&gt;/g,'>');
+            return encodedString;
+        },
+
+        /**
+         * Function: loadMarker
+         *
+         * Carica un marker sul layer per le ricerche (findLayer)
+         *
+         * Parameters:
+         * initConfig - {Object} Oggetto Configurazione
+         *  - map - {ldMaps.Map} MAppa su cui caricare il marker
+         *  - x - {Number} Coordinata X del marker
+         *  - y - {Number} Coordinata Y del marker
+         *  - classes - {Object} Stile di vestizione del marker
+         *  - label - {String} Etichetta
+         *  - epsgCode - {String} Codice EPSG (nel formato "EPSG:3003")
+         */
+        loadMarker: function (initConfig){
+
+            var classes,
+                hiliteLayer,
+                featureStr,
+                feature,
+                config,
+                label,
+                x,
+                y,
+                layerConfig,
+                epsgCode,
+                map,
+                zoomLevel,
+                setInitialExtent;
+
+            map = initConfig.map;
+            x = initConfig.x;
+            y = initConfig.y;
+            classes = initConfig.classes;
+            label = initConfig.label;
+            epsgCode = initConfig.epsgCode;
+            zoomLevel = initConfig.zoomLevel;
+            setInitialExtent = initConfig.setInitialExtent;
+
+            if (epsgCode && epsgCode !== "EPSG:4326") {
+                var point = new OpenLayers.LonLat(x,y);
+                point.transform(
+                    new OpenLayers.Projection(epsgCode),
+                    new OpenLayers.Projection("EPSG:4326")
+                );
+                x = point.lon;
+                y = point.lat;
+            }
+
+            layerConfig = {
+                name: "findLayer",
+                format: "GeoJSON",
+                classes: classes
+            };
+            hiliteLayer = map.layerManager.createVectorLayer(layerConfig);
+
+            // carico l'oggetto sul layer
+            featureStr = "{ \"type\": \"FeatureCollection\",\"features\": [{ \"type\": \"Feature\",";
+            featureStr += "\"geometry\": {\"type\": \"Point\", \"coordinates\": [" + x + "," + y + " ]},";
+            featureStr += "\"properties\": {\"label\": \"" + label + "\"}}]}";
+            feature = jQuery.parseJSON(featureStr);
+
+            config = {
+                layer: hiliteLayer,
+                features: feature,
+                url: null,
+                epsgCode: epsgCode,
+                options: {
+                   zoom: initConfig.zoom,
+                   clean: true,
+                   zoomLevel : zoomLevel,
+                   setInitialExtent : setInitialExtent
+                }
+            };
+
+            ldMaps.featureLoader.loadFeatures(config);
+
+        },
+
+        /**
+         * Function: getWFSBound
+         *
+         * Ritorna il bound degli elementi attraverso un servizio WFS
+         *
+         * Parameters:
+         * wfsUrl - {string} URL del servizio WFS
+         * typeName - {string} nome della feature
+         * sldFilter - {string} Filtro SLD
+         * map - {OpenLayers.Map} Mappa OL
+         * callback - {Function} Funzione di callback da richiamare
+         *
+         * Returns:
+         * {OpenLayers.Bound}
+         *
+         */
+        getWFSBound: function (wfsUrl,typeName,sldFilter,map,callback){
+
+            ldMaps.Util.getXML(
+                wfsUrl,
+                null,
+                true,
+                function (wfsResponse) {
+
+                    if (wfsResponse) {
+                        var json = $.xml2json(wfsResponse),
+                            bbox = null,
+                            srs = null,
+                            bounds;
+                        var exception = {};
+
+                        // Gestione Exception server WFS
+                        var serviceException = json["ServiceException"];
+                        if (serviceException) {
+                            exception.message = "ldMaps.Util.getWFSBound - Service Exception: " + serviceException.text;
+                            exception.level = 2;
+                            ldMaps.Util.handleException(exception);
+                            return;
+                        }
+                        // Prendo il bbox
+                        var boundedBy = json["boundedBy"] || json["gml:boundedBy"];
+                        if (boundedBy) {
+                            // Gestione not found
+                            if (boundedBy["null"] || boundedBy["gml:null"]) {
+                                exception.message = "ldMaps.Util.getWFSBound - elemento non trovato";
+                                exception.level = 2;
+                                ldMaps.Util.handleException(exception);
+                                return;
+                            }
+                            if(boundedBy["Box"]) {
+                                bbox = boundedBy["Box"]["coordinates"];
+                                srs = boundedBy["Box"].srsName;
+                            } else {
+                                bbox = boundedBy["gml:Box"]["gml:coordinates"];
+                                srs = boundedBy["gml:Box"].srsName;
+                            }
+                            if (bbox && srs) {
+                                callback(OpenLayers.Bounds.fromString(ldMaps.Util.transformStrBounds(srs, map.projection, bbox.replace(" ", ","))));
+                                return;
+                            }
+                        }
+                        // se non trovo bbox e srs
+                        exception.message = "ldMaps.Util.getWFSBound - bbox non ritornato dal servizio ";
+                        exception.level = 1;
+                        ldMaps.Util.handleException(exception);
+                    }
+
+                }
+            )
+        },
+
+        // Funzione per il decode di html
+        htmlDecode: function (string, quote_style) {
+
+            function get_html_translation_table (table, quote_style) {
+              var entities = {},
+                hash_map = {},
+                decimal;
+              var constMappingTable = {},
+                constMappingQuoteStyle = {};
+              var useTable = {},
+                useQuoteStyle = {};
+
+              // Translate arguments
+              constMappingTable[0] = 'HTML_SPECIALCHARS';
+              constMappingTable[1] = 'HTML_ENTITIES';
+              constMappingQuoteStyle[0] = 'ENT_NOQUOTES';
+              constMappingQuoteStyle[2] = 'ENT_COMPAT';
+              constMappingQuoteStyle[3] = 'ENT_QUOTES';
+
+              useTable = !isNaN(table) ? constMappingTable[table] : table ? table.toUpperCase() : 'HTML_SPECIALCHARS';
+              useQuoteStyle = !isNaN(quote_style) ? constMappingQuoteStyle[quote_style] : quote_style ? quote_style.toUpperCase() : 'ENT_COMPAT';
+
+              if (useTable !== 'HTML_SPECIALCHARS' && useTable !== 'HTML_ENTITIES') {
+                throw new Error("Table: " + useTable + ' not supported');
+                // return false;
+              }
+
+              entities['38'] = '&amp;';
+              if (useTable === 'HTML_ENTITIES') {
+                entities['160'] = '&nbsp;';
+                entities['161'] = '&iexcl;';
+                entities['162'] = '&cent;';
+                entities['163'] = '&pound;';
+                entities['164'] = '&curren;';
+                entities['165'] = '&yen;';
+                entities['166'] = '&brvbar;';
+                entities['167'] = '&sect;';
+                entities['168'] = '&uml;';
+                entities['169'] = '&copy;';
+                entities['170'] = '&ordf;';
+                entities['171'] = '&laquo;';
+                entities['172'] = '&not;';
+                entities['173'] = '&shy;';
+                entities['174'] = '&reg;';
+                entities['175'] = '&macr;';
+                entities['176'] = '&deg;';
+                entities['177'] = '&plusmn;';
+                entities['178'] = '&sup2;';
+                entities['179'] = '&sup3;';
+                entities['180'] = '&acute;';
+                entities['181'] = '&micro;';
+                entities['182'] = '&para;';
+                entities['183'] = '&middot;';
+                entities['184'] = '&cedil;';
+                entities['185'] = '&sup1;';
+                entities['186'] = '&ordm;';
+                entities['187'] = '&raquo;';
+                entities['188'] = '&frac14;';
+                entities['189'] = '&frac12;';
+                entities['190'] = '&frac34;';
+                entities['191'] = '&iquest;';
+                entities['192'] = '&Agrave;';
+                entities['193'] = '&Aacute;';
+                entities['194'] = '&Acirc;';
+                entities['195'] = '&Atilde;';
+                entities['196'] = '&Auml;';
+                entities['197'] = '&Aring;';
+                entities['198'] = '&AElig;';
+                entities['199'] = '&Ccedil;';
+                entities['200'] = '&Egrave;';
+                entities['201'] = '&Eacute;';
+                entities['202'] = '&Ecirc;';
+                entities['203'] = '&Euml;';
+                entities['204'] = '&Igrave;';
+                entities['205'] = '&Iacute;';
+                entities['206'] = '&Icirc;';
+                entities['207'] = '&Iuml;';
+                entities['208'] = '&ETH;';
+                entities['209'] = '&Ntilde;';
+                entities['210'] = '&Ograve;';
+                entities['211'] = '&Oacute;';
+                entities['212'] = '&Ocirc;';
+                entities['213'] = '&Otilde;';
+                entities['214'] = '&Ouml;';
+                entities['215'] = '&times;';
+                entities['216'] = '&Oslash;';
+                entities['217'] = '&Ugrave;';
+                entities['218'] = '&Uacute;';
+                entities['219'] = '&Ucirc;';
+                entities['220'] = '&Uuml;';
+                entities['221'] = '&Yacute;';
+                entities['222'] = '&THORN;';
+                entities['223'] = '&szlig;';
+                entities['224'] = '&agrave;';
+                entities['225'] = '&aacute;';
+                entities['226'] = '&acirc;';
+                entities['227'] = '&atilde;';
+                entities['228'] = '&auml;';
+                entities['229'] = '&aring;';
+                entities['230'] = '&aelig;';
+                entities['231'] = '&ccedil;';
+                entities['232'] = '&egrave;';
+                entities['233'] = '&eacute;';
+                entities['234'] = '&ecirc;';
+                entities['235'] = '&euml;';
+                entities['236'] = '&igrave;';
+                entities['237'] = '&iacute;';
+                entities['238'] = '&icirc;';
+                entities['239'] = '&iuml;';
+                entities['240'] = '&eth;';
+                entities['241'] = '&ntilde;';
+                entities['242'] = '&ograve;';
+                entities['243'] = '&oacute;';
+                entities['244'] = '&ocirc;';
+                entities['245'] = '&otilde;';
+                entities['246'] = '&ouml;';
+                entities['247'] = '&divide;';
+                entities['248'] = '&oslash;';
+                entities['249'] = '&ugrave;';
+                entities['250'] = '&uacute;';
+                entities['251'] = '&ucirc;';
+                entities['252'] = '&uuml;';
+                entities['253'] = '&yacute;';
+                entities['254'] = '&thorn;';
+                entities['255'] = '&yuml;';
+              }
+
+              if (useQuoteStyle !== 'ENT_NOQUOTES') {
+                entities['34'] = '&quot;';
+              }
+              if (useQuoteStyle === 'ENT_QUOTES') {
+                entities['39'] = '&#39;';
+              }
+              entities['60'] = '&lt;';
+              entities['62'] = '&gt;';
+
+
+              // ascii decimals to real symbols
+              for (decimal in entities) {
+                if (entities.hasOwnProperty(decimal)) {
+                  hash_map[String.fromCharCode(decimal)] = entities[decimal];
+                }
+              }
+
+              return hash_map;
+            }
+
+          var hash_map = {},
+            symbol = '',
+            tmp_str = '',
+            entity = '';
+          tmp_str = string.toString();
+
+          if (false === (hash_map = get_html_translation_table('HTML_ENTITIES', quote_style))) {
+            return false;
+          }
+
+          // fix &amp; problem
+          // http://phpjs.org/functions/get_html_translation_table:416#comment_97660
+          delete(hash_map['&']);
+          hash_map['&'] = '&amp;';
+
+          for (symbol in hash_map) {
+            entity = hash_map[symbol];
+            tmp_str = tmp_str.split(entity).join(symbol);
+          }
+            tmp_str = tmp_str.split('&#039;').join("'");
+            tmp_str = tmp_str.split('&#39;').join("'");
+
+          return tmp_str;
+        }
+
+	};
+}());
+
+/**
+*
+* Class: ldMaps.i18n
+*
+* Gestione multilinguismo
+*
+*/
+ldMaps.i18n = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var dict = {
+        "Scala" : {
+            "en" : "Scale"
+        },
+        "Coordinate:" : {
+            "en" : "Coordinates:"
+        },
+        "Ricerche" : {
+            "en" : "Find"
+        },
+        "Attenzione" : {
+            "en" : "Attention"
+        },
+        "Nessun indirizzo indicato" : {
+            "en" : "No Address"
+        },
+        "Il punto è fuori dai limiti geografici della mappa" : {
+            "en" : "Address is outside the map boundary"
+        },
+        "Indirizzo" : {
+            "en" : "Address"
+        },
+        "Vai" : {
+            "en" : "OK"
+        },
+        "Annulla" : {
+            "en" : "Cancel"
+        },
+        "Aggiunta Livelli" : {
+            "en" : "Add Layers"
+        },
+        "Zoom alla massima estensione" : {
+            "en" : "Zoom to max extension"
+        },
+        "Zoom alla estensione iniziale" : {
+            "en" : "Zoom to initial extension"
+        },
+        "Temi" : {
+            "en" : "Themes"
+        },
+        "Aggiungi" : {
+            "en" : "Add"
+        },
+        "Nessun livello selezionato" : {
+            "en" : "No layer selected"
+        },
+        "Misure Areali" : {
+            "en" : "Measure Area"
+        },
+        "Area" : {
+            "en" : "Area"
+        },
+        "Misure Lineari" : {
+            "en" : "Measure Line"
+        },
+        "Distanza" : {
+            "en" : "Distance"
+        },
+        "Pan" : {
+            "en" : "Pan"
+        },
+        "Togli Livelli" : {
+            "en" : "Remove Layers"
+        },
+        "Seleziona i livelli da eliminare" : {
+            "en" : "Select the layers to remove"
+        },
+        "Calcolo Percorsi" : {
+            "en" : "Route Planner"
+        },
+        "Mezzo" : {
+            "en" : "Mode"
+        },
+        "In auto" : {
+            "en" : "Driving"
+        },
+        "A piedi" : {
+            "en" : "Walking"
+        },
+        "Invio" : {
+            "en" : "OK"
+        },
+        "Inverti direzione" : {
+            "en" : "Swap"
+        },
+        "Seleziona punto di partenza sulla mappa" : {
+            "en" : "Select start point on map"
+        },
+        "Seleziona punto di arrivo sulla mappa" : {
+            "en" : "Select end point on map"
+        },
+        "Distanza totale" : {
+            "en" : "Distance"
+        },
+        "Durata totale" : {
+            "en" : "Duration"
+        },
+        "Calcola" : {
+            "en" : "OK"
+        },
+        "Reset" : {
+            "en" : "Reset"
+        },
+        "Zoom In" : {
+            "en" : "Zoom In"
+        },
+        "Zoom Successivo" : {
+            "en" : "Zoom Next"
+        },
+        "Zoom Out" : {
+            "en" : "Zoom Out"
+        },
+        "Zoom Precedente" : {
+            "en" : "Zoom Previous"
+        },
+        "Trasparenza" : {
+            "en" : "Transparency"
+        },
+        "Sfondi" : {
+            "en" : "Base Layer"
+        },
+        "Livelli" : {
+            "en" : "Overlays"
+        },
+        "": {
+            "en" : ""
+
+        }
+
+    };
+
+    function get(string) {
+
+//        console.log(string);
+
+        if (dict[string]) {
+            return dict[string][ldMaps.i18n.language] || string;
+        } else {
+            return string;
+        }
+
+    }
+
+    // Public API
+    return {
+
+           /**
+            *  Property: dict
+            *  Dizionario dei termini
+           */
+
+           dict: dict,
+
+           /**
+            *  Property: language
+            *  Lingua
+           */
+
+           language: "it",
+
+           /**
+           *
+           *  Function: get
+           *
+           *  Ritorna una stringa dal dizionario nella lingua impostata.
+           *
+           *  Parameters:
+           *  string - {string} Stringa
+
+           */
+           get : get
+	};
+
+}());
+
+
+/**
+* 
+* Class:  ldMaps.Application
+*
+* Contiene i metodi per inizializzare e gestire la applicazione
+*
+*
+*/
+
+ldMaps.Application = function(initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var appConfig = initOptions.appConfig;
+
+    this.initOptions = initOptions;
+    this.id = null;
+    this.loadend = false;
+    this.map = null;
+    this.layout = null;
+    this.configuration = null;
+    this.extRequired = false;
+
+    // imposto le variabili globali
+    ldMaps.Application.setGlobals(initOptions);
+
+    ldMaps.Util.log("ldMaps.Application");
+
+    // Carico la configurazione
+    this.loadConfig(appConfig,initOptions);
+
+};
+
+/**
+ *  Function: buildApp
+*
+*  Carica la configurazione
+* Parameters:
+* appConfig - {string / Object} Oggetto di configurazione o URL della configurazione
+* initOptions - {Object} Oggetto contenente le opzioni di inizializzazione
+*
+*/
+ldMaps.Application.prototype.loadConfig = function(appConfig,initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    // Richiamo il metodo che costruisce l'applicazione
+    if (typeof appConfig === "string") {
+        ldMaps.Util.getJSONP(
+            appConfig,
+            null,
+            ldMaps.Util.bind(this, function(appConfig) {
+                this.buildApp(appConfig, initOptions);
+            })
+        );
+    } else {
+        this.buildApp(appConfig, initOptions);
+    }
+};
+
+
+//region  Metodi pubblici statici
+
+/**
+ *
+ * Function: checkServiceException
+ *
+ * Effettua il controllo che il servizio non abbia ritornato una eccezzione.
+ * Metodo statico
+ *
+ * Parameters:
+ * config -  {Object} oggetto configurazione
+ *
+*/
+ldMaps.Application.checkServiceException = function(config) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    if (config.exception) {
+        throw {
+            name:"ServiceError",
+            message:"ldMaps.Application: " + config.exception.message,
+            level:2
+        };
+    }
+};
+
+/**
+ *
+ * Function: checkConfig
+ *
+ * Effettua dei controlli di base sulla configurazione.
+ * Metodo statico
+ *
+ * Parameters:
+ * config -  {Object} oggetto configurazione
+ *
+*/
+ldMaps.Application.checkConfig = function(config) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    ldMaps.Util.assert(config,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: configuration deve essere valorizzato",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(config.application,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: application deve essere valorizzato",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(config.application.mapOptions,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: mapOptions deve essere valorizzato",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(config.application.layout,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: layout deve essere valorizzato",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(
+        (
+            (config.application.layout.type === "simple") ||
+            (config.application.layout.type === "panel") ||
+            (config.application.layout.type === "window") ||
+            (config.application.layout.type === "viewport")
+        ),
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: layout deve essere di tipo gestito (simple/panel/window/viewport)",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(config.baseLayers,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: baseLayers deve essere valorizzato",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(config.baseLayers.length > 0,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.Application.checkConfig: baseLayers deve contenere almeno un layer",
+            level: 2
+        }
+    );
+
+};
+
+/**
+ *
+ * Function: setGlobals
+ *
+ * Impostazione variabili globali - Metodo Statico
+ *
+ * Parameters:
+ * initOptions -  {Object} Oggetto opzioni
+ *
+*/
+ldMaps.Application.setGlobals = function(initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    // variabile globale per il debug
+    ldMaps.debug = ((initOptions.debug)||(ldMaps.Util.getUrlParam("debug") === "true"))? true : false;
+
+    // imposto il proxy
+    ldMaps.proxy = initOptions.proxy || "";
+
+    // imposto il proxy OL
+    OpenLayers.ProxyHost = initOptions.proxy || "/CartoWebNet2/services/proxy/proxy.ashx?url=";
+
+    // imposto il renderer SVG di OpenLayers sulla nuova versione
+    OpenLayers.Layer.Vector.prototype.renderers = ["SVG2", "SVG", "VML", "Canvas"];
+
+    // imposto la lingua
+    ldMaps.i18n.language = initOptions.language || "it";
+
+    // ket per bing maps
+    ldMaps.BING_MAPS_KEY = "Agzh6x2xuNQ4qhwHW_yc0Yd8vhb-5pMRsAHjkneosLHLesOAGqxv35yqxZBlqqVa";
+
+
+    OpenLayers.ImgPath = "http://srvcarto.regione.liguria.it/cartowebNet2/lib/OL/img/";
+
+};
+
+//endregion
+
+//region  Metodi pubblici di istanza
+
+/**
+ *  Function: buildApp
+*
+*  Costruisce la applicazione
+*  Prerequisito: Configurazione caricata
+* Parameters:
+* configuration - {Object} Oggetto di configurazione della applicazione
+* initOptions - {Object} Oggetto contenente le opzioni di inizializzazione
+*
+*/
+ldMaps.Application.prototype.buildApp = function(configuration,initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var layerManager;
+
+    try {
+
+        // controllo che il servizio non abbia ritornato un errore
+        ldMaps.Application.checkServiceException(configuration);
+
+        // controllo la configurazione (controlli base)
+        ldMaps.Application.checkConfig(configuration);
+
+        // imposto le proprieta' della applicazione
+        this.setAppProperties(configuration);
+
+        // impostazioni ExtJS
+        if (this.extRequired) {
+            // abilito i tooltip sui bottoni
+            Ext.QuickTips.init();
+            // imposto i bottoni per i messageBoxS
+            if (ldMaps.i18n.language === 'it') {
+                Ext.MessageBox.buttonText = {yes: "Si", no: "No"};
+            }
+        }
+
+        // registro la applicazione
+        ldMaps.appRegistry.add(this);
+
+        // inizializzo il layer manager
+        layerManager = new ldMaps.LayerManager(configuration.baseLayers,configuration.layers,this.id);
+
+        // costruisco la mappa OL
+        this.map = new ldMaps.Map(configuration.application.mapOptions,layerManager,this.id);
+
+        // costruisco l'interfaccia
+        if (initOptions.divID) {
+            configuration.application.layout.divID = initOptions.divID;
+        }
+        this.layout = new ldMaps.Layout(configuration.application.layout,this.id);
+
+        // faccio zoom su initialExtent
+
+        this.map.zoomToInitialExtent();
+
+        // imposto il flag di fine caricamento
+        this.loadend = true;
+
+        // se impostato idMap carico la mappa da catalogo
+        // altrimenti richiamo eventuale callback (che viene comunque chiamato nella loadMap)
+        if (initOptions.idMap) {  
+            this.loadMap(configuration, initOptions);
+        } else {
+        // se impostato idLayer carico i layer da catalogo
+            if (initOptions.idLayer) {
+                this.loadLayers(configuration, initOptions);
+            } else {
+                this.callback(configuration, initOptions);
+            }
+        }
+
+
+    } catch (exception) {
+        ldMaps.Util.handleException(exception);
+        return null;
+    }
+};
+
+
+ldMaps.Application.prototype.callback = function(configuration,initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    // richiamo eventuale callback
+    if (configuration.application.onLoadCallback && configuration.application.onLoadCallback.name) {
+        ldMaps.OnLoadCallbacksRegistry[configuration.application.onLoadCallback.name](configuration.application.onLoadCallback.params,this);
+    }
+    else if (initOptions.callBack) {
+        initOptions.callBack(this);
+    }
+
+};
+
+
+/**
+* Function: setAppProperties
+*
+* Imposta le proprietà della applicazione.
+*
+* Parameters:
+* configuration - {Object} Oggetto di configurazione della applicazione
+*/
+ldMaps.Application.prototype.setAppProperties = function(configuration) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    // imposto la configurazione
+    this.configuration = configuration;
+
+    // imposto l'id della applicazione (utilizzata dai bottoni)
+    this.id = configuration.application.id;
+
+    // imposto il flag extRequired
+    this.extRequired = configuration.application.layout.type !== "simple";
+
+};
+
+/**
+ *  Function: showMapWindow
+*
+*  Mostra la finestra mappa.
+*  Utilizzata da applicazioni con layout di tipo "window".
+*
+*/
+ldMaps.Application.prototype.showMapWindow = function() {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+   this.layout.layout.show();
+
+};
+
+/**
+*
+* Function: hiliteFeatures
+*
+* Evidenziazione dinamica feature di layer vettoriali.
+*
+* Utilizzata per applicazioni con integrata la cartografia (vedi EsempioWindow.js) o
+* da bottoni della applicazione (p.es: ricerche/find/filtri, ecc...)
+*
+* Parameters:
+* hiliteOptions - {Object} Oggetto di configurazione dell'hilite
+*  - layerName - {String} Nome del layer
+*  - filter - {Object} Oggetto configurazione del filtro
+*  -  - type - {String}  Tipo di filtro (BY_ATTRIBUTE,SLD,CQL)
+*  -  - attrName - {String} Nome dell'attributo (per filtro di tipo BY_ATTRIBUTE)
+*  -  - items - {Array} Array di valori (per filtro di tipo BY_ATTRIBUTE)
+*  -  - text - {String} Stringa contentente il filtro nel formato SLD o CQL
+*  - options - {Object} Oggetto configurazione delle opzioni
+*  -  - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+*
+*  Esempio:
+*  (start code)
+* var hiliteConf = {
+*			"layerName": "Prova",
+*			"filter" : {
+*				"type": "BY_ATTRIBUTE",
+*				"attrName": "ID",
+*				"items": ["1","2"]
+*			},
+*			"options": {
+*				"zoom": false
+*			}
+*		};
+*   (end)
+*
+*/
+ldMaps.Application.prototype.hiliteFeatures = function(hiliteOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var olLayer = this.map.getLayerByName(hiliteOptions.layerName);
+    if (olLayer) {
+        hiliteOptions.layer = olLayer;
+        ldMaps.featureHiliter.hiliteFeatures(hiliteOptions);
+    }
+
+};
+
+/**
+*
+* Function: resetHilite
+*
+* Azzeramento evidenziazione feature di layer vettoriali.
+*
+* Utilizzata per applicazioni con integrata la cartografia (vedi EsempioWindow.js) o da bottoni della applicazione (p.es: ricerche/find/filtri, ecc...)
+*
+*/
+ldMaps.Application.prototype.resetHilite = function() {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var map = this.map;
+    if (map) {
+        ldMaps.featureHiliter.resetHilite(map);
+    }
+
+};
+
+/**
+*
+* Function: loadFeatures
+*
+* Carica le feature in formato GeoJSON in un layer di tipo OpenLayers.Layer.Vector
+*
+* Parameters:
+* options - {Object} Oggetto di configurazione
+*  - layerName - {String} Nome del layer
+*  - features - {Object} Oggetto GeoJSON contenente le feature
+*  - url - {String} URL del servizio/file con serve le feature
+*  - options - {Object} Oggetto configurazione delle opzioni
+*  - - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+*  - - zoomLevel - {Integer} Se negativo effettua uno zoom all'indietro, se positivo e inferiore al livello di zoom attuale va a quel livello di zoom (zoom minimo)
+*  - - clean - {Boolean} Flag per indicare se bisogna cancellare eventuali feature preesistenti
+*
+*  Esempio:
+*  (start code)
+* var config = {
+*			"layerName": "Prova",
+*           "features": features,
+*           "url": null,
+*			"options": {
+ *				"zoom": false
+ *				"clean": false
+*			}
+*		};
+*   (end)
+*
+*/
+ldMaps.Application.prototype.loadFeatures = function(options) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var olLayer = this.map.getLayerByName(options.layerName);
+    if (olLayer) {
+        options.layer = olLayer;
+        ldMaps.featureLoader.loadFeatures(options);
+    }
+
+};
+
+/**
+*
+* Function: loadFeatureByAddress
+*
+* Carica le feature in formato GeoJSON in un layer di tipo OpenLayers.Layer.Vector
+*
+* Parameters:
+* options - {Object} Oggetto di configurazione
+*  - layerName - {String} Nome del layer
+*  - features - {Object} Oggetto GeoJSON contenente le feature
+*  - url - {String} URL del servizio/file con serve le feature
+*  - options - {Object} Oggetto configurazione delle opzioni
+*  - - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+*  - - zoomLevel - {Integer} Se negativo effettua uno zoom all'indietro, se positivo e inferiore al livello di zoom attuale va a quel livello di zoom (zoom minimo)
+*  - - clean - {Boolean} Flag per indicare se bisogna cancellare eventuali feature preesistenti
+*
+*  Esempio:
+*  (start code)
+* var config = {
+*			"layerName": "Prova",
+*           "address": " Genova, Liguria",
+*			"options": {
+*				"zoom": true
+*				"zoomLevel": 16
+*				"clean": true
+*			}
+*		};
+*   (end)
+*
+*/
+ldMaps.Application.prototype.loadFeatureByAddress = function(options) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var olLayer = this.map.getLayerByName(options.layerName);
+    if (olLayer) {
+        options.layer = olLayer;
+        ldMaps.featureLoader.loadFeatureByAddress(options);
+    }
+
+};
+
+/**
+*
+* Function: selectFeature
+*
+* Selezione programmatica feature di un layer vettoriali.
+*
+* Se più feature soddisfano il criterio di selezione solo la prima viene selezionata.
+*
+* Se impostato il parametro options.hiliteOnly=true viene fatto solo l'highlight della feaure.
+*
+* Se impostato il parametro feature viene selezionata la feature,
+* altrimenti viene fatta una ricerca della feature sul layer in base alla configurazione del parametro config.
+*
+*
+* Parameters:
+* options - {Object} Oggetto di configurazione dell'hilite
+*  - layerName - {String} Nome del layer
+*  - attrName - {String} Nome dell'attributo
+*  - item - {String}/{Number} Valore
+*  - options - {Object} Oggetto configurazione delle opzioni
+*  -  - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+*  -  - hiliteOnly - {Boolean} Flag per effettuare solo l'highlight della feature (default: false)
+* feature - {OpenLayers.Feature} Feature da selezionare
+*
+*  Esempio:
+*  (start code)
+* var selectConf = {
+*			"layerName": "Prova",
+*			"attrName": "ID",
+*				"items": "1"
+*			},
+*			"options": {
+*				"zoom": false,
+*				"hiliteOnly": false
+*			}
+*		};
+*   (end)
+*
+*/
+ldMaps.Application.prototype.selectFeature = function(options) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var olLayer = this.map.getLayerByName(options.layerName);
+    if (olLayer) {
+        options.layer = olLayer;
+        ldMaps.featureSelecter.selectFeature(options);
+    }
+
+};
+
+/**
+ *
+ * Function: unselectFeature
+ *
+ * Deselezione programmatica feature di un layer vettoriali.
+ *
+ * Se più feature soddisfano il criterio di selezione solo la prima viene deselezionata.
+ *
+ * Se impostato il parametro options.hiliteOnly=true viene fatto solo l'unhighlight della feaure.
+ *
+ * Se impostato il parametro feature viene deselezionata la feature,
+ * altrimenti viene fatta una ricerca della feature sul layer in base alla configurazione del parametro config
+ *
+ *
+  * Parameters:
+  * options - {Object} Oggetto di configurazione dell'hilite
+  *  - layerName - {String} Nome del layer
+  *  - attrName - {String} Nome dell'attributo
+  *  - item - {String}/{Number} Valore
+  *  - options - {Object} Oggetto configurazione delle opzioni
+  *  -  - hiliteOnly - {Boolean} Flag per effettuare solo l'highlight della feature (default: false)
+  * feature - {OpenLayers.Feature} Feature da selezionare
+  *
+  *  Esempio:
+  *  (start code)
+  * var selectConf = {
+  *			"layerName": "Prova",
+  *			"attrName": "ID",
+  *				"items": "1"
+  *			},
+  *			"options": {
+   *				"hiliteOnly": false
+  *			}
+  *		};
+  *   (end)
+  *
+  */
+ldMaps.Application.prototype.unselectFeature = function(options) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var olLayer = this.map.getLayerByName(options.layerName);
+    if (olLayer) {
+        options.layer = olLayer;
+        ldMaps.featureSelecter.unselectFeature(options);
+    }
+
+};
+
+/**
+*
+* Function: loadMap
+*
+* Effettua il caricamento di una mappa definita in Catalogo SIT
+*
+*
+* Parameters:
+* configuration - {Object} Oggetto di configurazione della applicazione
+* initOptions - {Object} Oggetto di inizializzazione
+*
+*/
+ldMaps.Application.prototype.loadMap = function (configuration, initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var idMap = initOptions.idMap;
+    var findOptions = initOptions.findOptions;
+    var loadBaseLayers = initOptions.loadBaseLayers;
+
+
+    if (!idMap || idMap === "null") {
+        var exception = {};
+        exception.message = "manca parametro mappa";
+        exception.level = 1;
+        ldMaps.Util.handleException(exception);
+        return;
+    }
+
+//    var layerConfigService = "/cartowebnet2/services/config/map/" + idMap;
+    var layerConfigService = ldMaps.proxy + "http://srvcarto.regione.liguria.it/cartowebnet2/services/config/map/" + idMap;
+    if (loadBaseLayers) {
+        layerConfigService += "?loadBaseLayers=true";
+    }
+
+    var app = this;
+
+    ldMaps.Util.getJSON(
+        layerConfigService,
+        null,
+        true,
+        function(mapConfig) {
+            app.layout.setMapTitle(mapConfig.name);
+            app.map.layerManager.addLayers(mapConfig.layers);
+            if (mapConfig.extent) {
+                setExtent(mapConfig.extent);
+            }
+            // se tipo mappa è raster imposto lo sfondo bianco
+            if (mapConfig.type && mapConfig.type == "R") {
+                ldMaps.Map.setBaseLayerOnMap("sfondo_bianco",app.id);
+            }
+            // se configurata find la effettuo
+            if (findOptions) {
+                if (findOptions.idList && findOptions.idList !== "null") {
+                    app.findWMS(findOptions);
+                } else {
+                     exception = {};
+                    exception.message = "Lista valori find non impostata";
+                    exception.level = 0;
+                    ldMaps.Util.handleException(exception);
+                }
+            }
+            // richiamo eventuale callback
+            app.callback(configuration, initOptions);
+        }
+    );
+
+};
+
+/**
+*
+* Function: loadLayers
+*
+* Effettua il caricamento di layers definita in Catalogo SIT
+*
+*
+* Parameters:
+* configuration - {Object} Oggetto di configurazione della applicazione
+* initOptions - {Object} Oggetto di inizializzazione
+*
+*/
+ldMaps.Application.prototype.loadLayers = function (configuration, initOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var idLayer = initOptions.idLayer;
+    var findOptions = initOptions.findOptions;
+
+
+    if (!idLayer || idLayer === "null") {
+        var exception = {};
+        exception.message = "manca parametro layer";
+        exception.level = 1;
+        ldMaps.Util.handleException(exception);
+        return;
+    }
+
+    var layerConfigService = ldMaps.proxy + "http://srvcarto.regione.liguria.it/cartowebnet2/services/config/layer/" + idLayer;
+
+    var app = this;
+
+    ldMaps.Util.getJSON(
+        layerConfigService,
+        null,
+        true,
+        function(layerConfig) {
+            app.map.layerManager.addLayers(layerConfig);
+            // se configurata find la effettuo
+            if (findOptions) {
+                if (findOptions.idList && findOptions.idList !== "null") {
+                    app.findWMS(findOptions);
+                } else {
+                     exception = {};
+                    exception.message = "Lista valori find non impostata";
+                    exception.level = 0;
+                    ldMaps.Util.handleException(exception);
+                }
+            }
+            // richiamo eventuale callback
+            app.callback(configuration, initOptions);
+        }
+    );
+
+};
+
+/**
+*
+* Function: findWMS
+*
+* Effettua una find con evidenziazione su layer WMS
+*
+*
+* Parameters:
+* findOptions - {Object} Oggetto di configurazione dell'hilite
+ *  - layerName - {String} Nome del layer
+ *  - idField - {String} Nome del campo ID su cui fare il filtro
+ *  - idList - {String} Lista dei valori separati da virgola
+ *  - zoomLevel - {String} Livello di zoom massimo
+
+*
+*/
+ldMaps.Application.prototype.findWMS = function(findOptions) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+
+    var layerName = findOptions.layerName,
+        idField = findOptions.idField,
+        idList = findOptions.idList,
+        zoomLevel = findOptions.zoomLevel,
+        map = this.map,
+        layerConfig = map.layerManager.getLayerConfigByName(layerName),
+        wmsUrl = layerConfig.wmsParams.url,
+        typeName = layerConfig.wmsParams.name;
+
+    if (!idList || idList === "null") {
+        var exception = {};
+        exception.message = "manca parametro idList";
+        exception.level = 0;
+        ldMaps.Util.handleException(exception);
+        return;
+    }
+    var idListArray = idList.split(',');
+
+    // creo il filtro sld
+    var sldFilter = ldMaps.WmsSldHiliter.getFilter(idField,idListArray);
+
+    var wfsUrl = this.initOptions.proxy + layerConfig.wmsParams.url + "VERSION=1.0.0&SERVICE=WFS&REQUEST=GetFeature&TYPENAME=" + typeName + "&Filter=" + sldFilter;
+
+    // funzione di callback richiamata da Util.getWFSBound
+    var hiliteFeature = function (bounds) {
+        var hiliteLayerName = "_findWMS";
+        var wmsSldHiliter = new ldMaps.WmsSldHiliter(map,hiliteLayerName);
+        var hiliteLayer = wmsSldHiliter.hiliteFeature(
+            layerConfig,
+            idField,
+            idListArray,
+            bounds,
+            zoomLevel,
+            function() {
+                // imposto initial extent della mappa
+                map.initialExtent = map.getExtent();
+            });
+    };
+
+    var bounds = ldMaps.Util.getWFSBound(
+        wfsUrl,
+        typeName,
+        sldFilter,
+        this.map,
+        hiliteFeature);
+};
+
+/**
+*
+* Function: getButtonOptions
+*
+* Ritorna un oggetto contenente le opzioni di configurazione di un bottone
+*
+* Parameters:
+* buttonID - {String} Id del bottone
+*
+*/
+ldMaps.Application.prototype.getButtonOptions = function(buttonId) {
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var groups = this.configuration.application.layout.toolbar.itemGroups,
+        buttons = {};
+    $.map(groups,function( val, i ) {
+        $.map(val.items,function( val2, i2 ) {
+            buttons[val2.name] = val2.options;
+        });
+    });
+    return buttons[buttonId];
+};
+
+/**
+*
+* Function: setButtonOption
+*
+* Imposta una opzione di configurazione di un bottone
+*
+* Parameters:
+ * buttonID - {String} Id del bottone
+ * optionsName - {String} Nome della opzione
+ * optionsValue - {String/Function/Object....} Valore della opzione
+*
+*/
+ldMaps.Application.prototype.setButtonOption = function(buttonId,optionName,optionsValue) {
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var groups = this.configuration.application.layout.toolbar.itemGroups;
+    $.map(groups,function( val, i ) {
+        $.map(val.items,function( val2, i2 ) {
+            if (val2.name === buttonId) {
+                val2.options[optionName] = optionsValue;
+            }
+        });
+    });
+};
+
+/**
+*
+* Function: addToolbarItems
+*
+* Aggiunge item alla toolbar
+*
+* Parameters:
+ * buttonID - {String} Id del bottone
+ * optionsName - {String} Nome della opzione
+ * optionsValue - {String/Function/Object....} Valore della opzione
+*
+*/
+ldMaps.Application.prototype.addToolbarItems = function(itemsConfig) {
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    var toolbar = Ext.getCmp('ldMaps-toolbar-'+this.id);
+    toolbar.add(itemsConfig);
+
+
+};
+
+//endregion
+
+/**
+* 
+* Class: ldMaps.controlFactory
+* 
+ * Factory per creazione di controlli OL
+ *
+*/
+
+ldMaps.controlFactory = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    // Crea un controllo OpenLayers basato su una determinata configurazione
+    function create (controlConfig) {
+
+        ldMaps.Util.log("ldMaps.controlFactory.create: " + controlConfig.name);
+
+        // provo a creare il controllo
+        // guardo prima tra i controlli di ldMaps e poi tra quelli OpenLayers
+        // se non riesco mando un'eccezzione
+        try {
+            return new ldMaps.Control[controlConfig.name](controlConfig.options);
+        } catch (exception) {
+            try {
+                return new OpenLayers.Control[controlConfig.name](controlConfig.options);
+            } catch (exception) {
+                throw {
+                    name: "BadOLControl",
+                    message: "ldMaps.controlFactory.create: control " + controlConfig.name + " non implementato",
+                    level: 0
+                };
+            }
+        }
+
+    }
+
+	/*
+	*  Public API
+	*/	
+	
+	return {
+		
+		/**
+         *
+		* Function: create
+        *
+        * Crea un controllo OpenLayers basato su una determinata configurazione.
+        *
+		* Parameters:
+        * controlConfig - {Object} Oggetto che contiene la configurazione del controllo
+        *
+		* Returns:
+        * {OpenLayers.Control} - Il controllo OL creato
+		* 
+		*/ 
+		
+		create: create
+	
+	};
+}());/*
+ *
+ * Class: ldMaps.Control.DeleteFeature
+ *
+ * Controllo OpenLayers Custom che permette di cancellare feature sulla mappa.
+ *
+ *
+ */	
+
+/*global ldMaps:false, window:false, OpenLayers:false, Ext:false, GeoExt:false , jQuery:false, $:false*/
+
+
+/**
+* 
+* Class: ldMaps.featureHiliter
+* 
+* Permette di effettuare l'evidenziazione delle feature vettoriali.
+*
+*/
+
+ldMaps.featureHiliter = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+
+	/*
+      private properties
+	*/
+	
+    var hilitedFeaturesRegistry = {};
+
+
+	/*
+      private methods
+	*/
+
+
+    // Evidenziazione dinamica feature di layer vettoriali
+    function hiliteFeatures(hiliteConfig) {
+        ldMaps.Util.log("ldMaps.featureHiliter.hiliteFeatures");
+
+        try {
+            ldMaps.Util.assert(hiliteConfig,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureHiliter.hiliteFeatures: selectConfig deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(hiliteConfig.layer,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureHiliter.hiliteFeatures: layer deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(hiliteConfig.filter,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureHiliter.hiliteFeatures: filter deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(hiliteConfig.filter.type === "BY_ATTRIBUTE",
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureHiliter.hiliteFeatures: filter.type deve essere di tipo BY_ATTRIBUTE",
+                    level: 1
+                }
+            );
+            if (hiliteConfig.filter.type === "BY_ATTRIBUTE") {
+                ldMaps.Util.assert(hiliteConfig.filter.attrName,
+                    {
+                        name: "BadParameter",
+                        message: "ldMaps.featureHiliter.hiliteFeatures: attrName deve essere valorizzato se filterType = BY_ATTRIBUTE",
+                        level: 1
+                    }
+                );
+                ldMaps.Util.assert(hiliteConfig.filter.items,
+                    {
+                        name: "BadParameter",
+                        message: "ldMaps.featureHiliter.hiliteFeatures: items deve essere valorizzato se filterType = BY_ATTRIBUTE",
+                        level: 1
+                    }
+                );
+                ldMaps.Util.assert(hiliteConfig.filter.items instanceof Array,
+                    {
+                        name: "BadParameter",
+                        message: "ldMaps.featureHiliter.hiliteFeatures: items deve essere un array se filterType = BY_ATTRIBUTE",
+                        level: 1
+                    }
+                );
+            }
+        } catch(exception) {
+            ldMaps.Util.handleException(exception);
+            return;
+        }
+
+        var layer = hiliteConfig.layer,
+            options = hiliteConfig.options || {"zoom" : true},
+            zoom = options.zoom,
+            maxZoomLevel = options.maxZoomLevel;
+
+        // cerco nelle feature del layer quelle in configurazione
+        // se il layer non si � ancora caricato lo faccio sull'evento "loadend"
+        if (!layer.loadend) {
+            layer.events.register("loadend", layer, function() {
+                hilite(hiliteConfig);
+            });
+        } else {
+            hilite(hiliteConfig);
+        }
+
+    }
+
+
+    // cerca nelle feature del layer quelle in configurazione e le evidenzia
+	function hilite(hiliteConfig) {
+
+		// configurazione hilite
+		var layer = hiliteConfig.layer,
+            filterType = hiliteConfig.filter.type,
+            attrName = hiliteConfig.filter.attrName,
+            items = hiliteConfig.filter.items,
+            foundFeatures,
+            mapId = layer.map.id,
+            options = hiliteConfig.options || {"zoom" : true},
+            zoom = options.zoom,
+            maxZoomLevel = options.maxZoomLevel;
+
+		if (filterType==="BY_ATTRIBUTE") {
+            var hiliteFeatureControl = layer.map.featureManager.hiliteFeatureControl;
+            var hilitedFeatures = [];
+            var len = items.length;
+            for (var i = 0; i < len; i++) {
+				foundFeatures = layer.getFeaturesByAttribute(attrName,items[i]);
+                var len2 = foundFeatures.length;
+                for (var f = 0; f < len2; f++) {
+                    hilitedFeatures.push(foundFeatures[f]);
+                    hiliteFeature(hiliteFeatureControl,foundFeatures[f]);
+				}
+			}
+            setHilitedFeatures(mapId,hilitedFeatures);
+		}
+
+        // se impostato flag per zoom faccio lo zoom
+        if (zoom) {
+            layer.map.zoomToFeatures(getHilitedFeatures(mapId),maxZoomLevel);
+        }
+	}
+
+    // Evidenzia una feature
+    function hiliteFeature(hiliteFeatureControl,feature) {
+        ldMaps.Util.log("ldMaps.featureHiliter.hiliteFeature");
+        hiliteFeatureControl.highlight(feature);
+    }
+
+
+    // Azzeramento evidenziazione feature di layer vettoriali
+    function resetHilite(map){
+        ldMaps.Util.log("ldMaps.featureHiliter.resetHilite");
+
+        var hilitedFeatures = getHilitedFeatures(map.id);
+
+        if (!hilitedFeatures) {
+            return;
+        }
+        // copio le features selezionate in un array di appoggio
+        var appoSelected = [],
+            numFeatures = hilitedFeatures.length,
+            i,
+            i2;
+
+        if (numFeatures) {
+            for (i = 0; i < numFeatures; i++) {
+                appoSelected.push(hilitedFeatures[i]);
+            }
+        }
+
+        // azzero l'array delle feature selezionate
+        setHilitedFeatures(map.id,[]);
+
+        // azzero la evidenziazione
+        numFeatures = appoSelected.length;
+        if (numFeatures) {
+            var hiliteFeatureControl = map.featureManager.hiliteFeatureControl;
+            for (i2 = 0; i2 < numFeatures; i2++) {
+                hiliteFeatureControl.unhighlight(appoSelected[i2]);
+            }
+        }
+    }
+
+    // Ritorna le feature evidenziate
+    function getHilitedFeatures(mapId) {
+
+        return hilitedFeaturesRegistry[mapId];
+
+    }
+
+    // Ritorna le feature evidenziate
+    function setHilitedFeatures(mapId,features) {
+
+        hilitedFeaturesRegistry[mapId] = features;
+
+    }
+
+
+	/*
+  Public API
+	*/
+	return {
+
+        /**
+        *
+        * Function: hiliteFeatures
+        *
+        * Evidenziazione dinamica feature di layer vettoriali.
+        *
+        * Utilizzata per applicazioni con integrata la cartografia (vedi EsempioWindow.js) o
+        * da bottoni della applicazione (p.es: ricerche/find/filtri, ecc...)
+        *
+        * Parameters:
+        * hiliteConfig - {Object} Oggetto di configurazione dell'hilite
+        *  - layerName - {String} Nome del layer
+        *  - filter - {Object} Oggetto configurazione del filtro
+        *  -  - type - {String}  Tipo di filtro (BY_ATTRIBUTE,SLD,CQL)
+        *  -  - attrName - {String} Nome dell'attributo (per filtro di tipo BY_ATTRIBUTE)
+        *  -  - items - {Array} Array di valori (per filtro di tipo BY_ATTRIBUTE)
+        *  -  - text - {String} Stringa contentente il filtro nel formato SLD o CQL
+        *  - options - {Object} Oggetto configurazione delle opzioni
+        *  -  - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+        *
+        *  Esempio:
+        *  (start code)
+        * var hiliteConf = {
+        *			"layerName": "Prova",
+        *			"filter" : {
+        *				"type": "BY_ATTRIBUTE",
+        *				"attrName": "ID",
+        *				"items": ["1","2"]
+        *			},
+        *			"options": {
+        *				"zoom": false
+        *			}
+        *		};
+        *   (end)
+        *
+        */
+        hiliteFeatures : hiliteFeatures,
+
+        /**
+        *
+        * Function: hiliteFeature
+         *
+         * Evidenziazione di una feature
+         *
+         * Utilizzata da OpenLayersExt: OpenLayers.Control.SelectFeature.prototype.unhighlight
+         *
+        * Parameters:
+         * feature - {OpenLayers.Feature} feature da evidenziare
+        */
+        hiliteFeature : hiliteFeature,
+
+        /**
+        *
+        * Function: resetHilite
+        *
+        * Azzeramento evidenziazione feature di layer vettoriali.
+        *
+        * Utilizzata per applicazioni con integrata la cartografia (vedi EsempioWindow.js) o da bottoni della applicazione (p.es: ricerche/find/filtri, ecc...)
+        *
+        */
+		resetHilite : resetHilite,
+
+        /**
+        * Funzione che ritorna le feature attualmente evidenziate
+        * Returns: {Array}
+        * Parameters:
+        * feature - {OpenLayers.Feature} feature da evidenziare
+        */
+        getHilitedFeatures: getHilitedFeatures
+
+	};
+
+}());
+/**
+*
+* Class: ldMaps.featureLoader
+ *
+ * Oggetto per il caricamento delle feature vettoriali
+ *
+*
+*/
+
+ldMaps.featureLoader = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+	/*
+      private properties
+    */
+
+	/*
+        private methods
+	*/
+
+
+    // Carica le feature in formato GeoJSON in un layer di tipo OpenLayers.Layer.Vector
+    function loadFeatures(config) {
+        ldMaps.Util.log("ldMaps.featureLoader.loadFeatures");
+
+        var features,
+            url,
+            layer;
+
+        // controlli configurazione
+        try {
+            ldMaps.Util.assert(config,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureLoader.loadFeatures: oggetto di configurazione deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(config.layer,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureLoader.loadFeatures: Layer non trovato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(config.url || config.features,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureLoader.loadFeatures: url o features devono essere valorizzati",
+                    level: 1
+                }
+            );
+        } catch(e) { throw e; }
+
+        // impostazione parametri
+        layer = config.layer;
+        features = config.features;
+        url = config.url;
+
+
+        // se impostato parametro layerLegendUrl
+        // cambio la legenda del layer
+        if (config.layerLegendUrl) {
+            var styles = layer.styleMap.styles;
+            for (var stile in styles) {
+                var rule = styles[stile].rules[0];
+                rule.symbolizer.externalGraphic = config.layerLegendUrl;
+            }
+        }
+
+
+        // gestione simbologia custom per singola feature(immagine e dimensioni)
+        if (config.customFeatureImg || config.customFeatureSize) {
+            var externalGraphic = layer.styleMap.styles["default"].rules[0].symbolizer.externalGraphic,
+                graphicTitle = layer.styleMap.styles["default"].rules[0].symbolizer.graphicTitle,
+                graphicWidth = layer.styleMap.styles["default"].rules[0].symbolizer.graphicWidth ,
+                graphicHeight = layer.styleMap.styles["default"].rules[0].symbolizer.graphicHeight,
+                graphicOpacity = layer.styleMap.styles["default"].rules[0].symbolizer.graphicOpacity,
+                graphicXOffset = layer.styleMap.styles["default"].rules[0].symbolizer.graphicXOffset,
+                graphicYOffset = layer.styleMap.styles["default"].rules[0].symbolizer.graphicYOffset;
+            if (config.customFeatureImg) {
+                externalGraphic = "${img}";
+            }
+            if (config.customFeatureSize) {
+                graphicWidth = "${width}";
+                graphicHeight = "${height}";
+            }
+            var style = new OpenLayers.Style({
+                externalGraphic: externalGraphic,
+                graphicTitle: graphicTitle,
+                graphicWidth: graphicWidth ,
+                graphicHeight: graphicHeight,
+                graphicOpacity: graphicOpacity,
+                graphicXOffset: graphicXOffset,
+                graphicYOffset: graphicYOffset
+            });
+            layer.styleMap = new OpenLayers.StyleMap(style);
+        }
+
+        // imposto il flag loadend sul layer a false
+        // viene poi reimpostato alla fine del caricamento richiamando l'evento loadend
+        layer.loadend=false;
+
+        // caricamento feature
+        try {
+            // se impostate le feature carico direttamente
+            if (features) {
+                loadFeaturesCB(features,config);
+            }
+            if (url) {
+                ldMaps.Util.getJSONP(
+                    url,
+                    null,
+                    function(features) {
+                        loadFeaturesCB(features, config);
+                    }
+                );
+            }
+        }
+        catch (exception) {
+            ldMaps.Util.handleException(exception);
+        }
+
+    }
+
+
+    // Carica le feature in formato GeoJSON in un layer di tipo OpenLayers.Layer.Vector a partire da un indirizzo
+    function loadFeatureByAddress(config) {
+        ldMaps.Util.log("ldMaps.featureLoader.loadFeatureByAddress");
+
+        // controlli configurazione
+        try {
+            ldMaps.Util.assert(config,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureLoader.loadFeatureByAddress: oggetto di configurazione deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(config.layer,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureLoader.loadFeatureByAddress: Layer non trovato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(config.address,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureLoader.loadFeatureByAddress: indirizzo deve essere valorizzato",
+                    level: 1
+                }
+            );
+        } catch(e) { throw e; }
+
+        // impostazione parametri
+        var layer = config.layer,
+            address = config.address,
+            html = config.html,
+            properties = {
+                "infoPopUp": html,
+                "label": address,
+                "tooltip": address
+            };
+
+        // imposto il flag loadend sul layer a false
+        // viene poi reimpostato alla fine del caricamento richiamando l'evento loadend
+        layer.loadend=false;
+
+        // geocoding e caricamento feature
+        try {
+            ldMaps.Util.geoCode(
+                address,
+                properties,
+                function(result) {
+                    loadFeaturesCB(result, config);
+                }
+            );
+        }
+        catch (exception) {
+            ldMaps.Util.handleException(exception);
+        }
+
+    }
+
+    // funzione di callback che carica le feature sul layer
+	function loadFeaturesCB (features, config) {
+
+        var options,
+            zoom,
+            zoomLevel,
+            clean,
+            layer,
+            featureCollection,
+            setInitialExtent;
+
+        layer = config.layer;
+        options = config.options || {"zoom" : true , "zoomLevel" : 16, "clean": false};
+
+        zoom = options.zoom;
+        zoomLevel = options.zoomLevel;
+        clean = options.clean;
+        setInitialExtent = options.setInitialExtent;
+
+        try {
+            // deserializzo GeoJSON
+            featureCollection = createFeaturesByGeoJSON(layer, features);
+
+            // se impostato il flag clean ripulisco il layer
+            if (clean) {
+                layer.destroyFeatures();
+            }
+
+            // carico le feature sul layer
+            layer.addFeatures(featureCollection);
+
+            layer.redraw();
+
+            // se impostato flag per zoom faccio lo zoom
+            if (zoom) {
+                layer.map.zoomToFeatures(featureCollection,zoomLevel);
+            }
+
+            // se impostato flag per impostare initialExtent della mappa lo imposto
+            if (setInitialExtent) {
+                layer.map.setInitialExtent(layer.map.getExtent());
+            }
+
+        }
+        catch (exception) {
+            throw {
+                name: "BadFeatureFormat",
+                message: "ldMaps.featureLoader.loadFeatures: Non sono riuscito a caricare le feature",
+                level: 1
+            };
+        }
+
+
+        // reimposto il loadend a true
+        layer.events.triggerEvent("loadend");
+
+    }
+
+    // deserializza il GeoJSON in una featureCollection
+    function createFeaturesByGeoJSON(layer, features) {
+    // definisco il formato
+        var format_geojson = new OpenLayers.Format.GeoJSON({
+            "internalProjection": new OpenLayers.Projection(layer.map.projection),
+            "externalProjection": layer.projection
+        });
+        // deserializzo il json nelle feature
+        return format_geojson.read(features);
+    }
+
+
+	/*
+        Public API
+	*/
+	return {
+
+        /**
+        *
+        * Function: loadFeatures
+        *
+        * Carica le feature in formato GeoJSON in un layer di tipo OpenLayers.Layer.Vector
+        *
+        * Parameters:
+        * loadConfig - {Object} Oggetto di configurazione
+        *  - layer - {OpenLayers.Layer} Layer
+        *  - features - {Object} Oggetto GeoJSON contenente le feature
+		*  - url - {String} URL del servizio/file con serve le feature
+        *  - options - {Object} Oggetto configurazione delle opzioni
+        *  - - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+        *  - - clean - {Boolean} Flag per indicare se bisogna cancellare eventuali feature preesistenti
+        *
+        *
+        */
+		loadFeatures : loadFeatures,
+
+        /**
+        *
+        * Function: loadFeatureByAddress
+        *
+        * Effettua geocoding e caricamento di un indirizzo
+        *
+        * Parameters:
+        * loadConfig - {Object} Oggetto di configurazione
+        *  - layer - {OpenLayers.Layer} Layer
+        *  - address - {String} Indirizzo da geocodificare
+        *  - options - {Object} Oggetto configurazione delle opzioni
+        *  - - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+        *  - - zoomLevel - {Int} Livello di zoom
+        *  - - clean - {Boolean} Flag per indicare se bisogna cancellare eventuali feature preesistenti
+        *
+        *
+        */
+		loadFeatureByAddress : loadFeatureByAddress
+
+	};
+
+}());
+/**
+* 
+* Class: ldMaps.InfoPopupManager
+*
+* Gestore delle funzioni per la info e le popup
+*
+*
+*/
+ldMaps.InfoPopupManager = (function(){
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    return {
+
+        /**
+         *
+         * Function: onFeatureSelect
+         *
+         * Gestisce le operazioni di info e gestione popup.
+         * Richiamato sulla select della feature
+         *
+         * Parameters:
+         * feature - {OpenLayers.Feature} Feature
+         *
+         */
+        onFeatureSelect: function(feature) {
+
+            // Imposto la opzioni di configurazione
+            var configOptions = ldMaps.InfoPopupManager.getConfigOptions(feature);
+
+            // Gestione infoPopUp
+            if (configOptions.infoPopUp) {
+                ldMaps.InfoPopupManager.loadPopUp(feature,configOptions);
+            } else {
+                // Gestione infoUrl
+                if (configOptions.infoUrl) {
+                    ldMaps.InfoPopupManager.info(feature,configOptions);
+                }
+            }
+
+        },
+
+        /**
+         *
+         * Function: onFeatureUnselect
+         *
+         * Gestisce le operazioni di info e gestione popup.
+         * Richiamato sulla unselect della feature
+         *
+         * Parameters:
+         * feature - {OpenLayers.Feature} Feature
+         *
+         */
+        onFeatureUnselect: function(feature) {
+            // se esiste una popup la chiudo
+            ldMaps.InfoPopupManager.destroyPopup(feature);
+        },
+
+        getConfigOptions: function(feature) {
+
+            var infoAppo = {
+                "infoLabelAttr" : null,
+                "infoUrl" : null,
+                "infoTarget" : null,
+                "infoWidth" : null,
+                "infoHeight" : null,
+                "infoPopUp" : null
+            },
+            configOptions = {};
+
+            configOptions.layerName = feature.layer.name;
+            configOptions.layerConfig = feature.layer.map.layerManager.getLayerConfigByName(configOptions.layerName) || {};
+            configOptions.infoOptions = configOptions.layerConfig.infoOptions || infoAppo;
+            configOptions.infoLabelAttr = feature.attributes.infoLabelAttr || configOptions.infoOptions.infoLabelAttr;
+            configOptions.infoUrl = feature.attributes.infoUrl || configOptions.infoOptions.infoUrl;
+            configOptions.infoTarget = feature.attributes.infoTarget || configOptions.infoOptions.infoTarget;
+            configOptions.infoWidth =  feature.attributes.infoWidth || configOptions.infoOptions.infoWidth;
+            configOptions.infoHeight =  feature.attributes.infoHeight || configOptions.infoOptions.infoHeight;
+            configOptions.infoPopUp = feature.attributes.infoPopUp || configOptions.infoOptions.infoPopUp;
+
+            return configOptions;
+        },
+
+        info: function(feature,configOptions) {
+
+            // attribute replacement {$attribute_name} - utilizzo la funzione OpenLayers.Style.createLiteral
+            var infoUrl = OpenLayers.Style.createLiteral(configOptions.infoUrl, feature.attributes, feature);
+
+            var map = feature.layer.map;
+
+
+            if (configOptions.infoTarget) {
+                if (configOptions.infoTarget === "panel") {
+                    var id = "layerInfoMediaWin";
+                    var mediaWin = new ldMaps.ExtMediaWindow(infoUrl,configOptions.infoWidth,configOptions.infoHeight,id);
+                    // gestisco la deselezione della feature quando chiudo la finestra
+                    mediaWin.on("destroy",
+                            function() {
+                                map.featureManager.selectFeatureControl.unselect(this);
+                            },
+                            feature
+                        );
+                    mediaWin.show();
+                }
+                else {
+                    var options = "status=yes, toolbar=yes, menubar=no, width=" + configOptions.infoWidth + ", height=" + configOptions.infoHeight + ", resizable=yes, scrollbars=yes";
+                    window.open(infoUrl, configOptions.infoTarget, options);
+                }
+            } else {
+                window.document.location.href = infoUrl;
+            }
+
+        },
+
+
+        loadPopUp: function(feature,configOptions) {
+
+            var infoPopUp = configOptions.infoPopUp,
+                popUpWidth = 150,
+                popUpHeight = 100,
+                maxPopUpWidth = 300,
+                maxPopUpHeight = 200,
+                closeBox = true,
+                popup;
+
+            // costruisco l'html per il default
+            if (infoPopUp==="default") {
+                infoPopUp = ldMaps.InfoPopupManager.buildDefaultPopup(configOptions);
+            }
+
+            // se cluster costruisco popup per il cluster
+            if(feature.cluster) {
+                if (feature.attributes.count > 1) {
+                    infoPopUp = ldMaps.InfoPopupManager.buildClusterPopup(configOptions,feature);
+                } else {
+                    feature.attributes = feature.cluster[0].attributes;
+                    feature.attributes.count = 1;
+                }
+            }
+
+            // attribute replacement {$attribute_name} - utilizzo la funzione OpenLayers.Style.createLiteral
+            infoPopUp = OpenLayers.Style.createLiteral(infoPopUp, feature.attributes, feature);
+
+            // decodifico eventuali encoding html (&amp;, ecc...)
+            infoPopUp = ldMaps.Util.unescapeHtmlEntities(infoPopUp);
+
+            //costruisco la popup
+            //var popup = new OpenLayers.Popup.Anchored(
+            popup = new OpenLayers.Popup.FramedCloud(
+                "featurePopup",
+                 feature.geometry.getBounds().getCenterLonLat(),
+                 new OpenLayers.Size(popUpWidth,popUpHeight),
+                 infoPopUp,
+                 null,
+                 closeBox,
+                function(evt) {
+                    // 'this' is the popup.
+                    this.feature.layer.map.featureManager.selectFeatureControl.unselect(this.feature);
+                }
+            );
+            popup.maxSize = new OpenLayers.Size(maxPopUpWidth,maxPopUpHeight);
+
+        // aggiungo alla feature e alla mappa
+            // HACK per risolvere il seguente malfunzionamento
+            // Se aggiungo un layer vettoriale mi si sputtanano le pop-up (non vengono cancellate sull'unselect, non funziona il tasto close).
+            // il problema � legato al fatto che viene chiamato due volte la funzione onFeatureSelect e quindi create due popup sulla feature
+            // Quindi creo la popup sulla feature solo se non esiste gi�
+            if (!feature.popup) {
+                feature.popup = popup;
+                popup.feature = feature;
+                popup.panMapIfOutOfView = true;
+                // imposto lo sfondo delle popup
+                popup.backgroundColor = "#BBCCFF";
+                popup.opacity=0.9;
+                // aggiungo la popup alla mappa
+                feature.layer.map.addPopup(popup);
+            }
+        },
+
+        buildDefaultPopup: function(configOptions) {
+
+            var defaultPopUp = "<div class='defaultPopUpTitle'>" + configOptions.layerConfig.legend.label + "<br><br></div>";
+            defaultPopUp += "<div class='defaultPopUpLabel'>${" + configOptions.infoLabelAttr + "}<br><br></div>";
+            if (configOptions.infoUrl) {
+                defaultPopUp += "<div class='defaultPopUpLink'><a href=" + configOptions.infoUrl;
+                if(configOptions.infoTarget) {
+                    defaultPopUp += " target='" + configOptions.infoTarget + "'";
+                }
+                defaultPopUp += ">Dettagli</a></div>";
+            }
+            return defaultPopUp;
+
+        },
+
+        buildClusterPopup: function(configOptions,feature) {
+            var appId = feature.layer.map.appId;
+            var layerName = feature.layer.name;
+            var featureId = feature.id;
+
+            var clusterPopUp = "<div class='defaultPopUpTitle'>" + configOptions.layerConfig.legend.label + "<br><br></div>";
+            clusterPopUp += "<div class='defaultPopUpLabel'>" + feature.attributes.count + " Elementi<br><br></div>";
+            clusterPopUp += "<div class='defaultPopUpLink'>"
+            clusterPopUp += "<a href=javascript:ldMaps.InfoPopupManager.zoomClusterPopup(" + appId + "," + feature.geometry.x + "," + feature.geometry.y + ",'" + layerName + "','" + featureId + "')>Zoom</a></div>" ;
+
+            return clusterPopUp;
+        },
+
+        zoomClusterPopup: function(appId,x,y,layerName,featureId) {
+            var map = ldMaps.appRegistry.get(appId).map;
+            var layer = map.getLayerByName(layerName);
+            var feature = layer.getFeatureById(featureId);
+
+            ldMaps.InfoPopupManager.destroyPopup(feature);
+
+            var zoomLevel = map.zoom + 2;
+            map.zoomToPoint(x,y,zoomLevel);
+        },
+
+        destroyPopup: function(feature) {
+            if (feature.popup) {
+                var map = feature.layer.map;
+                var popup = feature.popup;
+                popup.feature = null;
+                map.removePopup(feature.popup);
+                feature.popup.destroy();
+                feature.popup = null;
+            }
+        }
+
+
+    };
+
+}());
+
+/**
+*
+* Class: ldMaps.FeatureManager
+*
+* Gestore dei controlli per le features vettoriali.
+*
+* Crea i controlli OL di tipo FeatureSelect per select/hilite/hover.
+*
+* Comprende le funzioni di callback richiamate sull'evento "featureselect"
+*
+*
+*/
+ldMaps.FeatureManager = function(map) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    ldMaps.Util.log("ldMaps.LayerManager");
+
+    this.hiliteFeatureControl = null;
+    this.selectFeatureControl = null;
+    this.hoverFeatureControl = null;
+
+    // dizionario delle funzioni di callback registrate
+    this.registeredCallbacks = {
+        "onFeatureSelect" : [],
+        "onFeatureUnselect" : [],
+        "onFeatureOver" : [],
+        "onFeatureOut" : []
+    };
+
+
+   /**
+   *
+   * Function: registerCallback
+   *
+   * Registra una  funzione di callback
+   *
+   * Parameters:
+   * event - {String} evento
+   * callback - {Function} funzione di callback
+   *
+   * Return:
+   * {Boolean} true se la feature � tra quelle selezionate
+   *
+   */
+    this.registerCallback = function(event,callback) {
+        this.registeredCallbacks[event].push(callback);
+    };
+
+    /**
+    *
+    * Function: getRegisteredCallbacks
+    *
+    * Ritorna una funzione di callback associata ad un evento
+    *
+    * Parameters:
+    * event - {String} evento
+    *
+    * Return:
+    * {Function} funzione di callback
+    *
+    */
+    this.getRegisteredCallbacks = function(event) {
+        return this.registeredCallbacks[event];
+    };
+
+   // Attiva il controllo OL
+    this.activateHiliteFeatureControl = function(vectLayerArray) {
+
+        this.hiliteFeatureControl = new OpenLayers.Control.SelectFeature(vectLayerArray);
+        this.hiliteFeatureControl.renderIntent = "hilite";
+        this.hiliteFeatureControl.highlightOnly = true;
+        this.hiliteFeatureControl.hover = true;
+        this.hiliteFeatureControl.name = "hiliteFeatureControl";
+
+        map.addControl(this.hiliteFeatureControl);
+        this.hiliteFeatureControl.activate();
+
+    };
+
+
+    // Attiva il controllo OL
+    this.activateHoverFeatureControl = function(vectLayerArray) {
+
+        // funzione richiamata sull"evento mouseover della feature
+        var onFeatureOver = function(feature,callbacks) {
+
+            for(var i=0; i < callbacks.length; i++) {
+                if (typeof callbacks[i] === "function") {
+                    callbacks[i](feature);
+                }
+            }
+
+        };
+
+        // funzione richiamata sull'evento mouseout della feature
+        var onFeatureOut = function(feature,callbacks) {
+
+            for(var i=0; i < callbacks.length; i++) {
+                if (typeof callbacks[i] === "function") {
+                    callbacks[i](feature);
+                }
+            }
+
+        };
+
+        var featureOutCallbacks = this.getRegisteredCallbacks("onFeatureOut");
+        var featureOverCallbacks = this.getRegisteredCallbacks("onFeatureOver");
+
+        this.hoverFeatureControl = new OpenLayers.Control.SelectFeature(vectLayerArray, {
+            hover: true,
+            renderIntent: "hover",
+            highlightOnly: true,
+            eventListeners: {
+                featurehighlighted:function(e){
+                    onFeatureOver(e.feature,featureOverCallbacks);
+                },
+                featureunhighlighted:function(e){
+                    onFeatureOut(e.feature,featureOutCallbacks);
+                }
+            }
+        });
+
+
+        this.hoverFeatureControl.name = "hoverFeatureControl";
+        map.addControl(this.hoverFeatureControl);
+        this.hoverFeatureControl.activate();
+
+    };
+
+    // Attiva il controllo OL
+    this.activateSelectFeatureControl = function(vectLayerArray) {
+
+        // funzione richiamata sull'evento select della feature
+        var onFeatureSelect = function(feature,callbacks) {
+
+            // Gestione Info e Popup
+            ldMaps.InfoPopupManager.onFeatureSelect(feature);
+
+            // Richiamo delle funzioni di callback registrate
+            for(var i=0; i < callbacks.length; i++) {
+                if (typeof callbacks[i] === "function") {
+                    callbacks[i](feature);
+                }
+            }
+
+        };
+
+        // funzione richiamata sull'evento unselect della feature
+        var onFeatureUnselect = function(feature,callbacks) {
+
+            // Gestione Info e Popup
+            ldMaps.InfoPopupManager.onFeatureUnselect(feature);
+
+            // Richiamo delle funzioni di callback registrate
+            for(var i=0; i < callbacks.length; i++) {
+                if (typeof callbacks[i] === "function") {
+                    callbacks[i](feature);
+                }
+            }
+
+        };
+
+        var featureSelectCallbacks = this.getRegisteredCallbacks("onFeatureSelect");
+        var featureUnselectCallbacks = this.getRegisteredCallbacks("onFeatureUnselect");
+
+        this.selectFeatureControl = new OpenLayers.Control.SelectFeature(vectLayerArray);
+        this.selectFeatureControl.onSelect = function(feature) {
+            onFeatureSelect(feature,featureSelectCallbacks);
+        };
+        this.selectFeatureControl.onUnselect = function(feature) {
+            onFeatureUnselect(feature,featureUnselectCallbacks);
+        };
+        this.selectFeatureControl.name = "selectFeatureControl";
+
+        map.addControl(this.selectFeatureControl);
+        this.selectFeatureControl.activate();
+
+    };
+
+    /**
+     *
+     * Function: registerAction
+     *
+     * Registra le azioni collegate adi layer vettoriali
+     *
+     * Parameters:
+     * layersConfig - {Array} Array di configurazione dei layer
+     *
+     */
+    this.registerAction = function(layersConfig) {
+
+        var len = layersConfig.length,
+            i,
+            j,
+            event,
+            callbackName,
+            callback,
+            exception;
+
+
+        for (i = 0; i < len; i++) {
+            if (layersConfig[i].actions && layersConfig[i].actions.length > 0) {
+                for (j = 0; j < layersConfig[i].actions.length; j++) {
+                    // controllo che esistano actions.event e actions.callback in configurazione
+                    event = layersConfig[i].actions[j].event;
+                    if (!event) {
+                        exception = {
+                            name: 'BadAction',
+                            message: 'ldMaps.FeatureManager.registerAction: event non definito',
+                            level: 1
+                        };
+                        ldMaps.util.handleException(exception);
+                        return;
+                    }
+                    callbackName = layersConfig[i].actions[j].callback;
+                    if (!callbackName) {
+                        exception = {
+                            name: 'BadAction',
+                            message: 'ldMaps.FeatureManager.registerAction: calback non definito',
+                            level: 1
+                        };
+                        ldMaps.util.handleException(exception);
+                        return;
+                    }
+                    callback = ldMaps.featureActionsRegistry[callbackName];
+                    if (typeof callback !== "function") {
+                        exception = {
+                            name: 'BadCallbackName',
+                            message: 'ldMaps.FeatureManager.registerAction: funzione di callback ' + callbackName + ' non esiste',
+                            level: 1
+                        };
+                        ldMaps.util.handleException(exception);
+                        return;
+                    }
+
+                    // registro la action
+                    this.registerCallback(
+                        layersConfig[i].actions[j].event,
+                        callback
+                    );
+                }
+            }
+        }
+
+    };
+
+    this.updateControlLayer = function() {
+        var vectLayers = map.getLayersByClass("OpenLayers.Layer.Vector");
+
+        // levo i layer _info
+        for (var i = 0; i < vectLayers.length; i++) {
+            if (vectLayers[i].name.indexOf("_INFO") > 0) {
+                vectLayers.splice(i,1);
+            }
+        }
+
+        // ATTENZIONE:
+        // NON MODIFICARE L'ORDINE DI AGGIORNAMENTO DEI CONTROLLI
+        this.hoverFeatureControl.setLayer(vectLayers);
+        this.hiliteFeatureControl.setLayer(vectLayers);
+        this.selectFeatureControl.setLayer(vectLayers);
+    };
+
+    this.activateControls = function() {
+        // ATTENZIONE:
+        // NON MODIFICARE L'ORDINE DI AGGIORNAMENTO DEI CONTROLLI
+        this.hoverFeatureControl.activate();
+        this.hiliteFeatureControl.activate();
+        this.selectFeatureControl.activate();
+    };
+
+    this.deactivateControls = function() {
+        // ATTENZIONE:
+        // NON MODIFICARE L'ORDINE DI AGGIORNAMENTO DEI CONTROLLI
+        this.hoverFeatureControl.deactivate();
+        this.hiliteFeatureControl.deactivate();
+        this.selectFeatureControl.deactivate();
+    };
+
+    // carico l'array con i layer vettoriali
+    var vectLayerArray = map.getLayersByClass("OpenLayers.Layer.Vector");
+
+    // ATTENZIONE:
+    // NON MODIFICARE L'ORDINE DI CREAZIONE DEI CONTROLLI
+    // L'ULTIMO DEVE ESSERE QUELLO PER LA SELECT
+    // NON MODIFICARE LA MODALITA' DI CREAZIONE DEI CONTROLLI DI HILITE E OVER
+    this.activateHoverFeatureControl(vectLayerArray);
+    this.activateHiliteFeatureControl(vectLayerArray);
+    this.activateSelectFeatureControl(vectLayerArray);
+
+    // registro le action sui layer vettoriali
+    this.registerAction(map.layerManager.getLayersConfig());
+
+};
+
+
+/**
+ *
+ * Class: ldMaps.featureActionsRegistry
+ *
+ * Oggetto che raccoglie le funzioni di callback associate agli eventi sulle feature
+ *
+ *
+ */
+
+ldMaps.featureActionsRegistry = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+
+    // Funzione di test per verificare la registrazione del callback sull'evento mouseover
+    function testOver(feature) {
+        ldMaps.Util.log(feature);
+    }
+
+    // Funzione di test per verificare la registrazione del callback sull'evento mouseout
+    function testOut(feature) {
+        ldMaps.Util.log(feature);
+    }
+
+    // Funzione di test per verificare la registrazione del callback sull'evento select
+    function testSelect(feature) {
+        ldMaps.Util.log("testSelect");
+    }
+
+    // Funzione di test per verificare la registrazione del callback sull'evento unselect
+    function testUnselect(feature) {
+        ldMaps.Util.log("testUnselect");
+    }
+
+	/*
+      Public API
+	*/
+	return {
+
+        /**
+        * Function: testOver
+        * Funzione di test per verificare la registrazione del callback sull'evento mouseover
+        *
+        */
+        testOver: testOver,
+
+        /**
+        * Function: testOut
+        * Funzione di test per verificare la registrazione del callback sull'evento mouseout
+        *
+        */
+        testOut: testOut,
+
+        /**
+        * Function: testSelect
+        * Funzione di test per verificare la registrazione del callback sull'evento select
+        *
+        */
+        testSelect: testSelect,
+
+        /**
+        * Function: testUnselect
+        * Funzione di test per verificare la registrazione del callback sull'evento unselect
+        *
+        */
+        testUnselect: testUnselect
+
+	};
+
+}());
+/**
+*
+* Class: ldMaps.featureSelecter
+* 
+ *
+ * Oggetto per la selezione programmatica di feature
+ *
+*/
+
+ldMaps.featureSelecter = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+
+	/*
+      private properties
+	*/
+
+	/*
+      private methods
+	*/
+
+    function selectFeature(selectConfig,feature){
+
+        try {
+            ldMaps.Util.assert(selectConfig,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.selectFeature: selectConfig deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(selectConfig.layer,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.selectFeature: layer deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(feature || selectConfig.attrName,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.selectFeature: attrName (oppure feature) deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(
+                ( feature ||
+                        ( selectConfig.item !== null && selectConfig.item !== undefined )
+                ),
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.selectFeature: item (oppure feature) deve essere valorizzato",
+                    level: 1
+                }
+            );
+        } catch(e) { throw e; }
+
+
+        // configurazione hilite
+        var layer = selectConfig.layer,
+            attrName = selectConfig.attrName,
+            item = selectConfig.item,
+            options = selectConfig.options || {"zoom" : false, "hiliteOnly": false},
+            zoom = options.zoom,
+            maxZoomLevel = options.maxZoomLevel,
+            hiliteOnly = options.hiliteOnly,
+            foundFeatures,
+            foundFeature;
+
+        if (feature) {
+            foundFeature = feature;
+        } else {
+            // cerco nelle feature del layer quelle che soddisfano il criterio e seleziono la prima
+            foundFeatures = layer.getFeaturesByAttribute(attrName,item);
+            if (foundFeatures.length > 0) {
+                foundFeature = foundFeatures[0];
+            }
+        }
+        if (foundFeature) {
+            if (hiliteOnly) {
+                layer.map.featureManager.hoverFeatureControl.highlight(foundFeature);
+            } else {
+                var selectFeatureControl = layer.map.featureManager.selectFeatureControl;
+                selectFeatureControl.unselectAll();
+                selectFeatureControl.select(foundFeature);
+            }
+            // se impostato flag per zoom faccio lo zoom
+            if (zoom) {
+                layer.map.zoomToFeatures([foundFeature],maxZoomLevel);
+            }
+        }
+    }
+
+    function  unselectFeature(selectConfig,feature){
+
+        //ldMaps.Util.log("ldMaps.featureSelected.unselectFeature");
+
+
+        try {
+            ldMaps.Util.assert(selectConfig,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.unselectFeature: selectConfig deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(selectConfig.layer,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.unselectFeature: layer deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(feature || selectConfig.attrName,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.unselectFeature: attrName (oppure feature) deve essere valorizzato",
+                    level: 1
+                }
+            );
+            ldMaps.Util.assert(feature || selectConfig.item,
+                {
+                    name: "BadParameter",
+                    message: "ldMaps.featureSelected.unselectFeature: item (oppure feature) deve essere valorizzato",
+                    level: 1
+                }
+            );
+        } catch(e) { throw e; }
+
+
+        // configurazione hilite
+        var layer = selectConfig.layer,
+            attrName = selectConfig.attrName,
+            item = selectConfig.item,
+            options = selectConfig.options || {"hiliteOnly": false},
+            hiliteOnly = options.hiliteOnly,
+            foundFeatures,
+            foundFeature,
+            selectConfig2 = {};
+
+        if (feature) {
+            foundFeature = feature;
+        } else {
+            // cerco nelle feature del layer quelle che soddisfano il criterio e seleziono la prima
+            foundFeatures = layer.getFeaturesByAttribute(attrName,item);
+            if (foundFeatures.length > 0) {
+                foundFeature = foundFeatures[0];
+            }
+        }
+
+
+        if (foundFeature) {
+            if (hiliteOnly) {
+                layer.map.featureManager.hoverFeatureControl.unhighlight(foundFeature);
+                if (foundFeature.isSelected()) {
+                    selectConfig2.layer = selectConfig.layer;
+                    selectConfig2.attrName = selectConfig.attrName;
+                    selectConfig2.item = selectConfig.item;
+                    selectConfig2.options = {"hiliteOnly": false};
+                    selectFeature(selectConfig2,foundFeature);
+
+                }
+            } else {
+                layer.map.featureManager.selectFeatureControl.unselect(foundFeature);
+            }
+        }
+    }
+
+	/*
+      Public API
+	*/
+	return {
+
+
+        /**
+        *
+        * Function: selectFeature
+        *
+        * Selezione programmatica feature di un layer vettoriali.
+        *
+        * Se pi� feature soddisfano il criterio di selezione solo la prima viene selezionata.
+        *
+        * Se impostato il parametro options.hiliteOnly=true viene fatto solo l'highlight della feaure.
+        *
+        * Se impostato il parametro feature viene selezionata la feature,
+        * altrimenti viene fatta una ricerca della feature sul layer in base alla configurazione del parametro config.
+        *
+        *
+        * Parameters:
+        * config - {Object} Oggetto di configurazione dell'hilite
+        *  - layerName - {String} Nome del layer
+        *  - attrName - {String} Nome dell'attributo
+        *  - item - {String}/{Number} Valore
+        *  - options - {Object} Oggetto configurazione delle opzioni
+        *  -  - zoom - {Boolean} Flag per impostare lo zoom sulle feature caricate
+        *  -  - hiliteOnly - {Boolean} Flag per effettuare solo l'highlight della feature (default: false)
+         * feature - {OpenLayers.Feature} Feature da selezionare
+        *
+        *  Esempio:
+        *  (start code)
+        * var selectConf = {
+        *			"layerName": "Prova",
+        *			"attrName": "ID",
+        *				"items": "1"
+        *			},
+        *			"options": {
+         *				"zoom": false,
+         *				"hiliteOnly": false
+        *			}
+        *		};
+        *   (end)
+        *
+        */
+
+		selectFeature : selectFeature,
+
+        /**
+        *
+        * Function: unselectFeature
+        *
+        * Deselezione programmatica feature di un layer vettoriali.
+        *
+        * Se pi� feature soddisfano il criterio di selezione solo la prima viene deselezionata.
+        *
+        * Se impostato il parametro options.hiliteOnly=true viene fatto solo l'unhighlight della feaure.
+        *
+        * Se impostato il parametro feature viene deselezionata la feature,
+        * altrimenti viene fatta una ricerca della feature sul layer in base alla configurazione del parametro config
+        *
+        *
+         * Parameters:
+         * config - {Object} Oggetto di configurazione dell'hilite
+         *  - layerName - {String} Nome del layer
+         *  - attrName - {String} Nome dell'attributo
+         *  - item - {String}/{Number} Valore
+         *  - options - {Object} Oggetto configurazione delle opzioni
+         *  -  - hiliteOnly - {Boolean} Flag per effettuare solo l'highlight della feature (default: false)
+          * feature - {OpenLayers.Feature} Feature da selezionare
+         *
+         *  Esempio:
+         *  (start code)
+         * var selectConf = {
+         *			"layerName": "Prova",
+         *			"attrName": "ID",
+         *				"items": "1"
+         *			},
+         *			"options": {
+          *				"hiliteOnly": false
+         *			}
+         *		};
+         *   (end)
+         *
+         */
+
+        unselectFeature : unselectFeature
+
+
+	};
+
+}());
+/**
+*
+* Class: ldMaps.layerFactory
+* 
+ *
+ * Factory per creazione di layers OpenLayers
+ *
+*/
+
+ldMaps.layerFactory = (function(){
+
+    /*global ldMaps:false, window:false, OpenLayers:false, google:false, VEMapStyle:false */
+    "use strict";
+
+    var BASE_RESOLUTIONS = [156543.03390625, 78271.516953125, 39135.7584765625, 19567.87923828125, 9783.939619140625, 4891.9698095703125, 2445.9849047851562, 1222.9924523925781, 611.4962261962891, 305.74811309814453, 152.87405654907226, 76.43702827453613, 38.218514137268066, 19.109257068634033, 9.554628534317017, 4.777314267158508, 2.388657133579254, 1.194328566789627, 0.5971642833948135, 0.29858214169740677, 0.14929107084870338];
+
+    // array contenente i renderIntent gestiti con associata una stylemap di default
+    var renderIntents = [
+           {
+               name: "default",
+               defaultStyle: {
+                   fillColor: "#ee9900",
+                   fillOpacity: 0.4,
+                   hoverFillColor: "white",
+                   hoverFillOpacity: 0.8,
+                   strokeColor: "#ee9900",
+                   strokeOpacity: 1,
+                   strokeWidth: 1,
+                   strokeLinecap: "round",
+                   strokeDashstyle: "solid",
+                   hoverStrokeColor: "red",
+                   hoverStrokeOpacity: 1,
+                   hoverStrokeWidth: 0.2,
+                   pointRadius: 6,
+                   hoverPointRadius: 1,
+                   hoverPointUnit: "%",
+                   pointerEvents: "visiblePainted",
+                   cursor: "inherit"
+               }
+           },
+           {
+               name: "hilite",
+               defaultStyle: {
+                   fillColor: "#66cccc",
+                   fillOpacity: 0.2,
+                   hoverFillColor: "white",
+                   hoverFillOpacity: 0.8,
+                   strokeColor: "#66cccc",
+                   strokeOpacity: 1,
+                   strokeLinecap: "round",
+                   strokeWidth: 2,
+                   strokeDashstyle: "solid",
+                   hoverStrokeColor: "red",
+                   hoverStrokeOpacity: 1,
+                   hoverStrokeWidth: 0.2,
+                   pointRadius: 6,
+                   hoverPointRadius: 1,
+                   hoverPointUnit: "%",
+                   pointerEvents: "visiblePainted",
+                   cursor: "inherit"
+               }
+           },
+           {
+               name: "select",
+               defaultStyle: {
+                   fillColor: "blue",
+                   fillOpacity: 0.4,
+                   hoverFillColor: "white",
+                   hoverFillOpacity: 0.8,
+                   strokeColor: "blue",
+                   strokeOpacity: 1,
+                   strokeWidth: 2,
+                   strokeLinecap: "round",
+                   strokeDashstyle: "solid",
+                   hoverStrokeColor: "red",
+                   hoverStrokeOpacity: 1,
+                   hoverStrokeWidth: 0.2,
+                   pointRadius: 6,
+                   hoverPointRadius: 1,
+                   hoverPointUnit: "%",
+                   pointerEvents: "visiblePainted",
+                   cursor: "pointer"
+               }
+           },
+           {
+               name: "hover",
+               defaultStyle: {
+                   fillColor: "blue",
+                   fillOpacity: 0.4,
+                   hoverFillColor: "white",
+                   hoverFillOpacity: 0.8,
+                   strokeColor: "blue",
+                   strokeOpacity: 1,
+                   strokeWidth: 2,
+                   strokeLinecap: "round",
+                   strokeDashstyle: "solid",
+                   hoverStrokeColor: "red",
+                   hoverStrokeOpacity: 1,
+                   hoverStrokeWidth: 0.2,
+                   pointRadius: 6,
+                   hoverPointRadius: 1,
+                   hoverPointUnit: "%",
+                   pointerEvents: "visiblePainted",
+                   cursor: "pointer"
+               }
+           },
+           {
+               name: "temporary",
+               defaultStyle: {
+                   fillColor: "#66cccc",
+                   fillOpacity: 0.2,
+                   hoverFillColor: "white",
+                   hoverFillOpacity: 0.8,
+                   strokeColor: "#66cccc",
+                   strokeOpacity: 1,
+                   strokeLinecap: "round",
+                   strokeWidth: 2,
+                   strokeDashstyle: "solid",
+                   hoverStrokeColor: "red",
+                   hoverStrokeOpacity: 1,
+                   hoverStrokeWidth: 0.2,
+                   pointRadius: 6,
+                   hoverPointRadius: 1,
+                   hoverPointUnit: "%",
+                   pointerEvents: "visiblePainted",
+                   cursor: "inherit"
+               }
+           },
+           {
+               name: "delete",
+               defaultStyle: {
+                   display: "none"
+               }
+           }
+       ];
+
+	// Impostazione opzioni di base per tutti i layer
+	function setLayerOptions(layerConfig,map) {
+		var layerOptions = {};
+		layerOptions.projection = layerConfig.projection || map.projection;
+		layerOptions.isBaseLayer = layerConfig.isBaseLayer;
+		layerOptions.opacity = layerConfig.opacity || 1;
+		layerOptions.attribution = layerConfig.attribution;
+		layerOptions.transitionEffect = "resize";
+		//layerOptions.transitionEffect = null;
+		layerOptions.metadata = layerConfig.metadata;
+		layerOptions.minScale = layerConfig.minScale || null;
+		layerOptions.maxScale = layerConfig.maxScale || null;
+		layerOptions.infoOptions = layerConfig.infoOptions;
+		return layerOptions;
+	}
+
+    function isCluster(strategiesConfig) {
+        if (strategiesConfig && strategiesConfig.length) {
+            var len = strategiesConfig.length;
+            for (var i = 0; i < len; i++) {
+                if (strategiesConfig[i].name === "Cluster") {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+	// Creazione styleMap vettoriale
+	function createVectorStyleMap(layerConfig) {
+
+		var classes = [],
+            StyleMapLiteral = {},
+            j,
+            len = renderIntents.length,
+            style,
+            rules,
+            i,
+            len2,
+            classFilter,
+            format,
+            rule,
+            clusterRule,
+            noClusterRule;
+
+
+        if (layerConfig.classes) {
+            if (layerConfig.classes instanceof Array ) {
+                classes = layerConfig.classes;
+            } else {
+                classes.push(layerConfig.classes);
+            }
+        }  else {
+            return null;
+        }
+
+
+		for (j = 0, len; j < len; j++) {
+
+			style = new OpenLayers.Style();
+			rules = [];
+            len2 = classes.length;
+
+			for (i = 0; i < len2; i++) {
+
+				classFilter = null;
+				format = new OpenLayers.Format.CQL();
+
+				if (classes[i].filter) {
+					classFilter = format.read(classes[i].filter);
+				}
+
+                if (isCluster(layerConfig.strategies)) {
+                    rules.push(buildSingleFeatureClusterRule(classes[i].styleMaps, renderIntents[j].name));
+                    rules.push(buildClusterRule(classes[i].styleMaps, renderIntents[j].name));
+                } else {
+                    rules.push(buildRule(classes[i].styleMaps, classFilter, renderIntents[j].name));
+                }
+
+			}
+
+			style.addRules(rules);
+
+			StyleMapLiteral[renderIntents[j].name] = style;
+
+		}
+
+        //TODO: se non esiste il renderIntent "hover" lo imposto uguale al renderIntent "select"
+
+        return new OpenLayers.StyleMap(StyleMapLiteral);
+
+	}
+
+    // Ritorna la rule (filtro e simbolizer) da utilizzare per le feature per un determinato renderIntent
+    // Se lo stile non è definito viene costruito uno style di default
+	function buildRule(styleMaps,classFilter,renderIntent) {
+        return new OpenLayers.Rule({
+            symbolizer: getClassStyleByIntent(styleMaps,renderIntent) || getDefaultStyleByIntent(renderIntent),
+            filter: classFilter
+        });
+	}
+
+
+    // Ritorna la rule (filtro e simbolizer) da utilizzare per le feature in cluster
+	function buildClusterRule(styleMaps,renderIntent) {
+        var symbolizer = getClassStyleByIntent(styleMaps,renderIntent) || getDefaultStyleByIntent(renderIntent) ;
+
+        if (symbolizer.externalGraphic) {
+            symbolizer.graphicWidth = symbolizer.graphicWidth * 1.5;
+            symbolizer.graphicHeight = symbolizer.graphicHeight * 1.5;
+            symbolizer.graphicTitle = "${count} Elementi";
+        } else {
+            symbolizer.pointRadius = symbolizer.pointRadius * 1.5;
+        }
+
+        var filter = new OpenLayers.Filter.Comparison(
+        {
+            type: OpenLayers.Filter.Comparison.GREATER_THAN,
+            property: "count",
+            value: 1
+        });
+
+		if (symbolizer) {
+			var rule = new OpenLayers.Rule({
+				symbolizer: symbolizer,
+				filter: filter
+			});
+		}
+		return rule;
+	}
+
+
+    // Ritorna la rule (filtro e simbolizer) da utilizzare per le feature non in cluster
+	function buildSingleFeatureClusterRule(styleMaps,renderIntent) {
+        var symbolizer = getClassStyleByIntent(styleMaps,renderIntent) || getDefaultStyleByIntent(renderIntent) ;
+
+        //symbolizer.graphicTitle = "${count} Elemento";
+
+        var filter = new OpenLayers.Filter.Comparison(
+                {
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: "count",
+                    value: 1
+                });
+
+		if (symbolizer) {
+			var rule = new OpenLayers.Rule({
+				symbolizer: symbolizer,
+				filter: filter
+			});
+		}
+		return rule;
+	}
+
+
+
+	// Ritorna lo style (symbolizer) associato ad una stylemap per un determinato renderIntet
+	function getClassStyleByIntent(styleMaps, renderIntent) {
+        var len = styleMaps.length;
+        for (var s = 0; s < len; s++) {
+			if (styleMaps[s].renderIntent === renderIntent)
+			{
+				return ldMaps.Util.cloneObj(styleMaps[s].style);
+			}
+		}
+		return null;
+	}
+
+	// Ritorna lo style (symbolizer) di default associato ad un determinato renderIntet
+	function getDefaultStyleByIntent(renderIntent,cluster) {
+        var len = renderIntents.length;
+        for (var s = 0; s < len; s++) {
+			if (renderIntents[s].name === renderIntent)
+			{
+				return  ldMaps.Util.cloneObj(renderIntents[s].defaultStyle);
+			}
+		}
+		return null;
+	}
+
+
+    // Crea un Layer OpenLayers in base ad una determinata configurazione
+    function create(layerConfig,map) {
+        try {
+            var layer = ldMaps.layerFactory[layerConfig.type](layerConfig,map);
+            layer.legend = layerConfig.legend;
+            if (!layerConfig.legend) {
+                layer.displayInLayerSwitcher = false;
+            }
+            // imnposto un attributo contenente la configurazione del layer
+            layer.config = layerConfig;
+
+            return layer;
+        }
+        catch (exception) {
+            throw {
+                name: "BadLayerConfig",
+                message: "ldMaps.layerFactory.create: Errore creazione layer " + layerConfig.name  + " di tipo " + layerConfig.type,
+                level: 1
+            };
+        }
+    }
+
+    /*
+    *
+    * Metodi per creazione dei layer Openlayers dei vari tipi
+    *
+    */
+
+    // google generico
+    function createGoogleLayer(layerType,layerConfig) {
+
+        var	olLayer = new OpenLayers.Layer.Google(
+            layerConfig.name,
+            {
+                type: layerType,
+                resolutions: BASE_RESOLUTIONS,
+                serverResolutions: BASE_RESOLUTIONS,
+                minZoomLevel: 0,
+                maxZoomLevel: 19,
+                alwaysInRange: true
+            }
+        );
+        // abilito l'animazione del layer su zoom
+        return olLayer;
+    }
+
+    // google stradario
+    function google_roadmap(layerConfig) {
+        ldMaps.Util.log("ldMaps.layerFactory.create google_roadmap");
+        var layerType = google.maps.MapTypeId.ROADMAP;
+        return createGoogleLayer(layerType,layerConfig);
+    }
+
+    // google satellite
+    function google_satellite(layerConfig) {
+        ldMaps.Util.log("ldMaps.layerFactory.create google_satellite");
+        var layerType = google.maps.MapTypeId.SATELLITE;
+        return createGoogleLayer(layerType,layerConfig);
+    }
+
+    // google ibrido
+    function google_hybrid(layerConfig) {
+        ldMaps.Util.log("ldMaps.layerFactory.create google_hybrid");
+        var layerType = google.maps.MapTypeId.HYBRID;
+        return createGoogleLayer(layerType,layerConfig);
+    }
+
+    // google terreno
+    function google_terrain(layerConfig) {
+        ldMaps.Util.log("ldMaps.layerFactory.create google_terrain");
+        var layerType = google.maps.MapTypeId.TERRAIN;
+        return createGoogleLayer(layerType,layerConfig);
+    }
+
+
+
+    // Sfondo Bianco
+    function no_base(layerConfig) {
+        ldMaps.Util.log("ldMaps.layerFactory.create Sfondo Bianco");
+        var	olLayer = new OpenLayers.Layer(
+            layerConfig.name,
+            {
+                resolutions: BASE_RESOLUTIONS,
+                serverResolutions: BASE_RESOLUTIONS,
+                alwaysInRange: true,
+                isBaseLayer: true
+            }
+        );
+        return olLayer;
+    }
+
+    // OpenStreetMap
+    function OSM() {
+        ldMaps.Util.log("ldMaps.layerFactory.create OSM");
+
+        var olLayer = new OpenLayers.Layer.OSM("OSM", null, {
+            transitionEffect: "resize"
+        });
+        return olLayer;
+    }
+
+
+    // TMS
+    function TMS(layerConfig,map) {
+        ldMaps.Util.log("ldMaps.layerFactory.create TMS");
+
+        var mapBounds,
+            minZoomLevel,
+            maxZoomLevel,
+            resolutions = [],
+            BLANK_PNG = "http://srvcarto.regione.liguria.it/sfondi/none.png";
+
+        if (layerConfig.bounds) {
+            mapBounds = new OpenLayers.Bounds.fromString(layerConfig.bounds);
+        } else {
+            mapBounds = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34);
+        }
+
+        minZoomLevel = layerConfig.minZoomLevel || 7;
+        maxZoomLevel = layerConfig.maxZoomLevel || 20;
+        resolutions = BASE_RESOLUTIONS.slice(minZoomLevel,maxZoomLevel);
+
+        function getTileURL(bounds) {
+            var TMSLayer = this;
+            var res = TMSLayer.map.getResolution();
+            var x = Math.round((bounds.left - TMSLayer.maxExtent.left) / (res * TMSLayer.tileSize.w));
+            var y = Math.round((bounds.bottom - TMSLayer.tileOrigin.lat) / (res * TMSLayer.tileSize.h));
+            var z = BASE_RESOLUTIONS.indexOf(TMSLayer.map.resolution);
+
+
+            if (mapBounds.intersectsBounds( bounds ) && z >= minZoomLevel && z <= maxZoomLevel ) {
+                return TMSLayer.url + z + "/" + x + "/" + y + "." + TMSLayer.type;
+            } else {
+                return BLANK_PNG;
+            }
+        }
+
+        var olLayer = new OpenLayers.Layer.TMS(
+            layerConfig.name,
+            layerConfig.url,
+            {
+                type: 'png',
+                getURL: getTileURL,
+                alpha: false,
+                resolutions: resolutions,
+                serverResolutions: BASE_RESOLUTIONS
+            }
+        );
+
+
+        if (map.layerManager.isBaseLayerInConfig(layerConfig.name)){
+            olLayer.setIsBaseLayer(true);
+        } else {
+            olLayer.setIsBaseLayer(false);
+        }
+
+
+        return olLayer;
+    }
+
+    // TMS
+    function MapProxyTMS(layerConfig,map) {
+        ldMaps.Util.log("ldMaps.layerFactory.create TMS");
+
+        var olLayer = new OpenLayers.Layer.TMS(
+            layerConfig.name,
+            layerConfig.url,
+            {
+                layername: layerConfig.name,
+                type: 'png',
+                resolutions: BASE_RESOLUTIONS.slice(0,18),
+                zoomOffset: -1,
+                tileSize: new OpenLayers.Size(256, 256),
+                minScale: layerConfig.minScale || null,
+                maxScale: layerConfig.maxScale || null
+            }
+        );
+
+        if (map.layerManager.isBaseLayerInConfig(layerConfig.name)){
+            olLayer.setIsBaseLayer(true);
+        } else {
+            olLayer.setIsBaseLayer(false);
+        }
+
+
+        return olLayer;
+    }
+
+    // Bing Hybrid
+    function bing_hybrid() {
+        var	olLayer = new OpenLayers.Layer.Bing({
+            name: "bing_hybrid",
+            key: ldMaps.BING_MAPS_KEY,
+            type: "AerialWithLabels",
+            resolutions: BASE_RESOLUTIONS
+        });
+        return olLayer;
+    }
+
+    // Bing Aerial
+    function bing_aerial() {
+        var	olLayer = new OpenLayers.Layer.Bing({
+            name: "bing_aerial",
+            key: ldMaps.BING_MAPS_KEY,
+            type: "Aerial",
+            resolutions: BASE_RESOLUTIONS
+        });
+        return olLayer;
+    }
+
+    // Bing Road
+    function bing_road() {
+        var	olLayer = new OpenLayers.Layer.Bing({
+            name: "bing_road",
+            key: ldMaps.BING_MAPS_KEY,
+            type: "Road",
+            resolutions: BASE_RESOLUTIONS
+        });
+        return olLayer;
+    }
+
+    var createStrategy = function(strategy) {
+        if (strategy.name === "BBOX") {
+            return new OpenLayers.Strategy.BBOX();
+        }
+        if (strategy.name === "Cluster") {
+            var options = {};
+            if (strategy.options && strategy.options.distance) {
+                options.distance = strategy.options.distance;
+            }
+            if (strategy.options && strategy.options.threshold) {
+                options.threshold = strategy.options.threshold;
+            }
+            return new OpenLayers.Strategy.Cluster(options);
+        }
+
+    };
+
+    // Vettoriale
+    function createStrategies(layerConfig) {
+        var strategiesConfig = layerConfig.strategies;
+        var strategiesArray = [];
+        if (strategiesConfig) {
+            var len = strategiesConfig.length;
+            for (var i = 0; i < len; i++) {
+                strategiesArray.push(createStrategy(strategiesConfig[i]));
+            }
+        } else {
+            strategiesArray.push(new OpenLayers.Strategy.Fixed());
+        }
+        return strategiesArray;
+    }
+
+    function GeoJSON(layerConfig,map) {
+        ldMaps.Util.log("ldMaps.layerFactory.create GeoJSON");
+
+        // impostazione opzioni di base
+        var layerOptions = setLayerOptions(layerConfig,map),
+            olLayer;
+
+        // se non è impostato parametro la url
+        // viene creato un layer senza feature che viene poi caricato successivamente
+        if (layerConfig.url){
+
+            // creo il protocollo
+            layerOptions.protocol = new OpenLayers.Protocol.HTTP({
+                format: new OpenLayers.Format.GeoJSON({ignoreExtraDims: true}),
+                url: layerConfig.url
+            });
+
+            // creo le strategie
+            layerOptions.strategies = createStrategies(layerConfig);
+
+        }
+
+        // creo il livello OL
+        olLayer = new OpenLayers.Layer.Vector(
+            layerConfig.name,
+            layerOptions
+        );
+
+
+        // creo la StyleMap
+        olLayer.styleMap = createVectorStyleMap(layerConfig);
+
+
+        return olLayer;
+
+    }
+
+    // WFS
+    function WFS(layerConfig,map) {
+        ldMaps.Util.log("ldMaps.layerFactory.create WFS");
+
+        // impostazione opzioni di base
+        var layerOptions = setLayerOptions(layerConfig,map),
+            olLayer;
+
+
+        // creo il protocollo
+        if (layerConfig.wfsParams.method = "GET") {
+            var params = {
+                request: "GetFeature",
+                service: "wfs",
+                version: "1.0.0"
+            };
+            params.typeName = layerConfig.wfsParams.featureType;
+            if (layerConfig.wfsParams.filter) {
+                params.filter = layerConfig.wfsParams.filter;
+            }
+            var options = {
+                url: layerConfig.wfsParams.url,
+                params: params,
+                format: new OpenLayers.Format.GML({
+                    featureNS: "http://ng.org/sf",
+                    geometryName: "wkb_geometry"
+                })
+            };
+            layerOptions.protocol = new OpenLayers.Protocol.HTTP(options);
+        } else {
+            layerOptions.protocol = new OpenLayers.Protocol.WFS(layerConfig.wfsParams);
+        }
+
+        layerOptions.strategies = createStrategies(layerConfig);
+
+
+        // creo il livello OL
+        olLayer = new OpenLayers.Layer.Vector(
+            layerConfig.name,
+            layerOptions
+        );
+
+
+        olLayer.styleMap = createVectorStyleMap(layerConfig);
+
+        return olLayer;
+    }
+
+    // WMS
+    function WMS(layerConfig,map) {
+        ldMaps.Util.log("ldMaps.layerFactory.create WMS");
+
+        // impostazione opzioni di base
+        var layerOptions = setLayerOptions(layerConfig,map),
+            wmsParams = {},
+            olLayer;
+
+        // impostazione parametri layer WMS
+//        wmsParams.layers = layerConfig.wmsParams.name;
+//        wmsParams.transparent = layerConfig.wmsParams.transparent;
+//        if (layerConfig.wmsParams.format) {
+//            wmsParams.format = layerConfig.wmsParams.format;
+//        }
+
+        layerConfig.wmsParams.layers = layerConfig.wmsParams.name;
+        wmsParams = ldMaps.Util.cloneObj(layerConfig.wmsParams);
+        wmsParams.url = null;
+        wmsParams.name = null;
+
+        layerOptions.buffer = 0;
+        layerOptions.singleTile = true;
+        layerOptions.transitionEffect = null;
+
+        // se base layer setto
+        if (layerConfig.isBaseLayer) {
+            layerOptions.resolutions = [78271.516953125, 39135.7584765625, 19567.87923828125, 9783.939619140625, 4891.9698095703125, 2445.9849047851562, 1222.9924523925781, 611.4962261962891, 305.74811309814453, 152.87405654907226, 76.43702827453613, 38.218514137268066, 19.109257068634033, 9.554628534317017, 4.777314267158508, 2.388657133579254, 1.194328566789627, 0.5971642833948135, 0.29858214169740677, 0.14929107084870338];
+        }
+
+        // creo il livello OL
+        olLayer = new OpenLayers.Layer.WMS(
+            layerConfig.name,
+            layerConfig.wmsParams.url,
+            wmsParams,
+            layerOptions
+        );
+
+        olLayer.noMagic = true;
+        if (!layerConfig.isBaseLayer) {
+            olLayer.isBaseLayer = false;
+        }
+
+
+        // registro l'evento tileerror per gestire errori nei servizi WMS
+        // mando un messaggio alla console
+        olLayer.events.register("tileerror", olLayer, function() {
+            var tile = arguments[0].tile;
+            var url = tile.url;
+            $.get(
+                ldMaps.proxy + url,
+                function(data) {
+                    var message = "";
+                    if(url.indexOf("WIDTH=1&HEIGHT=1") < 0) {
+                        try {
+                            var errorText = data.childNodes[1].childNodes[1].textContent;
+                            message += "WMS Server Error:\n";
+                            message += "\nError Text: " + errorText;
+                            message += "\nURL: " + url;
+                        } catch (ex) {
+                            message += "WMS Server Error\n";
+                            message += "\nURL: " + url;
+                        } finally {
+                            var exception = {
+                                name: "WMSServerError",
+                                message: message,
+                                level: 0
+                            };
+                            ldMaps.Util.handleException(exception);
+                        }
+                    }
+                },
+                "xml"
+            );
+        });
+
+        return olLayer;
+    }
+
+    function JSONP(layerConfig,map) {
+        ldMaps.Util.log("ldMaps.layerFactory.create JSONP");
+
+        // impostazione opzioni di base
+        var layerOptions = setLayerOptions(layerConfig,map),
+            olLayer;
+
+        // se non è impostato parametro la url
+        // viene creato un layer senza feature che viene poi caricato successivamente
+        if (layerConfig.url){
+
+            // creo il protocollo
+            layerOptions.protocol = new OpenLayers.Protocol.Script({
+                format: new OpenLayers.Format.GeoJSON({ignoreExtraDims: true}),
+                callbackTemplate: "OpenLayers.Protocol.Script.registry.${id}",
+                url: layerConfig.url
+            });
+
+            // creo le strategie
+            layerOptions.strategies = createStrategies(layerConfig);
+
+        }
+
+        // creo il livello OL
+        olLayer = new OpenLayers.Layer.Vector(
+            layerConfig.name,
+            layerOptions
+        );
+
+
+        // creo la StyleMap
+        olLayer.styleMap = createVectorStyleMap(layerConfig);
+
+
+
+        return olLayer;
+
+    }
+
+	// Public API
+	return {
+		
+		/**
+		* 
+		* Function: create
+        * Crea un Layer OpenLayers in base ad una determinata configurazione
+        *
+		* Parameters:
+        * layerConfig - {Object} Oggetto contenente la configurazione del layer
+        *
+		* Returns:
+        * layer - {OpenLayers.Layer}
+		* 
+		*/ 
+		create: create,
+
+		/*
+		*
+        * Metodi per creazione dei layer Openlayers dei vari tipi
+        *
+        */
+
+		google_roadmap: google_roadmap,
+		google_satellite:google_satellite,
+		google_hybrid: google_hybrid,
+		google_terrain: google_terrain,
+        bing_hybrid: bing_hybrid,
+        bing_aerial: bing_aerial,
+        bing_road: bing_road,
+		no_base: no_base,
+		OSM: OSM,
+        TMS: TMS,
+        MapProxyTMS: MapProxyTMS,
+        GeoJSON: GeoJSON,
+		WFS: WFS,
+		WMS: WMS,
+        JSONP: JSONP
+		
+	};
+}());
+
+
+/**
+ *
+ * Class: ldMaps.LayerManager
+ *
+ * Oggetto per la gestione dei layer:
+ *
+* -	Inizializzare i repository dei layer
+* -	Fornire informazioni sui layer disponibili ai moduli che lo richiedono, in particolare i metodi getBaseLayersConfig e getLayersConfig forniscono le configurazioni dei layer di base e overlay
+* -	Aggiungere layer ai repository
+* -	Rimuovere i layer dai repository
+* -	Creazione di layer di servizio (per esempio per le operazioni di find o calcolo percorsi)
+ *
+ *
+ */
+ldMaps.LayerManager = function(baseLayers,overlayLayers,appId) {
+
+    /*global ldMaps:false, Ext:false, window:false, OpenLayers:false */
+    "use strict";
+
+    ldMaps.Util.log("ldMaps.LayerManager");
+
+    /*
+        Proprietà Pubbliche
+     */
+    this.overlayLayerStore = null;
+    this.baseLayerStore = null;
+    this.overlayLayersConfig = overlayLayers;
+    this.baseLayersConfig = baseLayers;
+
+    var app = ldMaps.appRegistry.get(appId);
+
+    /*
+        Metodi
+     */
+
+
+    // imposta il flag isBaseLayer e la visibilità sui base layer
+    this.setBaseLayers = function() {
+
+        // imposto la proprietà isBaseLayer a true per i baseLayers
+        var visible,i, len = this.baseLayersConfig.length;
+        visible = false;
+        for (i = 0; i < len; i ++) {
+            if (this.baseLayersConfig[i].visible) {
+                visible = true;
+            }
+            this.baseLayersConfig[i].isBaseLayer = true;
+        }
+
+        // se non esiste nessun baseLayer visibile rendo visibile l'ultimo
+        if (!visible) {
+            this.baseLayersConfig[len - 1].visible = true;
+        }
+
+    };
+
+    /**
+    *
+    * Function: getLayerConfigByName
+    *
+    * Ritorna la configurazione di un layer
+    *
+    * Parameters:
+    * name - {String} Nome del layer
+    *
+    * Returns:
+    * {Object} Configurazione del layer
+    *
+    */
+    this.getLayerConfigByName = function(layerName) {
+        var i,len = this.overlayLayersConfig.length;
+        for (i = 0; i < len; i++) {
+            if (this.overlayLayersConfig[i].name===layerName) {
+                return this.overlayLayersConfig[i];
+            }
+        }
+        return null;
+    };
+
+    /**
+    *
+    * Function: getLayerIndexByName
+    *
+    * Ritorna l'indice di un layer in configurazione
+    *
+    * Parameters:
+    * name - {String} Nome del layer
+    *
+    * Returns:
+    * {Integer}
+    *
+    */
+    this.getLayerIndexByName = function(layerName) {
+        var i , len = this.overlayLayersConfig.length;
+        for (i = 0; i < len; i++) {
+            if (this.overlayLayersConfig[i].name===layerName) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+    /**
+    *
+    * Function: isbaseLayerInConfig
+    *
+    * Indica se il baseLayer è in configurazione
+    *
+    * Parameters:
+    * name - {String} Nome del layer
+    *
+    * Returns:
+    * {Boolean}
+    *
+    */
+    this.isBaseLayerInConfig = function(layerName) {
+        var i , len;
+        len = this.baseLayersConfig.length;
+        for (i = 0; i < len; i++) {
+            if (layerName === this.baseLayersConfig[i].name) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+    *
+    * Function: isLayerInConfig
+    *
+    * Indica se il layer è in configurazione
+    *
+    * Parameters:
+    * name - {String} Nome del layer
+    *
+    * Returns:
+    * {Boolean}
+    */
+    this.isLayerInConfig = function(layerName) {
+        var i , len;
+        len = this.overlayLayersConfig.length;
+        for (i = 0; i < len; i++) {
+            if (layerName === this.overlayLayersConfig[i].name) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // costruisce lo store dei layer in base al tipo
+    this.buildLayerStoreByType = function(type) {
+        var layers = [],
+        layersConfig,
+        i,
+        len,
+        idStore = type + "-layer-store",
+        layerStore;
+
+        if (type === "overlay") {
+            layersConfig = this.overlayLayersConfig;
+        } else {
+            layersConfig = this.baseLayersConfig;
+        }
+
+          if (layersConfig) {
+              len = layersConfig.length;
+            for (i = 0; i < len; i++) {
+                if ((layersConfig[i].showInLegend === undefined) || (layersConfig[i].showInLegend === true)) {
+                    layers.push(layersConfig[i]);
+                }
+            }
+        }
+        layers.reverse();
+
+
+        layerStore = new Ext.data.JsonStore({
+            id: idStore,
+            data: layers,
+            fields: [{
+                name: "name", mapping: "name"
+            },{
+                name: "legend", mapping: "legend"
+            }
+            ]
+        });
+
+        if (type === "overlay") {
+              this.overlayLayerStore = layerStore;
+        } else {
+              this.baseLayerStore = layerStore;
+        }
+    };
+
+    // rimuove un layer dallo store
+    this.removeLayerFromStore = function(layerName) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.removeLayerFromStore");
+
+        var storeItems = this.overlayLayerStore.data.items,
+            item,
+            len2 = storeItems.length,
+            rec;
+
+        for (item = 0; item < len2; item++) {
+            if (storeItems[item]) {
+                if (storeItems[item].data.name === layerName) {
+                    rec = this.overlayLayerStore.getAt(item);
+                    this.overlayLayerStore.remove(rec);
+                }
+            }
+        }
+    };
+
+    // aggiunge un layer allo store
+    this.addLayerToStore = function(layerConfig) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.addLayerToStore");
+
+        if ((layerConfig.showInLegend === undefined) || (layerConfig.showInLegend === true)) {
+            if (this.overlayLayerStore) {
+                var rec = new this.overlayLayerStore.recordType(layerConfig);
+                this.overlayLayerStore.insert(0, rec);
+            } else {
+                this.initStore();
+            }
+        }
+    };
+
+    // aggiunge un base layer allo store
+    this.addBaseLayerToStore = function(layerConfig) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.addBaseLayerToStore");
+
+        if ((layerConfig.showInLegend === undefined) || (layerConfig.showInLegend === true)) {
+            if (this.baseLayerStore) {
+                var rec = new this.baseLayerStore.recordType(layerConfig);
+                  this.baseLayerStore.insert(0, rec);
+            } else {
+                this.initStore();
+            }
+        }
+    };
+
+    /**
+    *
+    * Function: getOverlayLayersNameFromStore
+    *
+    * Ritorna un array con i nomi dei layer nello store
+    *
+    * Returns:
+    * layerNames - {Array} Array contenente i nomi dei layer nello store
+    *
+    */
+    this.getOverlayLayersNameFromStore = function() {
+
+        ldMaps.Util.log("ldMaps.LayerManager.getOverlayLayersNameFromStore");
+
+        if(this.overlayLayerStore) {
+            var layersName = [],
+                storeItems = this.overlayLayerStore.data.items,
+                item,
+                len2 = storeItems.length;
+
+            for (item = 0; item < len2; item++) {
+                layersName.push(storeItems[item].data.name);
+            }
+
+            return layersName;
+        }
+
+    };
+
+    /**
+    *
+    * Function: getLayerStore
+    *
+    * Ritorna lo store dei layer
+    *
+    * Parameters:
+    * type  - {String} Tipo di store ("base"/"overlay")
+    *
+    * Returns:
+    * store - {Ext.data.JsonStore}
+    *
+    */
+    this.getLayerStore = function(type) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.getLayerStore");
+
+        if (type === "base") {
+            return this.baseLayerStore;
+        } else {
+            return this.overlayLayerStore;
+        }
+
+    };
+
+    function updateSelectControls(layers) {
+// aggiorno il controllo per la selezione delle feature dei livelli vettoriali
+        if (app.map) {
+            // ATTENZIONE:
+            // NON MODIFICARE L'ORDINE DI AGGIORNAMENTO DEI CONTROLLI
+            app.map.featureManager.hoverFeatureControl.setLayer(layers);
+            app.map.featureManager.hiliteFeatureControl.setLayer(layers);
+            app.map.featureManager.selectFeatureControl.setLayer(layers);
+        }
+    }
+
+    /**
+    *
+    * Function: addLayers
+    *
+    * Aggiunge i layer alla applicazione (aggiorna configurazione, store, mappa e legenda)
+    *
+    * Parameters:
+    * layers - {Array/Object} Array oppure singolo oggetto contenente la configurazione dei layer
+    *
+    *
+    */
+    this.addLayers = function(layersIn) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.addLayers");
+
+        ldMaps.Util.assert(layersIn,
+            {
+                name: "BadParameter",
+                message: "ldMaps.LayerManager.addLayers: parametro deve essere valorizzato",
+                level: 1
+            }
+        );
+
+        var layers;
+
+        if (layersIn instanceof Array) {
+            layers = layersIn;
+        } else {
+            layers = [layersIn];
+        }
+
+        var i,
+            len = layers.length,
+            layer;
+
+        // aggiungo i layer alla configurazione (se non sono già presenti)
+        for (i = 0; i < len; i++) {
+            layer = layers[i];
+            if (!this.isLayerInConfig(layer.name)) {
+                // aggiorno la configurazione
+                this.overlayLayersConfig.push(layer);
+                // aggiorno la mappa
+                var olLayer = app.map.loadLayer(layer);
+                // aggiorno gli store
+                this.addLayerToStore(layer);
+                if (layer.name.indexOf("_INFO") < 0) {
+                    // registro le action sugli eventi delle feature per i livelli vettoriali
+                    app.map.featureManager.registerAction([layer]);
+                }
+                // aggiorno il controllo per la getFeatureInfo dei livelli WMS se il layer è interrogabile
+                if (layer.type === "WMS" && layer.queryable) {
+                    var infoWmsControl = app.map.getControl("infoWmsControl");
+                    if (infoWmsControl) {
+                        infoWmsControl.addLayers([olLayer]);
+                    }
+                }
+            }
+        }
+
+        // aggiorno il controllo per la selezione delle feature dei livelli vettoriali
+        if (app.map) {
+            app.map.featureManager.updateControlLayer();
+        }
+
+
+    };
+
+    /**
+    *
+    * Function: addBaseLayers
+    *
+    * Aggiunge i baseLayer alla applicazione (aggiorna configurazione, store, mappa e legenda)
+    *
+    * Parameters:
+    * layers - {Array/Object} Array oppure singolo oggetto contenente la configurazione dei layer
+    *
+    *
+    */
+    this.addBaseLayers = function(layersIn) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.addBaseLayers");
+
+        ldMaps.Util.assert(layersIn,
+            {
+                name: "BadParameter",
+                message: "ldMaps.LayerManager.addBaseLayers: parametro deve essere valorizzato",
+                level: 1
+            }
+        );
+
+        var layers;
+
+        if (layersIn instanceof Array) {
+            layers = layersIn;
+        } else {
+            layers = [layersIn];
+        }
+
+
+        var i,
+            len = layers.length,
+            layer;
+
+
+        // aggiungo i layer alla configurazione (se non sono già presenti)
+        for (i = 0; i < len; i++) {
+            layer = layers[i];
+            if (!this.isBaseLayerInConfig(layer.name)) {
+                layer.isBaseLayer = true;
+                // aggiorno la configurazione
+                this.baseLayersConfig.push(layer);
+                // aggiorno la mappa
+                app.map.loadLayer(layer);
+                // aggiorno gli store
+                this.addBaseLayerToStore(layer);
+            }
+        }
+
+    };
+
+    /**
+    *
+    * Function: remove
+    *
+    * Rimuove i layer dalla applicazione
+    *
+    * Parameters:
+    * layersName - {Array} Array contenente i nomi dei layer
+    *
+    *
+    */
+    this.remove = function(layersName) {
+        ldMaps.Util.log("ldMaps.LayerManager.remove");
+
+        var layers = (Ext.isArray(layersName))? layersName : [layersName];
+
+        var me = this;
+
+        Ext.each(layers, function(layerName,i) {
+            // aggiorno la configurazione
+            var index = this.getLayerIndexByName(layerName);
+            if (index !== -1){
+                this.overlayLayersConfig.splice(index,1);
+            }
+            // aggiorno la mappa
+            app.map.removeLayerByName(layerName);
+            //Se il layer ha un hilite sld rimuovo anche il layer dell'hilite
+            if (app.map.wmsSldHiliter && app.map.wmsSldHiliter.hilitedLayerName === layerName) {
+                app.map.removeLayerByName(app.map.wmsSldHiliter.hiliteLayerName);
+            }
+            // aggiorno il controllo per la getFeatureInfo dei livelli WMS se il layer è interrogabile
+            var infoWmsControl = app.map.getControl("infoWmsControl");
+            if (infoWmsControl) {
+                var infoWmsControlLayers = infoWmsControl.layers;
+                if (infoWmsControlLayers) {
+                    for (var j = 0; j < infoWmsControlLayers.length; j++) {
+                        if (infoWmsControlLayers[j].name === layerName) {
+                            infoWmsControlLayers.splice(j,1);
+                        }
+                    }
+                }
+            }
+            // aggiorno lo store dei layer
+            me.removeLayerFromStore(layersName[i]);
+        });
+
+
+        if (app.map) {
+            app.map.featureManager.updateControlLayer();
+        }
+
+    };
+
+    /**
+    *
+    * Function: createVectorLayer
+    *
+    * Crea un layer vettoriale. Utilizzato da Find, CalcoloPercorsi per creare il layer delle evidenziazioni
+    *
+    * Parameters:
+    * config - {Object} Oggetto configurazione della combo.
+    *
+    * - layerName - {String} Nome del layer
+    * - format - {String} Formato del layer (GeoJSON/WFS)
+    * - classes - {Array} Array delle classi
+    * - infoOptions - {Object} Oggetto contentente le opzioni per la info
+    * - legend - {Object} Oggetto contentente la configurazione della legenda
+    *
+    * Returns:
+    * layer - {OpenLayers.Layer.Vector} Il layer vettoriale creato
+    *
+    */
+    this.createVectorLayer = function(config) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.createVectorLayer");
+
+        var format = config.format;
+        var layerName = config.name;
+        var classes = config.classes;
+        var infoOptions = config.infoOptions;
+        var legend = config.legend;
+        var showInLegend = false;
+        var projection = config.projection || "EPSG:4326";
+
+        if (format !== "GeoJSON") {
+            if(ldMaps.debug) {
+                ldMaps.Util.log("ERRORE: ldMaps.LayerManager.createVectorLayer: formato non supportato");
+            }
+            return null;
+        }
+
+        if (legend) {
+            showInLegend = true;
+        }
+
+        // se non esiste creo il layer vettoriale
+        if (!this.isLayerInConfig(layerName)) {
+            var layerConfig = {
+                "type": "GeoJSON",
+                "name": layerName,
+                "projection": projection,
+                "isBaseLayer": false,
+                "url": null,
+                "visible": true,
+                "showInLegend": showInLegend,
+                "classes": classes,
+                "infoOptions": infoOptions,
+                "legend" : legend
+            };
+            this.addLayers(layerConfig);
+        }
+
+        // ritorno il layer
+        return app.map.getLayerByName(layerName);
+
+    };
+
+    /**
+    *
+    * Function: createWMSLayer
+    *
+    * Crea un layer WMS. Utilizzato da Info per creare il layer delle evidenziazioni
+    *
+    * Parameters:
+    * config - {Object} Oggetto configurazione del layer WMS.
+    *
+    *
+    * Returns:
+    * layer - {OpenLayers.Layer.WMS} Il layer WMS creato
+    *
+    */
+    this.createWMSLayer = function(layerConfig) {
+
+        ldMaps.Util.log("ldMaps.LayerManager.createWMSLayer");
+
+        // se non esiste creo il layer WMS
+        if (!this.isLayerInConfig(layerConfig.name)) {
+            this.addLayers(layerConfig);
+        }
+
+        // ritorno il layer
+        return app.map.getLayerByName(layerConfig.name);
+
+    };
+
+    // inizializza gli store dei layer
+    this.initStore = function() {
+
+        ldMaps.Util.log("ldMaps.LayerManager.initStore");
+
+        // inizializzo gli store
+        if (app.extRequired) {
+            this.buildLayerStoreByType("base");
+            this.buildLayerStoreByType("overlay");
+        }
+
+    };
+
+    /**
+    *
+    * Function: getLayersConfig
+    *
+    * Ritorna la configurazione dei layer
+    *
+    * Returns:
+    * config - {Array} Array contenente la configurazione del layer
+    */
+    this.getLayersConfig = function() {
+        return this.overlayLayersConfig;
+    };
+
+    /**
+    *
+    * Function: getHiliteLayers
+    *
+    * Ritorna i layer di tipo hilite (hiliteLayer = true)
+    *
+    * Returns:
+    * config - {Array} Array contenente i layer di hilite (nome e hilitedLayerName)
+    */
+    this.getHiliteLayers = function(hilitedLayerName) {
+
+        var i,
+            len = app.map.layers.length,
+            hiliteLayers = [];
+
+        for (i = 0; i < len; i++) {
+            if (app.map.layers[i].hiliteLayer && app.map.layers[i].hilitedLayerName === hilitedLayerName) {
+                hiliteLayers.push(app.map.layers[i]);
+            }
+        }
+
+        return hiliteLayers;
+
+    };
+    /**
+    *
+    * Function: getBaseLayersConfig
+    *
+    * Ritorna la configurazione dei baseLayer
+    *
+    * Returns:
+    * config - {Array} Array contenente la configurazione del layer
+    */
+    this.getBaseLayersConfig = function() {
+        return this.baseLayersConfig;
+    };
+
+    /*
+        Inizializzazione
+    */
+
+    ldMaps.Util.assert(baseLayers,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.LayerManager.init: baseLayers deve essere valorizzato",
+            level: 2
+        }
+    );
+
+    ldMaps.Util.assert(baseLayers.length > 0,
+        {
+            name: "BadConfiguration",
+            message: "ldMaps.LayerManager.init: baseLayers deve contenere almeno un layer",
+            level: 2
+        }
+    );
+
+
+    // Imposto le proprietà dei baseLayer
+    this.setBaseLayers();
+
+
+    // inizializzo gli store
+    if (app.extRequired) {
+        this.buildLayerStoreByType("base");
+        this.buildLayerStoreByType("overlay");
+    }
+
+};
+ldMaps.LayerManager.setLayerVisible = function(name,visible,appId) {
+
+    /*global ldMaps:false, Ext:false, window:false, OpenLayers:false */
+    "use strict";
+
+    ldMaps.Util.log("ldMaps.LayerManager.setLayerVisible");
+
+    var app = ldMaps.appRegistry.get(appId),
+        layer = app.map.getLayerByName(name),
+        layerConfig = app.map.layerManager.getLayerConfigByName(name),
+        i,
+        hilitedLayer,
+        hilitedLayerConfig;
+
+    // guardo se ci sono layer di hilite collegati al layer in oggetto
+    var hilitedLayers = app.map.layerManager.getHiliteLayers(name);
+
+    if (layer) {
+        layer.setVisibility(visible);
+        for (i = 0; i < hilitedLayers.length; i++) {
+            hilitedLayers[i].setVisibility(visible);
+        }
+    }
+
+    if (layerConfig) {
+        layerConfig.visible = visible;
+    }
+
+};
+
+/**
+ * Class: ldMaps.Layout
+ *
+ *
+ * Costruisce il layout della applicazione
+ *
+ *
+ * Constructor: ldMaps.Layout
+ *
+ * Parameters:
+ * layoutConfig - {Object} Hashtable con la configurazione del layout
+ * appId - {string} Id della applicazione
+ *
+ */
+ldMaps.Layout = function(layoutConfig,appId) {
+
+    /*global ldMaps:false, Ext:false, window:false, OpenLayers:false */
+    "use strict";
+
+    /*
+       Proprietà
+     */
+
+    this.layout = null;
+    this.mapPanel = null;
+
+
+
+
+    /*
+        Funzioni private
+     */
+
+    function buildPanels(layoutConfig,layout) {
+
+        var panels = [],
+               legendPanel,
+               mapPanel;
+
+        // pannello legenda
+        if (layoutConfig.legend) {
+               // creo una legenda di tipo simple
+            legendPanel = new ldMaps.SimpleLegendPanel(layoutConfig.legend,appId);
+            panels.push(legendPanel);
+        }
+
+        // pannello mappa
+        if (ldMaps.MapPanel) {
+            layout.mapPanel = new ldMaps.MapPanel(layoutConfig,appId);
+           panels.push(layout.mapPanel);
+        }
+
+        // header
+        if (layoutConfig.header) {
+            var style = layoutConfig.header.style || null;
+            var titlePanel = new Ext.BoxComponent({
+                id: "ldMaps-layout-title",
+                region: 'north',
+                style: style,
+                autoEl: {
+                    tag: 'div',
+                    html: layoutConfig.header.html
+                }
+            });
+            if (layoutConfig.header.height) {
+                titlePanel.setHeight(layoutConfig.header.height);
+            }
+            panels.push(titlePanel);
+        }
+
+        return panels;
+
+    }
+
+
+    ldMaps.Util.log("ldMaps.Layout");
+
+    // costruisco i pannelli (map, legend, title)
+    var panelItems = buildPanels(layoutConfig,this);
+
+    // costruisco le opzioni di base
+    var basicOptions = {
+        defaults: {
+            frame: true,
+            split: true
+        },
+        id: "ldMaps-container-" + appId,
+        layout: "border",
+        hideBorders: false,
+        forceLayout: true,
+        closeAction: "hide",
+        items: panelItems
+    };
+
+    // construisco il layout
+    switch (layoutConfig.type) {
+        case "simple":
+            ldMaps.appRegistry.get(appId).map.render(layoutConfig.divID);
+            break;
+        case "viewport":
+            this.layout =  new ldMaps.ViewportLayout(layoutConfig,basicOptions);
+            break;
+        case "panel":
+            this.layout =  new ldMaps.PanelLayout(layoutConfig,basicOptions);
+            break;
+        case "window":
+            this.layout =  new ldMaps.WindowLayout(layoutConfig,basicOptions);
+            break;
+    }
+
+};
+ldMaps.Layout.prototype.setMapTitle = function(title) {
+
+    /*global ldMaps:false, window:false, OpenLayers:false */
+    "use strict";
+
+    Ext.getCmp("ldMaps-map-panel-1").setTitle(title);
+
+};
+
+ldMaps.Map = OpenLayers.Class(OpenLayers.Map, {
+
+
+
+    /*
+     * Constant: BASE_CONTROL_CONFIG
+     * {Object} Hashtable dei controlli di base
+     */
+	BASE_CONTROL_CONFIG: [
+		{
+			"type": "control",
+			"name": "ArgParser"
+		},
+		{
+			"type": "control",
+			"name": "Attribution"
+		},
+		{
+			"type": "control",
+			"name": "KeyboardDefaults"
+		},
+		{
+			"type": "control",
+			"name": "Navigation"
+		},
+		{
+			"type": "control",
+			"name": "LoadingPanel"
+		}
+	],
+
+    /**
+     * Property: mapOptions
+     * {Object} Opzioni mappa - Oggetto configuration.application.mapOptions
+     */
+    mapOptions: null,
+
+    /**
+     * Proprietà Privata: baseLayersConfig
+     * {Array} Array delle configurazioni dei baseLayer
+     */
+    baseLayersConfig: null,
+
+    /**
+     * Proprietà Privata: layersConfig
+     * {Array} Array delle configurazioni dei layer
+     */
+    layersConfig: null,
+
+    // Nome del base layer
+    baseLayerName: null,
+
+    // layer manager
+    layerManager: null,
+
+    // feature manager
+    featureManager: null,
+
+    previousExtent: null,
+
+    // livello massimo di zoom ammesso per la mappa
+    maxZoomLevel: null,
+
+    appId: null,
+    /*
+     * Constructor: ldMaps.Map
+     *
+     * Parameters:
+     * configMapOptions - {Object} Hashtable of options
+     * layerManager - {ldMaps.LayerManager} Oggetto layerManager
+     */
+
+
+    initialize: function(configMapOptions,layerManager,appId) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        ldMaps.Util.log("ldMaps.Map");
+
+        this.setMapOptions(configMapOptions);
+
+        this.appId = appId;
+
+        OpenLayers.Map.prototype.initialize.apply(this, [this.mapOptions]);
+
+        this.load(configMapOptions,layerManager);
+
+    },
+
+    setMapOptions: function(configMapOptions) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        this.mapOptions = {};
+
+        this.setProjection(configMapOptions);
+
+        this.setExtent(configMapOptions);
+
+        this.setUnits(configMapOptions);
+
+        // azzero i controlli della mappa OL - altrimenti fa vedere il controllo PanZoom sempre
+        this.mapOptions.controls = [];
+
+    },
+
+    setProjection: function(configMapOptions) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        if(configMapOptions.projection) {
+            this.mapOptions.projection = configMapOptions.projection;
+        } else {
+            this.mapOptions.projection = "EPSG:3857";
+        }
+
+        // creo la displayProjection
+        if(configMapOptions.displayProjection) {
+            this.mapOptions.displayProjection = new OpenLayers.Projection(configMapOptions.displayProjection);
+        } else {
+            this.mapOptions.displayProjection = new OpenLayers.Projection(this.mapOptions.projection);
+        }
+    },
+
+    setExtent: function(configMapOptions) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        this.mapOptions.maxExtent = OpenLayers.Bounds.fromString("-20037508, -20037508, 20037508, 20037508.34");
+
+        if (configMapOptions.restrictedExtent) {
+            this.mapOptions.restrictedExtent = new OpenLayers.Bounds.fromString(configMapOptions.restrictedExtent);
+        }
+
+        this.setMapOptionsInitialExtent(configMapOptions);
+
+    },
+
+    setMapOptionsInitialExtent: function(configMapOptions) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var bound,
+            exception,
+            LIG_BOUND_STR,
+            boundsStr,
+            initialExtentParam,
+            fromPrj;
+
+        // Se definito in QueryString lo imposto
+        // altrimenti se definito in config lo imposto
+        // altrimenti lo imposto sulla liguria
+        if (ldMaps.Util.getUrlParam("initialExtent")) {
+            this.mapOptions.initialExtent = this.calculateInitialExtent(this.getInitialExtentFromUrlParam());
+        } else if (configMapOptions.initialExtent){
+            this.mapOptions.initialExtent = this.calculateInitialExtent(configMapOptions.initialExtent);
+        } else {
+            this.mapOptions.initialExtent = this.calculateInitialExtent("830036,5402959,1123018,5597635");
+        }
+
+    },
+
+    // deve essere impostato nella forma proj,x1,y1,x2,y2
+    // esempio ?initialExtent=EPSG:3857,955508,5496093,1065424,5576964
+    getInitialExtentFromUrlParam: function() {
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var initialExtentParam = ldMaps.Util.getUrlParam("initialExtent").split(",");
+        var fromPrj = initialExtentParam.splice(0,1)[0];
+        var boundsStr = initialExtentParam.join(",");
+        if (this.mapOptions.projection !== fromPrj) {
+            boundsStr = ldMaps.Util.transformStrBounds(fromPrj,this.mapOptions.projection,boundsStr);
+        }
+        return boundsStr;
+    },
+
+    calculateInitialExtent: function(boundsStr) {
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var bound = new OpenLayers.Bounds.fromString(boundsStr);
+
+        if(this.restrictedExtent && !this.restrictedExtent.containsBounds(bound)) {
+            var exception = {
+                name: "BadInitialExtent",
+                message: "ldMaps.Map: initialExtent deve essere compreso in restrictedExtent",
+                level: 0
+            };
+            ldMaps.Util.handleException(exception);
+            return this.maxExtent;
+        } else {
+            return bound;
+        }
+
+    },
+
+    setUnits: function(configMapOptions) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        if (configMapOptions.units) {
+            this.mapOptions.units = configMapOptions.units;
+        } else {
+            this.mapOptions.units = "m";
+        }
+    },
+
+    load: function(configMapOptions,layerManager) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        this.maxZoomLevel = configMapOptions.maxZoomLevel || 19;
+        this.layerManager = layerManager;
+        this.baseLayersConfig = this.layerManager.getBaseLayersConfig();
+        this.layersConfig = this.layerManager.getLayersConfig();
+
+
+        // Carico i baseLayers
+        this.loadLayers(this.baseLayersConfig);
+
+        // Carico i layers
+        this.loadLayers(this.layersConfig);
+
+        // Imposto il base layer
+        for (var i = 0; i < this.baseLayersConfig.length; i++) {
+            if (this.baseLayersConfig[i].visible) {
+                this.baseLayerName = this.baseLayersConfig[i].name;
+                var baseLayer = this.getLayerByName(this.baseLayersConfig[i].name);
+                this.setBaseLayer(baseLayer);
+            }
+        }
+
+        // Inizializzo i controlli per la mappa OL
+        this.initControls(configMapOptions);
+
+        this.events.register("moveend", null, function() {
+            if (this.restrictedExtent && this.zoom < this.getZoomForExtent(this.restrictedExtent)) {
+                this.zoomToExtent(this.restrictedExtent);
+            }
+            if (this.maxZoomLevel && this.zoom > this.maxZoomLevel) {
+                this.zoomTo(this.maxZoomLevel);
+            }
+        });
+
+        // imposto il fractionalZoom
+        //TODO non imposto fractional zoom perchè non funziona con TMS
+        //this.setFractionalZoom();
+
+
+    },
+
+    /**
+    *
+    * Function: setFractionalZoom
+    *
+    * Imposta fractionalZoom della mappa a true se non ci sono layer google
+    *
+     * Parameters:
+     * baseLayersConfig - {Array} Array di oggetti configurazione dei layer di base
+    *
+    */
+
+    setFractionalZoom: function() {
+
+        "use strict";
+
+        ldMaps.Util.log("ldMaps.Map.setFractionalZoom");
+
+        var isNotFractionalLayer = false,
+            i,
+            len = this.baseLayersConfig.length;
+
+        for (i = 0; i < len; i++) {
+            if (this.baseLayersConfig[i].type.indexOf("google_") !== -1 || this.baseLayersConfig[i].type.indexOf("TMS") !== -1 ) {
+                isNotFractionalLayer = true;
+                break;
+            }
+        }
+        if (!isNotFractionalLayer) {
+            this.fractionalZoom = true;
+        }
+
+    },
+    /**
+    *
+    * Function: loadLayers
+    *
+    * Aggiunge un array di livelli alla mappa
+    *
+    *
+    * Parameters:
+    * layersconfig - {Array} Array di oggetti configurazione dei layer
+    *
+    */
+
+    loadLayers: function(layersConfig) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        ldMaps.Util.log("ldMaps.Map.loadLayers");
+
+        // aggiungo i layers alla mappa OL
+        if (layersConfig) {
+            for (var i = 0; i < layersConfig.length; i++) {
+                this.loadLayer(layersConfig[i]);
+            }
+        }
+
+	},
+
+    /**
+    *
+    * Function: loadLayer
+    *
+    * Aggiunge un livello alla mappa
+    *
+    * Parameters:
+    * layerConfig - {Object} Oggetto configurazione del layer
+    *
+    */
+
+    loadLayer: function(layerConfig) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        ldMaps.Util.log("ldMaps.Map.loadLayer");
+
+         var layer;
+
+         // creo il layer OL e lo aggiungo alla mappa
+         try {
+             layer = ldMaps.layerFactory.create(layerConfig,this);
+         }
+         catch (exception) {
+             ldMaps.Util.handleException(exception);
+         }
+
+         if (layer) {
+             this.addLayer(layer);
+             // Imposto la visibilità del layer
+             layer.setVisibility(layerConfig.visible);
+             // Se il layer è vettoriale registro l'evento loadend
+             // Quando il layer è caricato imposto l'attributo loadend a true;
+             // Serve per gestire l'hilite delle features all'avvio della applicazione
+             if (layer.CLASS_NAME==="OpenLayers.Layer.Vector") {
+                 layer.loadend=false;
+                 layer.events.on({
+                     "loadend": function(){
+                         layer.loadend = true;
+                     },
+                     scope: layer
+                 });
+             }
+             return layer;
+         }
+	},
+
+
+    /**
+     *
+     * Function: initControls
+     *
+     * Inizializza i controlli OpenLayers della mappa.
+     *
+     */
+
+    initControls: function(configMapOptions) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        // inizializzo i controlli per la selezione delle feature dei livelli vettoriali
+        this.featureManager = new ldMaps.FeatureManager(this);
+
+        // carico i controlli opzionali definiti in configurazione
+        this.loadControls(configMapOptions.olControls);
+
+        // Carico i controlli base
+        // Se impostato noBaseControls a true non carica i controlli di base (mappa bloccata)
+        if (!this.mapOptions.noBaseControls) {
+            this.loadControls(this.BASE_CONTROL_CONFIG);
+        }
+
+        if (configMapOptions.disableScrollWheel) {
+            var navControls = this.getControlsByClass("OpenLayers.Control.Navigation");
+            for(var i = 0; i < navControls.length; ++i)
+                navControls[i].disableZoomWheel();
+        }
+
+	},
+
+    /**
+    *
+    * Function: loadControls
+    *
+    * Carica i controlli OL sulla mappa.
+    *
+    * Parameters:
+    * controlsConfig - {Array} cArray oggetti configurazione dei controlli
+    *
+    */
+
+    loadControls: function(controls) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        ldMaps.Util.log("ldMaps.Map.loadControls");
+
+        // aggiungo i controlli alla mappa OL
+        if (controls) {
+            for (var i = 0; i < controls.length; i++) {
+                this.loadControl(controls[i]);
+            }
+        }
+	},
+
+    /**
+    *
+    * Function: loadControl
+    *
+    * Carica un controllo OL sulla mappa.
+    *
+    * Parameters:
+    * controlConfig - {Object} Oggetto di configurazione del controllo
+    *
+    */
+
+    loadControl: function(controlConfig) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        ldMaps.Util.log("ldMaps.Map.loadControl");
+
+        // creo il controllo OL e lo aggiungo alla mappa
+
+        try {
+            var olControl = ldMaps.controlFactory.create(controlConfig);
+            this.addControl(olControl);
+            return olControl;
+        }
+        catch (exception) {
+            ldMaps.Util.handleException(exception);
+            return null;
+        }
+
+	},
+
+    /**
+    * Function: isBaseLayer
+    *
+    * Ritorna true se il layer è il layer base della mappa
+    *
+    * Parameters:
+    * name - {string} Nome del layer
+    *
+    * Returns:
+    * {Boolean}
+    */
+
+    isBaseLayer: function(name) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        return name === this.baseLayerName;
+
+    },
+
+    /**
+    * Function: getLayerByName
+    *
+    * Ritorna il layer OL con un certo nome
+    *
+    * Parameters:
+    * name - {String} Name of the layer
+    *
+    * Returns:
+    * layer - {OpenLayers.Layer}
+    *
+    */
+    getLayerByName: function(name) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var layers = this.getLayersByName(name);
+        if (layers.length > 0) {
+            return layers[0];
+        } else {
+            return null;
+        }
+    },
+
+    /**
+     * Function: removeLayerByName
+    *
+    * Rimuove un layer dalla mappa
+    *
+    * Parameters:
+     * name - {string} Name of the layer
+    *
+    */
+    removeLayerByName: function(name) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var layers = this.getLayerByName(name);
+        if(layers) {
+            this.removeLayer(layers);
+        }
+
+    },
+
+    /**
+    * Function: zoomToStringExtent
+    *
+    * Effettua lo zoom su un bound, eventualmente converte il bound nel sistema di coordinate della mappa
+    *
+    * Parameters:
+    * boundsString - {string} Bound in formato "x1,y1,x2,y2"
+    * epsgCode - {string} Codice EPSG in formato "EPSG:XXXX"
+    *
+    */
+    zoomToStringExtent: function(boundsString,epsgCode) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var boundStr = boundsString;
+
+        // se boundsString è in una proiezione diversa dalla mappa converto in proiezione mappa
+        if ((epsgCode) && (this.projection !== epsgCode)) {
+            boundStr = ldMaps.Util.transformStrBounds(epsgCode,this.projection,boundsString);
+        }
+
+        var bounds = new OpenLayers.Bounds.fromString(boundStr);
+
+        this.zoomToExtent(bounds);
+
+    },
+
+    /**
+    * Function: zoomToInitialExtent
+    *
+    * Effettua lo zoom sull'initialExtent
+    *
+    */
+    zoomToInitialExtent: function() {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        // devo richiamare due volte altrimenti non fa zoom ???
+        this.zoomToExtent(this.initialExtent);
+        this.zoomToExtent(this.initialExtent);
+    },
+
+
+    /**
+    * Function: zoomToInitialExtent
+    *
+    * Effettua lo zoom sull'initialExtent
+    *
+    */
+    zoomToPoint: function(x,y,zoomLevel) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+        var geom = new OpenLayers.Geometry.Point(x,y);
+        var bounds = geom.getBounds().clone();
+
+        this.zoomToExtent(bounds, false);
+        if (zoomLevel && this.zoom > zoomLevel) {
+            if (!this.baseLayer.maxZoomLevel || zoomLevel < this.baseLayer.maxZoomLevel) {
+                this.zoomTo(zoomLevel);
+            }
+        }
+
+    },
+    /**
+    * Function: setInitialExtent
+    *
+    * Imposta l'initialExtent della mappa
+    *
+    */
+    setInitialExtent: function(extent) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        this.initialExtent = extent;
+    },
+
+    /**
+    * Function: zoomToFeatures
+    *
+    * Effettua uno zoom sulle feature
+    *
+    * Parameters:
+    * features - {Array} Array di features openlayer
+    * zoomLevel - {Number} Livello di zoom.
+    *
+    */
+    zoomToFeatures : function(features,zoomLevel) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        var numFeatures,
+            i,
+            bounds;
+
+        if(features && features.length) {
+            numFeatures = features.length;
+        }
+
+        if (numFeatures) {
+            bounds = features[0].geometry.getBounds().clone();
+            for (i = 1; i < numFeatures; i++) {
+                bounds.extend(features[i].geometry.getBounds());
+            }
+
+            this.zoomToExtent(bounds, false);
+
+
+            // se zoomlevel è negativo faccio zoom all'indietro
+            if (zoomLevel && zoomLevel < 0) {
+                this.zoomTo(this.zoom + zoomLevel)
+            } else {
+                if (zoomLevel && this.zoom > zoomLevel) {
+                    this.zoomTo(zoomLevel);
+                }
+            }
+        }
+    },
+
+    /**
+    * Function: zoomToLonlat
+    *
+    * Effettua uno zoom su un punto ad un determinato zoomLevel
+    *
+    * Parameters:
+    * xy - {lonlat} oggetto lonlat openlayer
+    * zoom - {Number} Livello di zoom.
+    *
+    */
+    zoomToLonlat : function(lonlat,zoom) {
+
+        /*global ldMaps:false, window:false, OpenLayers:false */
+        "use strict";
+
+        if (this.isValidZoomLevel(zoom)) {
+            this.setCenter(lonlat, zoom);
+        }
+    },
+
+	CLASS_NAME: "ldMaps.Map"
+});
+
+
+

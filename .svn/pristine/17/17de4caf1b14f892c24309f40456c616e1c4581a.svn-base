@@ -1,0 +1,115 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1"><title>
+	Cartografia Regione Liguria - Download Dati Cartografici
+</title><link type="text/css" rel="stylesheet" href="base.css" />
+    <style type="text/css">
+        .style7
+        {
+            padding: 4px;
+            font-size: 12px;
+            margin: 0px;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            background-color: #99CCCC;
+            text-align: left;
+            vertical-align: top;
+            height: 79px;
+        }
+        .style8
+        {
+            padding: 4px;
+            font-size: 12px;
+            margin: 0px;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            background-color: #99CCCC;
+            text-align: left;
+            vertical-align: top;
+            height: 56px;
+        }
+        #Button4
+        {
+            height: 21px;
+        }
+        .style9
+        {
+            padding: 4px;
+            font-size: 14px;
+            margin: 0px;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            background-color: white;
+            text-align: justify;
+            vertical-align: top;
+            font-weight: bold;
+            height: 31px;
+        }
+    </style>
+</head>
+<body>
+    <form name="form1" method="post" action="RichiestaDownload2.aspx?CodiceCatalogo=1592" id="form1">
+<div>
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJMzU3MDA1OTU1D2QWAgIDD2QWCAIFDw8WAh4HVmlzaWJsZWhkFgICAQ8QZGQWAGQCBw8PFgIfAGhkFgICAQ8QZGQWAGQCCQ8PFgIfAGhkFgICAQ8QZGQWAGQCCw8PFgIfAGhkZGRZVcJnYxm+hdcmuurvFhxJGJgl4g==" />
+</div>
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="8680F0FD" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWBgLiyMvLBALs0bLrBgKM54rGBgLUwoN5AuPIzo8PArGknr8Pok40sKn9IIVMk87vQHtMsj8Jrp4=" />
+</div>
+    <div>
+        <br />
+        <table bgcolor="white" width='880' border='0' cellspacing='0' cellpadding='0'>
+            <tr>
+                <td height='85'>
+                    <img src='img/bannerRL2.jpg' />
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <br>
+                    <table width="100%" border="0" cellpadding="1" cellspacing="2" style="height: 373px">
+                        <tr>
+                            <td class="foglia" style="text-align: center;">
+                                &nbsp;<br />
+                                <br />
+                                <span id="Label2" style="font-family:Verdana;font-size:Large;font-weight:bold;">SERVIZIO DI DOWNLOAD E TRASFORMAZIONE DEI DATI CARTOGRAFICI</span>
+                                <br />
+                                <br />
+                                <input name="TextBox1" type="text" value="Parametri mancanti" id="TextBox1" style="background-color:Transparent;border-color:White;border-style:None;font-family:Verdana;font-size:Large;font-weight:normal;height:67px;width:721px;text-align: center;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="style7">
+                                
+                                <br />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="foglia">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="style8">
+                                
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <tr>
+                    <td colspan="2" class="style9" style="text-align: center;">
+                        
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+                        <input type="submit" name="Button1" value="Annulla" id="Button1" style="height:22px;width:69px;" />
+                        <!--                     <input ID="Button4" onclick="javascript:history.back();" type="button" value="Annulla" /> -->
+                    </td>
+                </tr>
+        </table>
+    </div>
+    <input type="hidden" name="CodiceCatalogo" id="CodiceCatalogo" />
+    <input type="hidden" name="CodCliente" id="CodCliente" />
+    <input type="hidden" name="TipoCarta" id="TipoCarta" />
+    </form>
+</body>
+</html>

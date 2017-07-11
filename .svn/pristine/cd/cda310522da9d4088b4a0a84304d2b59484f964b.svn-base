@@ -1,0 +1,651 @@
+Ext.define('Geocoder.view.LoadDataBtn', {
+    extend: 'Ext.button.Button',
+    alias: "widget.cwn2-button-loaddata",
+    id: "geocoder-loaddata",
+    iconCls: "loadData",
+    width: 120,
+    handler: function () {
+        if (Ext.getCmp("load-data-win").isVisible()) {
+            Ext.getCmp("load-data-win").hide()
+        } else {
+            Ext.getCmp("load-data-win").show();
+        }
+    },
+    text: 'Caricamento Dati'
+});
+
+Ext.define('Geocoder.view.ShowLegendBtn', {
+    extend: 'Ext.button.Button',
+    alias: "widget.cwn2-button-showlegend",
+    id: "geocoder-showlegend",
+    iconCls: "showLegend",
+    width: 70,
+    handler: function () {
+        if (Ext.getCmp("legend-win").isVisible()) {
+            Ext.getCmp("legend-win").hide()
+        } else {
+            Ext.getCmp("legend-win").show();
+            Ext.getCmp("legend-win").alignTo(CWN2.app.layout.mapPanel.body, "tr-tr", [-10, 10]);
+        }
+    },
+    text: 'Legenda'
+});
+
+
+Ext.application({
+    name: 'Geocoder',
+
+    //controllers: ['Map','Voli','FotoWin','CancelSelTerrBtn','CartWin'],
+
+    launch: function () {
+
+        var id = CWN2.Util.getUrlParam('id');
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    "restrictedExtent": "830036.283895,5402959.60361,1123018.973727,5597635.329038",
+                    "olControls": [{name: "PanZoom"}]
+                },
+                "layout": {
+                    "header": null,
+                    "statusBar": false,
+                    "toolsPanel": {
+                        position: "south",
+                        collapsible: false,
+                        collapsed: false,
+                        height: 300
+                    },
+                    "widgets": [
+                        {"name": "ScaleCombo"},
+                        {"name": "CoordinateReadOut"}
+                    ],
+                    "toolbar": {
+                        "itemGroups": [
+                            {
+                                items: [
+                                    {name: "loaddata"}
+                                ]
+                            },
+                            {
+                                items: [
+                                    {name: "showlegend"}
+                                ]
+                            },
+                            {
+                                items: [
+                                    {"type": "combo", "name": "geocoder", "options": {hilite: true}}
+                                ]
+                            },
+                            {
+                                "align": "right",
+                                "items": [
+                                    {"type": "combo", "name": "base-layers"}
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "baseLayers": [
+                {"type": "no_base"},
+                {"type": "rl_ortofoto_2013"},
+                {"type": "rl_carte_base"},
+                {"type": "OSM"},
+                {"type": "google_terrain"},
+                {"type": "google_roadmap"},
+                {"type": "google_satellite"}
+            ],
+            "layers": []
+        };
+
+        var loadWin = function (appConfig) {
+
+
+            var loadData = function () {
+
+                var codiceCatalogo;
+                if (appConfig.tavole.length > 1) {
+                    codiceCatalogo = Ext.getCmp("geocoder-combo-tavole").value;
+                } else {
+                    codiceCatalogo = appConfig.tavole[0].codiceCatalogo;
+                }
+                ;
+
+                var where = "1=1";
+
+                Ext.each(appConfig.filtri, function (filtro) {
+                    var value = Ext.getCmp("geocoder-filter-" + filtro.nomeCampo).value;
+                    if (value) {
+                        where += " AND " + filtro.nomeCampo + "='" + value + "'";
+                    }
+                });
+
+                CWN2.loadingScreen = Ext.getBody().mask('Caricamento in corso', 'loadingscreen');
+                CWN2.Util.ajaxRequest({
+                    type: "JSON",
+                    url: "/geoservices/REST/geocoder/data/" + codiceCatalogo + "?APP=" + appConfig.codice + "&WHERE=" + where,
+                    callBack: function (response) {
+                        showData(response.data);
+                    }
+                });
+            }
+
+
+            var showData = function (data) {
+                var classes = [];
+                Ext.each(appConfig.tematismi, function (tema) {
+                    var styleMaps = [
+                        {
+                            "renderIntent": "default",
+                            "style": {
+                                pointRadius: 6,
+                                fillColor: tema.colore,
+                                fillOpacity: 0.6,
+                                hoverFillColor: tema.colore,
+                                hoverFillOpacity: 0.8,
+                                strokeColor: tema.colore,
+                                strokeOpacity: 1,
+                                strokeWidth: 1,
+                                strokeLinecap: "round",
+                                strokeDashstyle: "solid",
+                                hoverStrokeColor: tema.colore,
+                                hoverStrokeOpacity: 1,
+                                hoverStrokeWidth: 0.2,
+                                hoverPointRadius: 1,
+                                hoverPointUnit: "%",
+                                pointerEvents: "visiblePainted",
+                                cursor: "inherit"
+                            }
+                        },
+                        {
+                            "renderIntent": "select",
+                            "style": {
+                                pointRadius: 8,
+                                fillColor: tema.colore,
+                                fillOpacity: 1,
+                                hoverFillColor: tema.colore,
+                                hoverFillOpacity: 0.8,
+                                strokeColor: "#FFAA00",
+                                strokeOpacity: 1,
+                                strokeWidth: 2,
+                                strokeLinecap: "round",
+                                strokeDashstyle: "solid",
+                                hoverStrokeColor: tema.colore,
+                                hoverStrokeOpacity: 1,
+                                hoverStrokeWidth: 0.2,
+                                hoverPointRadius: 1,
+                                hoverPointUnit: "%",
+                                pointerEvents: "visiblePainted",
+                                cursor: "inherit"
+                            }
+                        }
+
+                    ];
+                    classes.push(
+                        {"filter": null, "styleMaps": styleMaps}
+                    );
+
+                    // carico layer su mappa
+                    var nomeLayer = "editingLayer" + tema.codiceTematismo;
+                    var editingLayer = CWN2.app.map.layerManager.createVectorLayer({
+                        name: nomeLayer,
+                        format: "GeoJSON",
+                        classes: classes
+                    });
+
+                    Ext.each(data.featureCollections, function (collection) {
+                        if (collection.codiceTematismo === tema.codiceTematismo) {
+                            var featureCollection = new OpenLayers.Format.GeoJSON({
+                                "internalProjection": new OpenLayers.Projection(CWN2.app.map.projection),
+                                "externalProjection": editingLayer.projection
+                            }).read(collection.featureCollection);
+                            editingLayer.destroyFeatures();
+                            editingLayer.addFeatures(featureCollection);
+                            editingLayer.redraw();
+                            editingLayer.map.zoomToFeatures(featureCollection, 15);
+                            return false;
+                        }
+                    });
+
+                    // rendo visibile layer e imposto check-box
+                    CWN2.app.map.layerManager.setLayerVisible(nomeLayer, true);
+                    var check = Ext.get("legenda-checkbox-" + tema.codiceTematismo);
+                    if (check) {
+                        check.dom.checked = true;
+                    }
+                });
+
+                // registro evento su selezione feature: seleziono la riga della grid
+                CWN2.app.map.featureManager.registerCallback(
+                    "onFeatureSelect",
+                    function (feature) {
+                        var grid = Ext.getCmp("georif-grid");
+                        var selMod = grid.getSelectionModel().select(grid.getStore().getById(feature.attributes[data.idColumn]));
+
+                        var controls = CWN2.app.map.getControlsBy("displayClass","olControlDragFeature");
+                        if (controls) {
+                            CWN2.app.map.removeControl(controls[0]);
+                        }
+                        var control = new OpenLayers.Control.DragFeature(feature.layer);
+                        CWN2.app.map.addControl(control);
+                        control.activate();
+                    }
+                );
+
+
+                // carico lista georiferiti
+
+                var columns = [];
+                var gridWidth = 0;
+                Ext.each(appConfig.gridCols, function (col) {
+                    Ext.each(data.columns, function (column) {
+                        if (col.nomeCampo === column) {
+                            var gridCol = {
+                                text: col.label,
+                                width: col.width,
+                                dataIndex: col.nomeCampo,
+                                sortable: true
+                            };
+                            if (col.editabile) {
+                                gridCol.editor = "textfield";
+                            }
+                            columns.push(gridCol);
+                            gridWidth += col.width;
+                            return false;
+                        }
+                    });
+                });
+                columns.push({
+                    dataIndex: "COLORE",
+                    renderer: function (value, metaData, record) {
+                        return '<div class="x-grid3-cell-inner" style="background-color:' + value + ';"><span style="color:green;">&nbsp; </span></div>';
+                    },
+                    width: 30
+                });
+                gridWidth += 100;
+
+                var georifPanel = Ext.getCmp("cwn2-geocoder-georif-panel");
+                georifPanel.setWidth(gridWidth);
+
+                var oldGrid = Ext.getCmp("georif-grid");
+                if (oldGrid) {
+                    georifPanel.remove(oldGrid);
+                }
+
+                var fields = data.columns;
+                fields.push("TEMATISMO");
+                fields.push("COLORE");
+
+                Ext.define('georiferiti', {
+                    extend: 'Ext.data.Model',
+                    fields: fields,
+                    idProperty: data.idColumn
+                });
+
+                var properties = [];
+                Ext.each(data.featureCollections, function (collection) {
+                    Ext.each(collection.featureCollection.features, function (feature) {
+                        var record = feature.properties;
+                        record.TEMATISMO = collection.codiceTematismo;
+                        record.COLORE = collection.colore;
+                        properties.push(record)
+                    });
+                });
+
+                var georefStore = Ext.create('Ext.data.Store', {
+                    model: 'georiferiti',
+                    data: properties
+                });
+
+                georifPanel.add(Ext.create('Ext.ux.LiveSearchGridPanel', {
+                    store: georefStore,
+                    id: "georif-grid",
+                    columnLines: true,
+                    frame: true,
+                    width: gridWidth,
+                    height: 250,
+                    columns: columns,
+                    plugins: [
+                        Ext.create('Ext.grid.plugin.CellEditing', {
+                            clicksToEdit: 1
+                        })
+                    ],
+                    listeners: {
+                        "select": function (sm, record, index, eOpts) {
+                            var tema = record.data["TEMATISMO"];
+                            var layer = CWN2.app.map.getLayerByName("editingLayer" + tema);
+                            //selezione feature
+                            CWN2.FeatureSelecter.selectFeature(
+                                {
+                                    "layer": layer,
+                                    "attrName": data.idColumn,
+                                    "item": record.data[data.idColumn],
+                                    "options": {
+                                        "zoom": true,
+                                        "maxZoomLevel": 17,
+                                        "hiliteOnly": false
+                                    }
+                                }
+                            );
+
+                        },
+                        "edit": function (editor, e) {
+                            //console.log(e.record);
+                            //richiesta conferma + salvataggio + refresh
+                            var idCat = data.id,
+                                idColumn = data.idColumn,
+                                idValue = e.record.data[idColumn],
+                                modColumn = Object.keys(e.record.modified)[0],
+                                oldValue = e.record.modified[modColumn],
+                                modValue = e.record.data[modColumn];
+                            if (oldValue === modValue) {
+                                return false;
+                            }
+                            Ext.MessageBox.confirm(
+                                CWN2.I18n.get('Conferma'),
+                                CWN2.I18n.get('Desideri salvare le modifiche?'),
+                                function (btn) {
+                                    if (btn === "yes") {
+                                        var jsonData = {
+                                            "id": idValue,
+                                            "col": modColumn,
+                                            "value": modValue
+                                        }
+                                        CWN2.Util.ajaxRequest({
+                                            type: "JSON",
+                                            url: "/geoservices/REST/geocoder/update/" + id,
+                                            jsonData: jsonData,
+                                            callBack: function (response) {
+                                                //TODO
+                                            }
+                                        });
+                                    } else {
+                                        e.record.reject();
+                                    }
+                                }
+                            );
+                        }
+                    }
+                }));
+
+                // carico lista non georiferiti
+
+                var georifPanel = Ext.getCmp("cwn2-geocoder-nogeorif-panel");
+                var oldGrid = Ext.getCmp("nogeorif-grid");
+                if (oldGrid) {
+                    georifPanel.remove(oldGrid);
+                }
+
+                georifPanel.add(Ext.create('Ext.ux.LiveSearchGridPanel', {
+                    store: Ext.create('Ext.data.Store', {
+                        model: 'georiferiti',
+                        data: data.notGeoref
+                    }),
+                    id: "nogeorif-grid",
+                    columnLines: true,
+                    frame: true,
+                    width: gridWidth,
+                    height: 250,
+                    columns: columns,
+                    plugins: [
+                        Ext.create('Ext.grid.plugin.CellEditing', {
+                            clicksToEdit: 1
+                        })
+                    ],
+                    listeners: {
+                        "select": function (sm, record, index, eOpts) {
+                            //TODO
+                        }
+                    }
+                }));
+
+                // mostro legenda
+                Ext.getCmp("legend-win").show();
+                Ext.getCmp("legend-win").alignTo(CWN2.app.layout.mapPanel.body, "tr-tr", [-10, 10]);
+            }
+
+            var panel = new Ext.Panel({
+                header: false,
+                border: false,
+                padding: '10 5 3 10',
+                bodyStyle: {"background-color": "#d8d8d8"},
+                items: []
+            })
+
+            // aggiungo eventuale combo delle tavole
+            if (appConfig.tavole.length > 1) {
+                var tabStore = [];
+                Ext.each(appConfig.tavole, function (tavola) {
+                    tabStore.push([tavola.codiceCatalogo, tavola.valoreComboScelta]);
+                });
+                panel.add([
+                    {
+                        xtype: 'combo',
+                        id: 'geocoder-combo-tavole',
+                        labelWidth: 80,
+                        width: 350,
+                        fieldLabel: appConfig.nomeComboSceltaTavola,
+                        store: tabStore,
+                        value: appConfig.tavole[0].codiceCatalogo
+                    }
+                ]);
+            }
+
+            // aggiungo combo dei filtri
+            if (appConfig.tavole.length > 0) {
+                var filterStore = [];
+                Ext.each(appConfig.filtri, function (filtro) {
+                    if (filtro.listaValori) {
+                        var filterStore = [];
+                        Ext.each(filtro.valori, function (valore) {
+                            filterStore.push([valore, valore]);
+                        });
+                        panel.add([
+                            {
+                                xtype: 'combo',
+                                id: 'geocoder-filter-' + filtro.nomeCampo,
+                                labelWidth: 80,
+                                width: 350,
+                                fieldLabel: filtro.nomeFiltro,
+                                store: filterStore
+                            }
+                        ]);
+
+                    } else {
+                        panel.add([
+                            {
+                                xtype: 'textfield',
+                                id: 'geocoder-filter-' + filtro.nomeCampo,
+                                labelWidth: 80,
+                                width: 350,
+                                fieldLabel: filtro.nomeFiltro
+                            }
+                        ]);
+                    }
+                });
+
+            }
+
+            var win = new Ext.Window({
+                title: "Caricamento Dati",
+                id: "load-data-win",
+                height: 300,
+                width: 400,
+                layout: "fit",
+                bodyStyle: {"background-color": "#d8d8d8"},
+                frame: true,
+                resizable: true,
+                closeAction: "hide",
+                items: [panel],
+                buttons: [
+                    {
+                        text: "Carica...",
+                        handler: function () {
+                            var checkForm = true;
+                            Ext.each(appConfig.filtri, function (filtro) {
+                                var filter = Ext.getCmp("geocoder-filter-" + filtro.nomeCampo).value;
+                                if (filtro.obbligatorio && !filter) {
+                                    Ext.MessageBox.alert('Attenzione', 'Campo "' + filtro.nomeFiltro + '" obbligatorio');
+                                    checkForm = false;
+                                    return false;
+                                }
+                            });
+                            if (checkForm) {
+                                loadData();
+                                win.hide();
+                            }
+                        }
+                    }
+                ],
+            });
+            win.show();
+            win.alignTo(CWN2.app.layout.mapPanel.body, "tl-tl", [10, 10]);
+
+            showLegend(appConfig);
+        }
+
+        var showLegend = function (appConfig) {
+
+            Ext.define('tematismi', {
+                extend: 'Ext.data.Model',
+                fields: ["codiceTematismo", "nomeTematismo", "espressione", "colore"],
+                idProperty: "codiceTematismo"
+            });
+
+            var store = new Ext.data.Store({
+                storeId: "tematismi-store",
+                model: "tematismi",
+                data: appConfig.tematismi
+            });
+
+            geocoderImpostaTematismo = function (tema, visible) {
+                CWN2.app.map.layerManager.setLayerVisible("editingLayer" + tema, visible);
+                var store = Ext.getCmp("georif-grid").getStore();
+                store.clearFilter(true);
+
+                var temiNonAttivi = [];
+                Ext.each(appConfig.tematismi, function (tema) {
+                    // aggiorno grid
+                    var check = Ext.get("legenda-checkbox-" + tema.codiceTematismo).dom.checked;
+                    if (!check) {
+                        temiNonAttivi.push(tema.codiceTematismo);
+
+                    }
+                });
+                store.filterBy(function (record, id) {
+                        var nonAttivo = false;
+                        Ext.each(temiNonAttivi, function (tema) {
+                            if (record.data.TEMATISMO === tema) {
+                                nonAttivo = true;
+                                return false;
+                            }
+                        });
+                        if (nonAttivo) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                );
+
+            };
+
+            var panel = new Ext.grid.Panel({
+                store: store,
+                viewConfig: {
+                    forceFit: true
+                },
+                width: 250,
+                title: "",
+                hideHeaders: true,
+                disableSelection: true,
+                columns: [
+                    {
+                        dataIndex: "colore",
+                        renderer: function (value, metaData, record) {
+                            return '<div class="x-grid3-cell-inner" style="background-color:' + value + ';"><span style="color:green;">&nbsp; </span></div>';
+                        },
+                        width: 30
+                    },
+                    {
+                        dataIndex: "codiceTematismo",
+                        renderer: function (value, metaData, record) {
+                            var onClick = "geocoderImpostaTematismo('" + value + "',this.checked);";
+                            return "<input type='checkbox' id='legenda-checkbox-" + value + "' onClick=" + onClick + " CHECKED>";
+                        },
+                        width: 25
+                    },
+                    {
+                        dataIndex: "",
+                        renderer: function (value, metaData, record) {
+                            return "<div style='white-space:normal; text-align:left'>" + record.data.nomeTematismo + " </div>";
+                        },
+                        width: 200
+                    }
+                ],
+                autoScroll: true,
+                frame: false
+            });
+
+
+            var win = new Ext.Window({
+                title: "Legenda",
+                id: "legend-win",
+                height: 250,
+                width: 270,
+                layout: "fit",
+                bodyStyle: {"background-color": "#d8d8d8"},
+                frame: true,
+                resizable: true,
+                closeAction: "hide",
+                items: [panel],
+                buttons: [],
+            });
+
+
+        };
+
+        var loadConfig = function () {
+
+            var toolsPanel = CWN2.app.layout.layout.getComponent("cwn2-layout-toolspanel");
+            toolsPanel.setBodyStyle({"background-color": "#d8d8d8"});
+            var geocoderDataPanel = new Ext.tab.Panel({
+                id: 'cwn2-geocoder-data-panel',
+                items: [
+                    {
+                        xtype: 'panel',
+                        id: "cwn2-geocoder-georif-panel",
+                        bodyStyle: {"background-color": "#d8d8d8"},
+                        title: "Georiferiti"
+                    },
+                    {
+                        xtype: 'panel',
+                        id: "cwn2-geocoder-nogeorif-panel",
+                        bodyStyle: {"background-color": "#d8d8d8"},
+                        title: "Non Georiferiti"
+                    }
+
+                ]
+            });
+            toolsPanel.add(geocoderDataPanel);
+
+            CWN2.Util.ajaxRequest({
+                type: "JSON",
+                url: "/geoservices/REST/geocoder/config/" + id,
+                callBack: function (response) {
+                    loadWin(response.data);
+                }
+            });
+
+        };
+
+        CWN2.app.load({
+            appConfig: config,
+            callBack: loadConfig,
+            debug: true
+        });
+
+
+    }
+});

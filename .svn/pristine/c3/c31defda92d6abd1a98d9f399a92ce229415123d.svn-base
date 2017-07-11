@@ -1,0 +1,177 @@
+/*global CWN2:false, window:false, OpenLayers:false, Ext:false, GeoExt:false , $:false*/
+Ext.define('CWN2.Widget.Button', {
+    constructor: function(widgetConfig, statusbar) {
+        "use strict";
+        CWN2.Util.log('CWN2.Widget.button');
+
+        var id = widgetConfig.id,
+            text = "bottone",
+            handler = null,
+            width = null;
+
+        if (!widgetConfig.id) {
+            CWN2.Util.log("Attenzione: id widget Button non definito", 0);
+        }
+        var map = CWN2.app.map;
+
+        if (widgetConfig.options) {
+            if (widgetConfig.options.text) {
+                text = widgetConfig.options.text;
+            }
+            if (widgetConfig.options.handler) {
+                handler = widgetConfig.options.handler;
+            }
+            if (widgetConfig.options.width) {
+                width = widgetConfig.options.width;
+            }
+            if (widgetConfig.options.align && widgetConfig.options.align === "right") {
+                statusbar.addStatusbarItem('->');
+            }
+        }
+
+        return [
+            {
+                xtype: "button",
+                id: id,
+                text: CWN2.I18n.get(text),
+                width: width,
+                handler: handler
+            }
+        ];
+    }
+});
+
+
+
+
+
+/*global CWN2:false, window:false, OpenLayers:false, Ext:false, GeoExt:false , $:false*/
+Ext.define('CWN2.Widget.CoordinateReadOut', {
+    constructor: function(widgetConfig, statusbar) {
+        "use strict";
+        CWN2.Util.log('CWN2.Widget.CoordinateReadOut');
+
+        var statusBarItemName = "cwn2-coordinate-readout-div";
+        var map = CWN2.app.map;
+
+        // funzione di callback richiamata sull'evento mousemove
+        function drawMeasure(e) {
+            var lonLat = map.getLonLatFromPixel(e.xy),
+                decimalPlaces = 0,
+                text;
+
+            if (map.displayProjection) {
+                if (map.displayProjection.projCode === "EPSG:4326") {
+                    decimalPlaces = 6;
+                }
+                lonLat.transform(map.getProjectionObject(), map.displayProjection);
+            }
+
+            text = " X=" + lonLat.lon.toFixed(decimalPlaces) + " Y=" + lonLat.lat.toFixed(decimalPlaces);
+
+            statusbar.setStatusbarItemText(statusBarItemName, text);
+
+        }
+
+        // registro l'evento sul mousemove (scrittura coodinate su statusbar)
+        map.events.register("mousemove", map, drawMeasure);
+
+        return [CWN2.I18n.get("Coordinate:"), {
+            id: statusBarItemName,
+            text: '',
+            width: 200,
+            xtype: "tbtext"
+        }];
+    }
+});
+
+
+
+
+/*global CWN2:false, window:false, OpenLayers:false, Ext:false, GeoExt:false , $:false*/
+Ext.define('CWN2.Widget.Scale', {
+    constructor: function(widgetConfig, statusbar) {
+        "use strict";
+        CWN2.Util.log('CWN2.Widget.Scale');
+
+        var statusBarItemName = "cwn2-scale-div";
+        var map = CWN2.app.map;
+
+        function drawScale() {
+            var text = " 1:" + map.getScale().toFixed(0);
+            statusbar.setStatusbarItemText(statusBarItemName, text);
+        }
+
+        // registro l'evento sul mousemove (scrittura coodinate su statusbar)
+        map.events.register("zoomend", map, drawScale);
+
+        drawScale();
+
+        return [CWN2.I18n.get("Scala"), {
+            id: statusBarItemName,
+            text: '',
+            width: 60,
+            xtype: "tbtext"
+        }];
+    }
+});
+
+/*global CWN2:false, window:false, OpenLayers:false, Ext:false, GeoExt:false , $:false*/
+Ext.define('CWN2.Widget.ScaleCombo', {
+    constructor: function(widgetConfig, statusbar) {
+        "use strict";
+        CWN2.Util.log('CWN2.Widget.ScaleCombo');
+
+        var statusBarItemName = "cwn2-scale-combo-div";
+        var map = CWN2.app.map;
+
+        function drawScale() {
+            combo.setValue(map.zoom.toString());
+        }
+
+        // registro l'evento sul mousemove (selezione combo)
+        map.events.register("zoomend", map, drawScale);
+
+        var scales = Ext.create('Ext.data.Store', {
+            fields: ['zoom', 'scale'],
+            data : [
+//                {"zoom":"7", "scale":"3.200.000"},
+                {"zoom":"8", "scale":"1:1.600.000"},
+                {"zoom":"9", "scale":"1:800.000"},
+                {"zoom":"10", "scale":"1:400.000"},
+                {"zoom":"11", "scale":"1:200.000"},
+                {"zoom":"12", "scale":"1:100.000"},
+                {"zoom":"13", "scale":"1:50.000"},
+                {"zoom":"14", "scale":"1:25.000"},
+                {"zoom":"15", "scale":"1:12.500"},
+                {"zoom":"16", "scale":"1:6.250"},
+                {"zoom":"17", "scale":"1:3.125"},
+                {"zoom":"18", "scale":"1:1.560"},
+                {"zoom":"19", "scale":"1:800"},
+                {"zoom":"20", "scale":"1:400"}
+            ]
+        });
+
+        var combo = Ext.create('Ext.form.ComboBox', {
+            store: scales,
+            queryMode: 'local',
+            displayField: 'scale',
+            valueField: 'zoom',
+            width: 100,
+            editable: false,
+            listeners:
+            {
+                select: function (cmb, record, index)
+                {
+                    var zoom = parseInt(record[0].data.zoom);
+                    if (CWN2.app.map.zoom !== zoom) {
+                        CWN2.app.map.zoomTo(zoom);
+                    }
+                }
+            }
+        })
+
+        return [CWN2.I18n.get("Scala "), combo];
+    }
+});
+

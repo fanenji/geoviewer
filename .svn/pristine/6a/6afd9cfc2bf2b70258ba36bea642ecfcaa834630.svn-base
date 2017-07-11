@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="1.1.0" xmlns="http://www.opengis.net/sld" xmlns:se="http://www.opengis.net/se"
+                       xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/sld">
+    <NamedLayer>
+        <se:Name>L1429</se:Name>
+        <UserStyle>
+            <se:Name>default</se:Name>
+            <se:FeatureTypeStyle>
+                <se:Rule>
+                    <Filter>
+                        <PropertyIsEqualTo>
+                            <PropertyName>ID</PropertyName>
+                            <Literal>1</Literal>
+                        </PropertyIsEqualTo>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Geometry>
+                            <PropertyName>geometry</PropertyName>
+                        </Geometry>
+                        <Stroke>
+                            <CssParameter name="stroke">#FFCC00</CssParameter>
+                            <CssParameter name="stroke-width">6.0</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </se:Rule>
+            </se:FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>

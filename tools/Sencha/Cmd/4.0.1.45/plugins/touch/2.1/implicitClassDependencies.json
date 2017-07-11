@@ -1,0 +1,98 @@
+{
+    "Ext.Component": {
+        "componentLayout": {
+            "aliasPrefix" : "layout.",
+            "defaultPropertyName" : "defaultComponentLayoutType"
+        }
+    },
+
+    "Ext.container.AbstractContainer": {
+        "layout": {
+            "aliasPrefix": "layout.",
+            "defaultPropertyName" : "defaultLayoutType"
+        }
+    },
+
+    "Ext.data.Model": {
+        "proxy": {
+            "aliasPrefix" : "proxy.",
+            "defaultPropertyName" : "defaultProxyType"
+        },
+        "identifier": {
+            "aliasPrefix": "data.identifier."
+        },
+        "validations": {
+            "directRef" : "Ext.data.Validations"
+        }
+    },
+
+    "Ext.data.proxy.Proxy": {
+        "reader": {
+            "aliasPrefix" : "reader.",
+            "defaultPropertyName" : "defaultReaderType"
+        },
+        "writer": {
+            "aliasPrefix" : "writer.",
+            "defaultPropertyName" : "defaultWriterType"
+        }
+    },
+
+    "Ext.data.Store": {
+        "proxy": {
+            "aliasPrefix" : "proxy."
+        },
+        "model": {
+        }
+    },
+
+    "Ext.app.Profile": {
+        "models": {
+            "aliasPrefix" : "model.",
+            "profile" : true
+        },
+
+        "stores": {
+            "aliasPrefix" : "store.",
+            "profile" : true
+        },
+
+        "views": {
+            "aliasPrefix" : "view.",
+            "profile" : true
+        },
+
+        "controllers": {
+            "aliasPrefix" : "controller.",
+            "profile" : true
+        }
+    },
+
+    "Ext.app.Controller": {
+        "models": {
+            "aliasPrefix" : "model.",
+            "mvc" : true
+        },
+
+        "stores": {
+            "aliasPrefix" : "store.",
+            "mvc" : true
+        },
+
+        "views": {
+            "aliasPrefix" : "view.",
+            "mvc" : true
+        }
+    },
+
+    "Ext.app.Application": {
+        "controllers": {
+            "aliasPrefix" : "controller.",
+            "mvc" : true
+        },
+
+        "profiles": {
+            "aliasPrefix" : "profile.",
+            "mvc" : true
+        }
+    }
+}

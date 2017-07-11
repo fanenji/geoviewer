@@ -1,0 +1,1610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/Find.js" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/LoadLayers.js" line="205" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/LoadLayers.js" line="417" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/LoadLayers.js" line="38" />
+    <bookmark url="file://E:/progetti/Fototeca/Fototeca.js" line="741" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/WmsSldHiliter.js" line="112" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/Find.js" line="406" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/Find.js" line="379" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/RoutePlanner.js" line="341" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/InfoWms.js" line="539" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/LayerFactory.js" line="242" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/LayerFactory.js" line="365" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/GeoStyler.js" line="1926" />
+    <bookmark url="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/GeoStyler.js" line="1679" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" readonly="true" id="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.xml" afterPath="$PROJECT_DIR$/build.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Cwn2/src/buttons/InfoWms.js" afterPath="$PROJECT_DIR$/lib/Cwn2/src/buttons/InfoWms.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Cwn2/cwn2.js" afterPath="$PROJECT_DIR$/lib/Cwn2/cwn2.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Cwn2/cwn2-debug.js" afterPath="$PROJECT_DIR$/lib/Cwn2/cwn2-debug.js" />
+    </list>
+    <ignored path="geoviewer.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <file path="$PROJECT_DIR$/../../geoservices/viewer/pages/apps/Geoportale/GeoportalViewer.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390313483186" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/coordinate/transform_point.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390317589840" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/src/net/datasiel/geo/Coordinate.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403162455568" ignored="false" />
+    <file path="/Coordinate.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403162450808" ignored="false" />
+    <file path="/query_layer.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407229383056" ignored="false" />
+    <file path="dbtable:/d6393548/e633a861-e635-4119-ba12-0db1ea81e307/.SIT.CWN2_V_LAYERS" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407399481387" ignored="false" />
+    <file path="db-console:/d6393548/e633a861-e635-4119-ba12-0db1ea81e307/" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390469786445" ignored="false" />
+    <file path="/Find.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404306382064" ignored="false" />
+    <file path="/AMB_DB_AMB: SIT" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390397531776" ignored="false" />
+    <file path="/GeoportalViewer.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415184427376" ignored="false" />
+    <file path="dbtable:/d6393548/e633a861-e635-4119-ba12-0db1ea81e307/.SIT.CWR_LIVELLI" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390380376331" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/coordinate/transform_point.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403163500238" ignored="false" />
+    <file path="/build-2.13.bat" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390387981454" ignored="false" />
+    <file path="/MappaPTR.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390390064811" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/src/net/datasiel/geo/Config.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1424078600988" ignored="false" />
+    <file path="/Config.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1424078596498" ignored="false" />
+    <file path="dbtable:/d6393548/e633a861-e635-4119-ba12-0db1ea81e307/.SIT.CWN2_V_LAYERS_ATTRIBUTES" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390397497513" ignored="false" />
+    <file path="/InfoWms.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422268470814" ignored="false" />
+    <file path="/a.dummy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1424178631336" ignored="false" />
+    <file path="/Util.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1424096078429" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/query_layer_valuelist.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405069835209" ignored="false" />
+    <file path="/query_layer_valuelist.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407309051228" ignored="false" />
+    <file path="dbtable:/d6393548/7121e41f-c244-4a0d-80d2-beee80a75533/.CBASE.COMUNI_5000" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390473852175" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/src/net/datasiel/geo/Utils.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400766048304" ignored="false" />
+    <file path="E:/progetti/CartoWebNet2/lib/Cwn2/cwn2-debug.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390485347886" ignored="false" />
+    <file path="/CWN2.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390487269851" ignored="false" />
+    <file path="/MapCatalogueLoader.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415290565455" ignored="false" />
+    <file path="/build.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401438565358" ignored="false" />
+    <file path="/Cwn2.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414508071094" ignored="false" />
+    <file path="/index.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417623708614" ignored="false" />
+    <file path="/base.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399984245467" ignored="false" />
+    <file path="/a.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390492128372" ignored="false" />
+    <file path="/GenioWebIntraGE.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411127499066" ignored="false" />
+    <file path="/scratch.txt" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414679926318" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/META-INF/context.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391435592752" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/reload_webapp_srvcarto.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390559005804" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/reload_geoservices_srvcarto.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390559374879" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/reload_geoservices_srvcarto.bat" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390559103570" ignored="false" />
+    <file path="/reload_geoservices_srvcarto.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390559857701" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/reload_geoservices_srvcarto/reload_geoservices_srvcarto.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390559491332" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/reload_geoservices_srvcarto/build.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390583340915" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/tomcat_restart.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390560338978" ignored="false" />
+    <file path="/CwRicercaParticellaRepertorioElemento.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390579675846" ignored="false" />
+    <file path="/CwRicercaParticellaRepertorio11.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390576699533" ignored="false" />
+    <file path="/CwRicercaParticellaRepertorio131.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390576960192" ignored="false" />
+    <file path="/CwRicercaParticellaRepertorio13.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390577167612" ignored="false" />
+    <file path="/repertorio.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417079674125" ignored="false" />
+    <file path="/S3ricerche.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392212739630" ignored="false" />
+    <file path="/IframeWindow.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400583571359" ignored="false" />
+    <file path="/repertorio.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417079372204" ignored="false" />
+    <file path="I:/conf/Catalina/localhost/manager.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390583472031" ignored="false" />
+    <file path="/manager.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390583470227" ignored="false" />
+    <file path="/GenioWebIntraGE.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411130036848" ignored="false" />
+    <file path="/GenioWebIntraGeConfig.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391178204753" ignored="false" />
+    <file path="/mapproxy.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390918281230" ignored="false" />
+    <file path="/_CreaMapFileCS.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407244368912" ignored="false" />
+    <file path="/LayerFactory.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423238162116" ignored="false" />
+    <file path="/google_geocode.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1390989470660" ignored="false" />
+    <file path="/cultura.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391086319466" ignored="false" />
+    <file path="/CwGetFeatureInfoGenerico.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391090359024" ignored="false" />
+    <file path="/requestGenioInsertPunto.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391185060422" ignored="false" />
+    <file path="/735.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400750344526" ignored="false" />
+    <file path="/854.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391161980305" ignored="false" />
+    <file path="/735.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391162138503" ignored="false" />
+    <file path="/geoserver.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406708833927" ignored="false" />
+    <file path="/context.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416559634248" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/web.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391594031425" ignored="false" />
+    <file path="/web.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391593911189" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/ag_request.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421933963183" ignored="false" />
+    <file path="/ag_request.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421926788593" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/config/ag_request.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421935747456" ignored="false" />
+    <file path="/SimpleLegend.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391513973028" ignored="false" />
+    <file path="/1505.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392218626046" ignored="false" />
+    <file path="/style.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391532574050" ignored="false" />
+    <file path="N:/COREM/Web.config" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1391681774517" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/export_sld.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392309277544" ignored="false" />
+    <file path="/export_sld.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392309176565" ignored="false" />
+    <file path="M:/mapfiles/repertoriocartografico/CARTE_TECNICHE/1237.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392200570939" ignored="false" />
+    <file path="$USER_HOME$/Downloads/mapserv (2).exe" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392199974597" ignored="false" />
+    <file path="/_CreaSimboliGeoServer.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392297975677" ignored="false" />
+    <file path="$USER_HOME$/Downloads/mapserv (3).exe" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392204656291" ignored="false" />
+    <file path="M:/CartoWebNET/_CreaSimboliGeoServerDB.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392210749256" ignored="false" />
+    <file path="/_CreaSimboliGeoServerDB.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392210638662" ignored="false" />
+    <file path="/CwGetFeatureInfoConc.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392214970000" ignored="false" />
+    <file path="/56.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392218636319" ignored="false" />
+    <file path="/repertorio.sym" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392221069071" ignored="false" />
+    <file path="/OpenLayers.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392227661294" ignored="false" />
+    <file path="/OpenlayersExt.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392228106210" ignored="false" />
+    <file path="/1100.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392299068153" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/create_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394470181291" ignored="false" />
+    <file path="/create_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392978440563" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/map.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421933783591" ignored="false" />
+    <file path="/map.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418730349997" ignored="false" />
+    <file path="/GS_MS_GS.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392980506761" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/delete_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392988728923" ignored="false" />
+    <file path="/delete_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1392988319218" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config_static/cultura1.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394447261059" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config_static/cultura2.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394448228707" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config_static/cultura3.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394448242089" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config_static/cultura_itinerari.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394448273107" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config_static/heritage.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394448303231" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config_static/heritage2.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394448320840" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/proxy/google_geocode_xml.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1394459752142" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/temp/sld/73.sld" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1395659177032" ignored="false" />
+    <file path="/gs_ms_2.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1395656055100" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/export_sld_db.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407155158429" ignored="false" />
+    <file path="/export_sld_db.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422868521868" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/temp/sld/59.sld" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1395659177032" ignored="false" />
+    <file path="/test_accentate.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1397652159688" ignored="false" />
+    <file path="/1633.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1397653406002" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/corem/get_lista_regioni.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1397654553466" ignored="false" />
+    <file path="/corem.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422288202790" ignored="false" />
+    <file path="/mappa.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416242924072" ignored="false" />
+    <file path="/mappa.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423239635104" ignored="false" />
+    <file path="/metadati.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1398777121617" ignored="false" />
+    <file path="/Toolbar.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1412254022148" ignored="false" />
+    <file path="/base.css" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423231286584" ignored="false" />
+    <file path="/window.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1398782505248" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/metadata/scheda_xml.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401112550723" ignored="false" />
+    <file path="/scheda_xml.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401111240035" ignored="false" />
+    <file path="/CwRicercaElemento.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423057664021" ignored="false" />
+    <file path="/CwRicercaCatastale131.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1398869281006" ignored="false" />
+    <file path="/LoadLayers.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415348485281" ignored="false" />
+    <file path="/selezionefogli.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399536268405" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/livello_squadro.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399538855759" ignored="false" />
+    <file path="/livello_squadro.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399538854322" ignored="false" />
+    <file path="/selezionefogli.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399539035597" ignored="false" />
+    <file path="/selezione_fogli.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399541262389" ignored="false" />
+    <file path="/selezione_fogli.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1413463802713" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/selezione_fogli_repcarto.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399625408882" ignored="false" />
+    <file path="/selezione_fogli_repcarto.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399625396597" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/fototeca/zip_files.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399879725968" ignored="false" />
+    <file path="/zip_files.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399638005345" ignored="false" />
+    <file path="/COREM.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411121233116" ignored="false" />
+    <file path="/VisualizzazioneSpecie.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417083282988" ignored="false" />
+    <file path="/stampa.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400250689961" ignored="false" />
+    <file path="/print.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1399995409243" ignored="false" />
+    <file path="/GCODE_IMPRESE_GEOWGS.htm" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400052842665" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/gv_print/print.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406123662900" ignored="false" />
+    <file path="/print.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406123399888" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/gv_print/phantom_print.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405673930268" ignored="false" />
+    <file path="/phantom_print.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400237293166" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/corem/get_bbox.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411118219957" ignored="false" />
+    <file path="/MappaFind.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414493569010" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/insert_coordinate.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400157655365" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/ag_insert_coordinate.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400158137234" ignored="false" />
+    <file path="/SelezioneCoordinate.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414494004485" ignored="false" />
+    <file path="/MapPanel.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400168768641" ignored="false" />
+    <file path="/test2.json" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400169070208" ignored="false" />
+    <file path="$USER_HOME$/.IntelliJIdea12/config/plugins/scratches/scratch1.txt" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400236571556" ignored="false" />
+    <file path="/FiltroSpecie.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411126996690" ignored="false" />
+    <file path="/Print.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414058425028" ignored="false" />
+    <file path="E:/progetti/CartoWebNet2/lib/Cwn2/src/SimpleLegendGridPanel.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400492262381" ignored="false" />
+    <file path="/LayerManager.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416231777863" ignored="false" />
+    <file path="/WmsSldHiliter.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417517803091" ignored="false" />
+    <file path="/print.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405608083384" ignored="false" />
+    <file path="/Fototeca.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402486945920" ignored="false" />
+    <file path="/Layout.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400594977935" ignored="false" />
+    <file path="/print_ba4d3c1c-4714-4e05-a8fe-af1f0825f623.json" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400666656036" ignored="false" />
+    <file path="/print.css" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405665796232" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/del_temp_dir.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400669558042" ignored="false" />
+    <file path="/del_temp_dir.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400669551431" ignored="false" />
+    <file path="I:/webapps/geoservices/gv_print/print.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400685820175" ignored="false" />
+    <file path="/FeatureLoader.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400688993718" ignored="false" />
+    <file path="M:/mapfiles/repertoriocartografico/LAVORIINCORSO/1594.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400761913911" ignored="false" />
+    <file path="/ND.bat" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400762691104" ignored="false" />
+    <file path="/Utils.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400766048304" ignored="false" />
+    <file path="/geoserver_manager.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422011169330" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/geoserver_manager.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401267464585" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/service_mngr.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416327787602" ignored="false" />
+    <file path="/service_mngr.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422883102568" ignored="false" />
+    <file path="/Fototeca.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1400852801551" ignored="false" />
+    <file path="/Map.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414576489254" ignored="false" />
+    <file path="/FiltroHabitat.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411121395746" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/geoserver/export_sld_db.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422876830942" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/geoserver/test_legend.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401378744142" ignored="false" />
+    <file path="/get_bbox.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411117836556" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/test_legend.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401442376738" ignored="false" />
+    <file path="I:/webapps/geoservices/geoserver_manager.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422869383524" ignored="false" />
+    <file path="$PROJECT_DIR$/../../proxy/WEB-INF/groovy/proxy.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401954956836" ignored="false" />
+    <file path="/proxy.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1401954953676" ignored="false" />
+    <file path="/gestionale.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404398569559" ignored="false" />
+    <file path="/deploy-config.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402470424758" ignored="false" />
+    <file path="/fragment.js2" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402480018290" ignored="false" />
+    <file path="/gestionale.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421926655282" ignored="false" />
+    <file path="/Coordinate.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402489945989" ignored="false" />
+    <file path="/DrawPolygon.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402558753273" ignored="false" />
+    <file path="/DrawRegularPolygon.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402561551932" ignored="false" />
+    <file path="/Generic.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1402572518730" ignored="false" />
+    <file path="/SelectFeature.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403273074186" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/test_conv_coord.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403162514007" ignored="false" />
+    <file path="/test_conv_coord.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403161691757" ignored="false" />
+    <file path="H:/webapps/geoservices/WEB-INF/REST/config/test_conv_coord.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403107676342" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/coordinate/transform_bbox.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403273866450" ignored="false" />
+    <file path="/transform_bbox.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1403273818316" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/create_sld.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417521207585" ignored="false" />
+    <file path="/create_sld.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417520400999" ignored="false" />
+    <file path="/1646.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1412236577789" ignored="false" />
+    <file path="/1647.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404208003722" ignored="false" />
+    <file path="/GeoportalViewer.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404284485698" ignored="false" />
+    <file path="/build-2.12.bat" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404295090527" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/query_layer.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407159011053" ignored="false" />
+    <file path="/style.css" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404383043266" ignored="false" />
+    <file path="/test.json" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404479317133" ignored="false" />
+    <file path="/Zoom.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404715957099" ignored="false" />
+    <file path="/LayerSwitcher2.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404716026952" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/geoserver/service_mngr.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423654671941" ignored="false" />
+    <file path="C:/mapserver/bin/gdal/apps/coverage.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404811137272" ignored="false" />
+    <file path="C:/mapserver/bin/gdal/apps/L3861.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404810258717" ignored="false" />
+    <file path="/coverage.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404810707058" ignored="false" />
+    <file path="/InfoPopupManager.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1404913428711" ignored="false" />
+    <file path="/MappaFind.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405081432196" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/test_tileindex.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405500583341" ignored="false" />
+    <file path="/test_tileindex.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405500288610" ignored="false" />
+    <file path="/legend.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407251129976" ignored="false" />
+    <file path="/print_cae4b76e-5dd3-48dd-8eb4-10eabab9b520.json" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405665422395" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/gv_print/print_legend.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406123707357" ignored="false" />
+    <file path="/print_legend.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1405674955000" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/config/query_layer_valuelist.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407309095445" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/config/map.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418730410361" ignored="false" />
+    <file path="E:/progetti/create_ecw_prj/create_prj.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406115294468" ignored="false" />
+    <file path="/create_prj.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406115294468" ignored="false" />
+    <file path="$USER_HOME$/Downloads/3840 (1).sld" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406190471565" ignored="false" />
+    <file path="$USER_HOME$/Downloads/4101.sld" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406190499562" ignored="false" />
+    <file path="/services.htm" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406211211714" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/config/create_sld.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417521201441" ignored="false" />
+    <file path="/SimpleLegendGridPanel.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407245998694" ignored="false" />
+    <file path="/ext-theme-gray-all.css" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1406644586934" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/config/query_layer.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407229422657" ignored="false" />
+    <file path="/CWRLivelli.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407249153171" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/download/stats/month.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407491592910" ignored="false" />
+    <file path="/month.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407491904230" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/download/stats/year.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407491950152" ignored="false" />
+    <file path="/year.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407491763813" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/download/stats/month.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407491913574" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/download/stats/map.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407492251909" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/download/stats/format.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407492344568" ignored="false" />
+    <file path="/format.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1407492344568" ignored="false" />
+    <file path="I:/webapps/ROOT/geoviewer/lib/OpenLayers/OpenLayers.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1410171961603" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/corem/get_bbox.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411118215349" ignored="false" />
+    <file path="I:/webapps/ROOT/geoviewer/lib/Cwn2/cwn2-debug.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417515601395" ignored="false" />
+    <file path="I:/webapps/ROOT/geoviewer/lib/Cwn2/cwn2.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417515601395" ignored="false" />
+    <file path="/config.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411129815437" ignored="false" />
+    <file path="/deploy-config-ese.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411129842378" ignored="false" />
+    <file path="/GeoStyler.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1424181804665" ignored="false" />
+    <file path="/geostyler.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1424079294941" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/proxy/proxy.jsp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411553844940" ignored="false" />
+    <file path="/geoserver_sld.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411555282081" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/proxy/proxy.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411553970211" ignored="false" />
+    <file path="/colorpicker.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1411716912284" ignored="false" />
+    <file path="/Pan.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1412254764381" ignored="false" />
+    <file path="/test.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1412257746127" ignored="false" />
+    <file path="/test.sld" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416839654001" ignored="false" />
+    <file path="M:/mapfiles/repertoriocartografico/PIANIFICAZIONE/1646.map" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1412323444244" ignored="false" />
+    <file path="/__dummy.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1413295011385" ignored="false" />
+    <file path="M:/CartoWebNET/_CreaMapFileCS.asp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1413449913902" ignored="false" />
+    <file path="/MappaPTR.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1413540514644" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/coordinate/test_conv_coord.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1413797870459" ignored="false" />
+    <file path="/SelezioneCoordinate.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416231318708" ignored="false" />
+    <file path="/styles.css" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1414679791883" ignored="false" />
+    <file path="/Globals.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418836645952" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/xsl_info_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781777052" ignored="false" />
+    <file path="/xsl_info_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415779959206" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/config/xsl_info_service.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415627556075" ignored="false" />
+    <file path="/Generico.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422607971110" ignored="false" />
+    <file path="/Generico.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422537928215" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/config/layer.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421933875098" ignored="false" />
+    <file path="/layer.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418287725810" ignored="false" />
+    <file path="/Redirect.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415619042033" ignored="false" />
+    <file path="/redirect.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415623090980" ignored="false" />
+    <file path="M:/mapfiles/vincoli/CwGetFeatureInfoVinc_v_paes.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415780348407" ignored="false" />
+    <file path="M:/mapfiles/info/vincoli/CwGetFeatureInfoVinc_v_paes.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781212476" ignored="false" />
+    <file path="M:/mapfiles/info/vincoli/CwGetFeatureInfoAree_protette.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781513427" ignored="false" />
+    <file path="M:/mapfiles/info/vincoli/CwGetFeatureInfoComuni_temi.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781589484" ignored="false" />
+    <file path="M:/mapfiles/info/vincoli/CwGetFeatureInfoVinc_v_archeo.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781654544" ignored="false" />
+    <file path="M:/mapfiles/info/vincoli/CwGetFeatureInfoVinc_v_paes_sing.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781697596" ignored="false" />
+    <file path="M:/mapfiles/info/vincoli/CwGetFeatureInfoVinc_v_sto_art.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415781730300" ignored="false" />
+    <file path="/AFVI.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415790233573" ignored="false" />
+    <file path="/InfoStazione.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1415873516674" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/fototeca/voli.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416394736098" ignored="false" />
+    <file path="/voli.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416394736098" ignored="false" />
+    <file path="/cache_mngr.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416408803142" ignored="false" />
+    <file path="/ol3cesium.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416483957489" ignored="false" />
+    <file path="/CartografiaSpecie.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418207444096" ignored="false" />
+    <file path="/CartografiaSpecie.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417604222315" ignored="false" />
+    <file path="/Mappa.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416821195117" ignored="false" />
+    <file path="/Mappa.js" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416822501529" ignored="false" />
+    <file path="$PROJECT_DIR$/../../../conf/context.xml" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416824717592" ignored="false" />
+    <file path="/V_FOTO_PROSP_FOTOTECA_L3599.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416921955493" ignored="false" />
+    <file path="/V_FOTO_PROSP_2006_L2253.xsl" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416923528775" ignored="false" />
+    <file path="I:/webapps/gs-manager/geoserver_manager.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1416929167454" ignored="false" />
+    <file path="/ZoomViewer.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1417010348111" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/viewer/pages/apps/corem/CartografiaSpecie.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418207444496" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/viewer/pages/apps/corem/CartografiaSpecie.jsp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418298244957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/corem_create_cache.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422957972641" ignored="false" />
+    <file path="/corem_create_cache.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418654404298" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/geoserver/cache_mngr.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423232018747" ignored="false" />
+    <file path="I:/webapps/geoservices/viewer/pages/apps/corem/CartografiaSpecie.jsp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418726961242" ignored="false" />
+    <file path="I:/webapps/geoservices/scripts/corem_create_cache.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418830397544" ignored="false" />
+    <file path="E:/progetti/analisi_log_wms/analog.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1418835172458" ignored="false" />
+    <file path="E:/progetti/keygen/src/keygen.java" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1420726449297" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/metadata/gestione.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421061140518" ignored="false" />
+    <file path="/CartografiaHabitat.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421075657928" ignored="false" />
+    <file path="/stats.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421918441644" ignored="false" />
+    <file path="I:/webapps/geoservices/WEB-INF/REST/download/stats/global.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421157095583" ignored="false" />
+    <file path="/global.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421157009879" ignored="false" />
+    <file path="/CartografiaHabitat.jsp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421232581994" ignored="false" />
+    <file path="/Cartografia.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421232690002" ignored="false" />
+    <file path="//srvcarto.regione.liguria.it/Tomcat6_prot/webapps/geoservices/viewer/pages/apps/corem/Cartografia.jsp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421830603338" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/viewer/pages/apps/corem/Cartografia.jsp" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421830618972" ignored="false" />
+    <file path="/CesiumGeoserverTerrainProvider.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421833894174" ignored="false" />
+    <file path="/CesiumGTP.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421853966528" ignored="false" />
+    <file path="/epsg-4326.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421838908438" ignored="false" />
+    <file path="/HelloWorld.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1421917930117" ignored="false" />
+    <file path="/geowebcache_manager.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422011805384" ignored="false" />
+    <file path="I:/webapps/geoservices/geowebcache_manager.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422011917643" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/WEB-INF/REST/geoserver/cache_mngr.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423238438842" ignored="false" />
+    <file path="$PROJECT_DIR$/../../geoservices/scripts/create_cache_1662.groovy" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1422958114242" ignored="false" />
+    <file path="/ripascimenti.html" changelist="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" time="1423238310088" ignored="false" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="DatabaseView">
+    <flatten value="false" />
+    <groupTables value="false" />
+    <sortChildren value="false" />
+  </component>
+  <component name="DebuggerManager">
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
+    <breakpoint_rules />
+    <ui_properties />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="geoviewer" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="geostyler.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/apps/geostyler/geostyler.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="0" selection-start="437" selection-end="437" vertical-scroll-proportion="-8.5">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="geoserver.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/test/geoserver.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="0" selection-start="710" selection-end="774" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GeoStyler.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/GeoStyler.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1387" column="12" selection-start="38340" selection-end="38340" vertical-scroll-proportion="0.47035572">
+              <folding>
+                <element signature="e#50#6598#0" expanded="false" />
+                <element signature="e#194#315#0" expanded="false" />
+                <element signature="e#376#502#0" expanded="false" />
+                <element signature="e#570#668#0" expanded="false" />
+                <element signature="e#728#920#0" expanded="false" />
+                <element signature="e#944#1106#0" expanded="false" />
+                <element signature="e#1137#1294#0" expanded="false" />
+                <element signature="e#1327#2148#0" expanded="false" />
+                <element signature="e#2162#2608#0" expanded="false" />
+                <element signature="e#2615#2965#0" expanded="false" />
+                <element signature="e#2971#3156#0" expanded="false" />
+                <element signature="e#3219#3449#0" expanded="false" />
+                <element signature="e#3498#3951#0" expanded="false" />
+                <element signature="e#3592#3819#0" expanded="false" />
+                <element signature="e#3877#3945#0" expanded="false" />
+                <element signature="e#4002#4151#0" expanded="false" />
+                <element signature="e#4069#4143#0" expanded="false" />
+                <element signature="e#4179#4534#0" expanded="false" />
+                <element signature="e#4430#4528#0" expanded="false" />
+                <element signature="e#4581#4794#0" expanded="false" />
+                <element signature="e#4682#4788#0" expanded="false" />
+                <element signature="e#4854#5072#0" expanded="false" />
+                <element signature="e#4952#5066#0" expanded="false" />
+                <element signature="e#5079#5361#0" expanded="false" />
+                <element signature="e#5405#6048#0" expanded="false" />
+                <element signature="e#5586#5647#0" expanded="false" />
+                <element signature="e#5698#6042#0" expanded="false" />
+                <element signature="e#5751#5834#0" expanded="false" />
+                <element signature="e#5966#6032#0" expanded="false" />
+                <element signature="e#6055#6124#0" expanded="false" />
+                <element signature="e#6146#6385#0" expanded="false" />
+                <element signature="e#6252#6354#0" expanded="false" />
+                <element signature="e#6392#6529#0" expanded="false" />
+                <element signature="e#6554#6596#0" expanded="false" />
+                <element signature="e#6637#8220#0" expanded="false" />
+                <element signature="e#6715#6749#0" expanded="false" />
+                <element signature="e#6756#6870#0" expanded="false" />
+                <element signature="e#6900#6996#0" expanded="false" />
+                <element signature="e#7023#7081#0" expanded="false" />
+                <element signature="e#7087#7205#0" expanded="false" />
+                <element signature="e#7211#7258#0" expanded="false" />
+                <element signature="e#7290#8052#0" expanded="false" />
+                <element signature="e#7470#7723#0" expanded="false" />
+                <element signature="e#7562#7707#0" expanded="false" />
+                <element signature="e#7815#7902#0" expanded="false" />
+                <element signature="e#7979#8046#0" expanded="false" />
+                <element signature="e#8059#8139#0" expanded="false" />
+                <element signature="e#8175#8218#0" expanded="false" />
+                <element signature="e#8256#11099#0" expanded="false" />
+                <element signature="e#8314#8426#0" expanded="false" />
+                <element signature="e#8577#8739#0" expanded="false" />
+                <element signature="e#8681#8725#0" expanded="false" />
+                <element signature="e#8785#8919#0" expanded="false" />
+                <element signature="e#8967#9161#0" expanded="false" />
+                <element signature="e#9169#9223#0" expanded="false" />
+                <element signature="e#9272#9670#0" expanded="false" />
+                <element signature="e#9301#9332#0" expanded="false" />
+                <element signature="e#9378#9542#0" expanded="false" />
+                <element signature="e#9722#9900#0" expanded="false" />
+                <element signature="e#9934#10203#0" expanded="false" />
+                <element signature="e#10098#10197#0" expanded="false" />
+                <element signature="e#10211#10221#0" expanded="false" />
+                <element signature="e#10375#10994#0" expanded="false" />
+                <element signature="e#10431#10817#0" expanded="false" />
+                <element signature="e#10497#10807#0" expanded="false" />
+                <element signature="e#10538#10601#0" expanded="false" />
+                <element signature="e#10630#10792#0" expanded="false" />
+                <element signature="e#11026#11095#0" expanded="false" />
+                <element signature="e#11138#15194#0" expanded="false" />
+                <element signature="e#11328#11703#0" expanded="false" />
+                <element signature="e#11392#11615#0" expanded="false" />
+                <element signature="e#11731#11765#0" expanded="false" />
+                <element signature="e#11796#11827#0" expanded="false" />
+                <element signature="e#11874#12638#0" expanded="false" />
+                <element signature="e#12098#12132#0" expanded="false" />
+                <element signature="e#12399#12444#0" expanded="false" />
+                <element signature="e#12686#12893#0" expanded="false" />
+                <element signature="e#12817#12886#0" expanded="false" />
+                <element signature="e#12925#14053#0" expanded="false" />
+                <element signature="e#12999#13098#0" expanded="false" />
+                <element signature="e#13114#13198#0" expanded="false" />
+                <element signature="e#13209#13240#0" expanded="false" />
+                <element signature="e#13241#13290#0" expanded="false" />
+                <element signature="e#13373#13530#0" expanded="false" />
+                <element signature="e#13563#13873#0" expanded="false" />
+                <element signature="e#13879#14047#0" expanded="false" />
+                <element signature="e#14102#15190#0" expanded="false" />
+                <element signature="e#14132#14614#0" expanded="false" />
+                <element signature="e#15059#15104#0" expanded="false" />
+                <element signature="e#15208#15763#0" expanded="false" />
+                <element signature="e#15210#15277#0" expanded="false" />
+                <element signature="e#15338#15520#0" expanded="false" />
+                <element signature="e#15560#15757#0" expanded="false" />
+                <element signature="e#15800#16924#0" expanded="false" />
+                <element signature="e#15869#16679#0" expanded="false" />
+                <element signature="e#15951#16093#0" expanded="false" />
+                <element signature="e#16242#16530#0" expanded="false" />
+                <element signature="e#16334#16514#0" expanded="false" />
+                <element signature="e#16711#16922#0" expanded="false" />
+                <element signature="e#16849#16916#0" expanded="false" />
+                <element signature="e#17235#17591#0" expanded="false" />
+                <element signature="e#18188#19798#0" expanded="false" />
+                <element signature="e#18336#18548#0" expanded="false" />
+                <element signature="e#18346#18438#0" expanded="false" />
+                <element signature="e#18448#18542#0" expanded="false" />
+                <element signature="e#18606#19796#0" expanded="false" />
+                <element signature="e#18779#18896#0" expanded="false" />
+                <element signature="e#18910#19126#0" expanded="false" />
+                <element signature="e#19139#19729#0" expanded="false" />
+                <element signature="e#19849#20943#0" expanded="false" />
+                <element signature="e#20189#20941#0" expanded="false" />
+                <element signature="e#20229#20493#0" expanded="false" />
+                <element signature="e#20289#20483#0" expanded="false" />
+                <element signature="e#20546#20826#0" expanded="false" />
+                <element signature="e#20656#20816#0" expanded="false" />
+                <element signature="e#20714#20802#0" expanded="false" />
+                <element signature="e#20993#22275#0" expanded="false" />
+                <element signature="e#21301#22273#0" expanded="false" />
+                <element signature="e#21412#21581#0" expanded="false" />
+                <element signature="e#21453#21571#0" expanded="false" />
+                <element signature="e#21621#21841#0" expanded="false" />
+                <element signature="e#21681#21831#0" expanded="false" />
+                <element signature="e#21894#22157#0" expanded="false" />
+                <element signature="e#21988#22147#0" expanded="false" />
+                <element signature="e#22046#22133#0" expanded="false" />
+                <element signature="e#22324#22877#0" expanded="false" />
+                <element signature="e#22600#22875#0" expanded="false" />
+                <element signature="e#22929#23801#0" expanded="false" />
+                <element signature="e#23277#23626#0" expanded="false" />
+                <element signature="e#24231#24362#0" expanded="false" />
+                <element signature="e#24368#24491#0" expanded="false" />
+                <element signature="e#24525#24667#0" expanded="false" />
+                <element signature="e#24815#25511#0" expanded="false" />
+                <element signature="e#24992#25509#0" expanded="false" />
+                <element signature="e#25565#26778#0" expanded="false" />
+                <element signature="e#26433#26711#0" expanded="false" />
+                <element signature="e#26828#27251#0" expanded="false" />
+                <element signature="e#27017#27249#0" expanded="false" />
+                <element signature="e#27304#27860#0" expanded="false" />
+                <element signature="e#27499#27858#0" expanded="false" />
+                <element signature="e#27917#29185#0" expanded="false" />
+                <element signature="e#28113#29183#0" expanded="false" />
+                <element signature="e#28298#28368#0" expanded="false" />
+                <element signature="e#28414#28552#0" expanded="false" />
+                <element signature="e#28595#28735#0" expanded="false" />
+                <element signature="e#28776#28912#0" expanded="false" />
+                <element signature="e#29241#29983#0" expanded="false" />
+                <element signature="e#29416#29981#0" expanded="false" />
+                <element signature="e#29659#29925#0" expanded="false" />
+                <element signature="e#29673#29789#0" expanded="false" />
+                <element signature="e#30038#30709#0" expanded="false" />
+                <element signature="e#30766#31461#0" expanded="false" />
+                <element signature="e#30942#31459#0" expanded="false" />
+                <element signature="e#31119#31403#0" expanded="false" />
+                <element signature="e#31133#31274#0" expanded="false" />
+                <element signature="e#31513#32575#0" expanded="false" />
+                <element signature="e#31875#31949#0" expanded="false" />
+                <element signature="e#31997#32141#0" expanded="false" />
+                <element signature="e#32184#32322#0" expanded="false" />
+                <element signature="e#34363#34468#0" expanded="false" />
+                <element signature="e#35149#35522#0" expanded="false" />
+                <element signature="e#35386#35520#0" expanded="false" />
+                <element signature="e#35580#36005#0" expanded="false" />
+                <element signature="e#35849#36003#0" expanded="false" />
+                <element signature="e#36062#36439#0" expanded="false" />
+                <element signature="e#36499#36928#0" expanded="false" />
+                <element signature="e#36984#37470#0" expanded="false" />
+                <element signature="e#37164#37250#0" expanded="false" />
+                <element signature="e#37370#37467#0" expanded="false" />
+                <element signature="e#37522#37852#0" expanded="false" />
+                <marker date="1424182266440" expanded="false" signature="3378:3393" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Find.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/Find.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="159" column="0" selection-start="4380" selection-end="4547" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Util.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/Util.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="310" column="26" selection-start="9218" selection-end="9218" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="S3ricerche.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/S3ricerche.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LayerManager.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/LayerManager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="56" column="24" selection-start="1485" selection-end="1505" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="4579.sld" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://I:/webapps/geoservices/geoserver_sld/sld/4579.sld">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="38" selection-start="902" selection-end="902" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="K:/Sigmater/script/CwRicercaElementoCensuario.asp" />
+        <option value="K:/Sigmater/Generico.js" />
+        <option value="I:/webapps/ROOT/geoviewer/pages/test/geoserver.html" />
+        <option value="$PROJECT_DIR$/stili/default/base.css" />
+        <option value="$PROJECT_DIR$/pages/apps/repertorio/repertorio.js" />
+        <option value="$PROJECT_DIR$/pages/apps/ambienteinliguria/ripascimenti.html" />
+        <option value="$PROJECT_DIR$/lib/Cwn2/src/LayerFactory.js" />
+        <option value="$PROJECT_DIR$/lib/Cwn2/src/Globals.js" />
+        <option value="$PROJECT_DIR$/pages/apps/ambienteinliguria/ripascimenti.js" />
+        <option value="I:/webapps/ROOT/geoviewer/pages/apps/ambienteinliguria/ripascimenti.html" />
+        <option value="$PROJECT_DIR$/pages/apps/ambienteinliguria/mappa.js" />
+        <option value="I:/webapps/ROOT/geoviewer/pages/apps/ambienteinliguria/gestionale.html" />
+        <option value="$USER_HOME$/.IntelliJIdea12/config/plugins/scratches/scratch.txt" />
+        <option value="$PROJECT_DIR$/lib/Cwn2/src/Util.js" />
+        <option value="$PROJECT_DIR$/pages/apps/geostyler/geostyler.html" />
+        <option value="$PROJECT_DIR$/lib/Cwn2/src/buttons/GeoStyler.js" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1696" />
+    <option name="height" value="1026" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>JavaScript</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="2" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="stili" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="stili" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="default" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="repertorio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geostyler" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cwn2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cwn2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="geoviewer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cwn2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="buttons" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GenerateAntBuildDialog.generateIdeaHomeProperty" value="false" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
+    <property name="last_opened_file_path" value="E:/progetti/CartoWebNet2" />
+    <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
+    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="geoviewer" />
+    <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="options.lastSelected" value="preferences.general" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="DefaultHtmlFileTemplate" value="Html5" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="false" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="restartRequiresConfirmation" value="true" />
+    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+    <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <PyConsoleSettings />
+    </option>
+    <option name="myDjangoConsoleState">
+      <PyConsoleSettings />
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps\ambienteinliguria" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\test" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps\corem" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps\PTR" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\stili\default\icons" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps\geostyler" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps\print" />
+      <recent name="E:\Tomcat6\webapps\ROOT\geoviewer\pages\apps" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Remote.Tomcat Debug">
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
+    <configuration default="true" type="XSLT" factoryName="XSLT">
+      <option name="myOutputFile" />
+      <option name="myOpenOutputFile" value="false" />
+      <option name="myOpenInBrowser" value="false" />
+      <option name="mySmartErrorHandling" value="true" />
+      <option name="myRunnerPort" value="34873" />
+      <option name="myVmArguments" />
+      <option name="myWorkingDirectory" />
+      <option name="myModule" />
+      <option name="myJdk" />
+      <parameters />
+      <OutputType value="CONSOLE" save-to-file="false" />
+      <FileType name="XML" />
+      <JdkChoice value="FROM_MODULE" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugSession" factoryName="Local" singleton="true">
+      <JSDebuggerConfigurationSettings>
+        <option name="engineId" value="embedded" />
+        <option name="fileUrl" />
+      </JSDebuggerConfigurationSettings>
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="Tomcat Debug" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Remote.Tomcat Debug" />
+    </list>
+    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
+      <Host>localhost</Host>
+      <Port>5050</Port>
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="true" SSL_PROTOCOLS="all">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <option name="IGNORE_EXTERNALS" value="false" />
+    <configuration useDefault="false">C:\Users\parodi\AppData\Roaming\Subversion</configuration>
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6eaf0b82-9dca-4386-95b7-e19a876eb8cd" name="Default" comment="" />
+      <created>1390312904703</created>
+      <updated>1390312904703</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42281878" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20379438" sideWeight="0.87540984" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.249694" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24724603" sideWeight="0.90604025" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.093959734" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32968238" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39978093" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_NEW_TODO" value="true" />
+    <option name="myTodoPanelSettings">
+      <value>
+        <are-packages-shown value="false" />
+        <are-modules-shown value="false" />
+        <flatten-packages value="false" />
+        <is-autoscroll-to-source value="false" />
+      </value>
+    </option>
+    <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ROLLBACK_IN_BACKGROUND" value="false" />
+    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="false" />
+    <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
+    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
+    <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
+    <option name="SHORT_DIFF_HORIZONTALLY" value="true" />
+    <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
+    <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
+    <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
+    <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
+    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
+    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
+    <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
+    <option name="LIMIT_HISTORY" value="true" />
+    <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
+    <option name="UPDATE_FILTER_SCOPE_NAME" />
+    <option name="USE_COMMIT_MESSAGE_MARGIN" value="false" />
+    <option name="COMMIT_MESSAGE_MARGIN_SIZE" value="72" />
+    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
+    <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
+    <option name="LAST_COMMIT_MESSAGE" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
+    <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
+    <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
+    <option name="ACTIVE_VCS_NAME" />
+    <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
+    <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
+    <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
+    <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
+    <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="5" />
+    </breakpoint-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://I:/webapps/ROOT/geoviewer/pages/apps/ambienteinliguria/gestionale.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="34" selection-start="999" selection-end="999" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://I:/webapps/ROOT/geoviewer/pages/apps/ambienteinliguria/mappa.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/apps/geostyler/test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="35.615383">
+          <folding>
+            <element signature="e#822#9016#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../geoservices/WEB-INF/REST/proxy/geoserver_sld.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="42" selection-start="334" selection-end="334" vertical-scroll-proportion="0.40963855" />
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.IntelliJIdea12/config/plugins/scratches/scratch.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="41" selection-start="41" selection-end="41" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://I:/webapps/geoservices/geoserver_sld/sld/4579.sld">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="38" selection-start="902" selection-end="902" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/LayerManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="24" selection-start="1485" selection-end="1505" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/S3ricerche.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/apps/repertorio/repertorio.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="100" selection-start="2568" selection-end="2621" vertical-scroll-proportion="0.40399384" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/test/geoserver.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="0" selection-start="710" selection-end="774" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/Util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="310" column="26" selection-start="9218" selection-end="9218" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/apps/geostyler/geostyler.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="0" selection-start="437" selection-end="437" vertical-scroll-proportion="-8.5">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/LoadLayers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="95" column="13" selection-start="2483" selection-end="2483" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/RoutePlanner.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="83" column="12" selection-start="2390" selection-end="2390" vertical-scroll-proportion="0.0">
+          <folding>
+            <marker date="1418314031739" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/Find.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="159" column="0" selection-start="4380" selection-end="4547" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Cwn2/src/buttons/GeoStyler.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1387" column="12" selection-start="38340" selection-end="38340" vertical-scroll-proportion="0.47035572">
+          <folding>
+            <element signature="e#50#6598#0" expanded="false" />
+            <element signature="e#194#315#0" expanded="false" />
+            <element signature="e#376#502#0" expanded="false" />
+            <element signature="e#570#668#0" expanded="false" />
+            <element signature="e#728#920#0" expanded="false" />
+            <element signature="e#944#1106#0" expanded="false" />
+            <element signature="e#1137#1294#0" expanded="false" />
+            <element signature="e#1327#2148#0" expanded="false" />
+            <element signature="e#2162#2608#0" expanded="false" />
+            <element signature="e#2615#2965#0" expanded="false" />
+            <element signature="e#2971#3156#0" expanded="false" />
+            <element signature="e#3219#3449#0" expanded="false" />
+            <element signature="e#3498#3951#0" expanded="false" />
+            <element signature="e#3592#3819#0" expanded="false" />
+            <element signature="e#3877#3945#0" expanded="false" />
+            <element signature="e#4002#4151#0" expanded="false" />
+            <element signature="e#4069#4143#0" expanded="false" />
+            <element signature="e#4179#4534#0" expanded="false" />
+            <element signature="e#4430#4528#0" expanded="false" />
+            <element signature="e#4581#4794#0" expanded="false" />
+            <element signature="e#4682#4788#0" expanded="false" />
+            <element signature="e#4854#5072#0" expanded="false" />
+            <element signature="e#4952#5066#0" expanded="false" />
+            <element signature="e#5079#5361#0" expanded="false" />
+            <element signature="e#5405#6048#0" expanded="false" />
+            <element signature="e#5586#5647#0" expanded="false" />
+            <element signature="e#5698#6042#0" expanded="false" />
+            <element signature="e#5751#5834#0" expanded="false" />
+            <element signature="e#5966#6032#0" expanded="false" />
+            <element signature="e#6055#6124#0" expanded="false" />
+            <element signature="e#6146#6385#0" expanded="false" />
+            <element signature="e#6252#6354#0" expanded="false" />
+            <element signature="e#6392#6529#0" expanded="false" />
+            <element signature="e#6554#6596#0" expanded="false" />
+            <element signature="e#6637#8220#0" expanded="false" />
+            <element signature="e#6715#6749#0" expanded="false" />
+            <element signature="e#6756#6870#0" expanded="false" />
+            <element signature="e#6900#6996#0" expanded="false" />
+            <element signature="e#7023#7081#0" expanded="false" />
+            <element signature="e#7087#7205#0" expanded="false" />
+            <element signature="e#7211#7258#0" expanded="false" />
+            <element signature="e#7290#8052#0" expanded="false" />
+            <element signature="e#7470#7723#0" expanded="false" />
+            <element signature="e#7562#7707#0" expanded="false" />
+            <element signature="e#7815#7902#0" expanded="false" />
+            <element signature="e#7979#8046#0" expanded="false" />
+            <element signature="e#8059#8139#0" expanded="false" />
+            <element signature="e#8175#8218#0" expanded="false" />
+            <element signature="e#8256#11099#0" expanded="false" />
+            <element signature="e#8314#8426#0" expanded="false" />
+            <element signature="e#8577#8739#0" expanded="false" />
+            <element signature="e#8681#8725#0" expanded="false" />
+            <element signature="e#8785#8919#0" expanded="false" />
+            <element signature="e#8967#9161#0" expanded="false" />
+            <element signature="e#9169#9223#0" expanded="false" />
+            <element signature="e#9272#9670#0" expanded="false" />
+            <element signature="e#9301#9332#0" expanded="false" />
+            <element signature="e#9378#9542#0" expanded="false" />
+            <element signature="e#9722#9900#0" expanded="false" />
+            <element signature="e#9934#10203#0" expanded="false" />
+            <element signature="e#10098#10197#0" expanded="false" />
+            <element signature="e#10211#10221#0" expanded="false" />
+            <element signature="e#10375#10994#0" expanded="false" />
+            <element signature="e#10431#10817#0" expanded="false" />
+            <element signature="e#10497#10807#0" expanded="false" />
+            <element signature="e#10538#10601#0" expanded="false" />
+            <element signature="e#10630#10792#0" expanded="false" />
+            <element signature="e#11026#11095#0" expanded="false" />
+            <element signature="e#11138#15194#0" expanded="false" />
+            <element signature="e#11328#11703#0" expanded="false" />
+            <element signature="e#11392#11615#0" expanded="false" />
+            <element signature="e#11731#11765#0" expanded="false" />
+            <element signature="e#11796#11827#0" expanded="false" />
+            <element signature="e#11874#12638#0" expanded="false" />
+            <element signature="e#12098#12132#0" expanded="false" />
+            <element signature="e#12399#12444#0" expanded="false" />
+            <element signature="e#12686#12893#0" expanded="false" />
+            <element signature="e#12817#12886#0" expanded="false" />
+            <element signature="e#12925#14053#0" expanded="false" />
+            <element signature="e#12999#13098#0" expanded="false" />
+            <element signature="e#13114#13198#0" expanded="false" />
+            <element signature="e#13209#13240#0" expanded="false" />
+            <element signature="e#13241#13290#0" expanded="false" />
+            <element signature="e#13373#13530#0" expanded="false" />
+            <element signature="e#13563#13873#0" expanded="false" />
+            <element signature="e#13879#14047#0" expanded="false" />
+            <element signature="e#14102#15190#0" expanded="false" />
+            <element signature="e#14132#14614#0" expanded="false" />
+            <element signature="e#15059#15104#0" expanded="false" />
+            <element signature="e#15208#15763#0" expanded="false" />
+            <element signature="e#15210#15277#0" expanded="false" />
+            <element signature="e#15338#15520#0" expanded="false" />
+            <element signature="e#15560#15757#0" expanded="false" />
+            <element signature="e#15800#16924#0" expanded="false" />
+            <element signature="e#15869#16679#0" expanded="false" />
+            <element signature="e#15951#16093#0" expanded="false" />
+            <element signature="e#16242#16530#0" expanded="false" />
+            <element signature="e#16334#16514#0" expanded="false" />
+            <element signature="e#16711#16922#0" expanded="false" />
+            <element signature="e#16849#16916#0" expanded="false" />
+            <element signature="e#17235#17591#0" expanded="false" />
+            <element signature="e#18188#19798#0" expanded="false" />
+            <element signature="e#18336#18548#0" expanded="false" />
+            <element signature="e#18346#18438#0" expanded="false" />
+            <element signature="e#18448#18542#0" expanded="false" />
+            <element signature="e#18606#19796#0" expanded="false" />
+            <element signature="e#18779#18896#0" expanded="false" />
+            <element signature="e#18910#19126#0" expanded="false" />
+            <element signature="e#19139#19729#0" expanded="false" />
+            <element signature="e#19849#20943#0" expanded="false" />
+            <element signature="e#20189#20941#0" expanded="false" />
+            <element signature="e#20229#20493#0" expanded="false" />
+            <element signature="e#20289#20483#0" expanded="false" />
+            <element signature="e#20546#20826#0" expanded="false" />
+            <element signature="e#20656#20816#0" expanded="false" />
+            <element signature="e#20714#20802#0" expanded="false" />
+            <element signature="e#20993#22275#0" expanded="false" />
+            <element signature="e#21301#22273#0" expanded="false" />
+            <element signature="e#21412#21581#0" expanded="false" />
+            <element signature="e#21453#21571#0" expanded="false" />
+            <element signature="e#21621#21841#0" expanded="false" />
+            <element signature="e#21681#21831#0" expanded="false" />
+            <element signature="e#21894#22157#0" expanded="false" />
+            <element signature="e#21988#22147#0" expanded="false" />
+            <element signature="e#22046#22133#0" expanded="false" />
+            <element signature="e#22324#22877#0" expanded="false" />
+            <element signature="e#22600#22875#0" expanded="false" />
+            <element signature="e#22929#23801#0" expanded="false" />
+            <element signature="e#23277#23626#0" expanded="false" />
+            <element signature="e#24231#24362#0" expanded="false" />
+            <element signature="e#24368#24491#0" expanded="false" />
+            <element signature="e#24525#24667#0" expanded="false" />
+            <element signature="e#24815#25511#0" expanded="false" />
+            <element signature="e#24992#25509#0" expanded="false" />
+            <element signature="e#25565#26778#0" expanded="false" />
+            <element signature="e#26433#26711#0" expanded="false" />
+            <element signature="e#26828#27251#0" expanded="false" />
+            <element signature="e#27017#27249#0" expanded="false" />
+            <element signature="e#27304#27860#0" expanded="false" />
+            <element signature="e#27499#27858#0" expanded="false" />
+            <element signature="e#27917#29185#0" expanded="false" />
+            <element signature="e#28113#29183#0" expanded="false" />
+            <element signature="e#28298#28368#0" expanded="false" />
+            <element signature="e#28414#28552#0" expanded="false" />
+            <element signature="e#28595#28735#0" expanded="false" />
+            <element signature="e#28776#28912#0" expanded="false" />
+            <element signature="e#29241#29983#0" expanded="false" />
+            <element signature="e#29416#29981#0" expanded="false" />
+            <element signature="e#29659#29925#0" expanded="false" />
+            <element signature="e#29673#29789#0" expanded="false" />
+            <element signature="e#30038#30709#0" expanded="false" />
+            <element signature="e#30766#31461#0" expanded="false" />
+            <element signature="e#30942#31459#0" expanded="false" />
+            <element signature="e#31119#31403#0" expanded="false" />
+            <element signature="e#31133#31274#0" expanded="false" />
+            <element signature="e#31513#32575#0" expanded="false" />
+            <element signature="e#31875#31949#0" expanded="false" />
+            <element signature="e#31997#32141#0" expanded="false" />
+            <element signature="e#32184#32322#0" expanded="false" />
+            <element signature="e#34363#34468#0" expanded="false" />
+            <element signature="e#35149#35522#0" expanded="false" />
+            <element signature="e#35386#35520#0" expanded="false" />
+            <element signature="e#35580#36005#0" expanded="false" />
+            <element signature="e#35849#36003#0" expanded="false" />
+            <element signature="e#36062#36439#0" expanded="false" />
+            <element signature="e#36499#36928#0" expanded="false" />
+            <element signature="e#36984#37470#0" expanded="false" />
+            <element signature="e#37164#37250#0" expanded="false" />
+            <element signature="e#37370#37467#0" expanded="false" />
+            <element signature="e#37522#37852#0" expanded="false" />
+            <marker date="1424182266440" expanded="false" signature="3378:3393" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <last-edited>unnamed</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>ext-debug</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>geoviewer</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.5" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>IDEA IU-129.1359</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
+

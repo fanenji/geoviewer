@@ -1,0 +1,385 @@
+<!DOCTYPE HTML>
+
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+
+    <title>GeoStyler TEST</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+</head>
+<body>
+
+<script>
+
+
+OpenLayers.Format.SLD.v1_0_0_GeoServer = OpenLayers.Class(
+        OpenLayers.Format.SLD.v1_0_0, {
+
+            /**
+             * Property: version
+             * {String} The specific parser version.
+             */
+            version: "1.0.0",
+
+            /**
+             * Property: profile
+             * {String} The specific profile
+             */
+            profile: "GeoServer",
+
+            /**
+             * Constructor: OpenLayers.Format.SLD.v1_0_0_GeoServer
+             * Create a new parser for GeoServer-enhanced SLD version 1.0.0.
+             *
+             * Parameters:
+             * options - {Object} An optional object whose properties will be set on
+             *     this instance.
+             */
+
+            /**
+             * Property: readers
+             * Contains public functions, grouped by namespace prefix, that will
+             *     be applied when a namespaced node is found matching the function
+             *     name.  The function will be applied in the scope of this parser
+             *     with two arguments: the node being read and a context object passed
+             *     from the parent.
+             */
+            readers: OpenLayers.Util.applyDefaults({
+                "sld": OpenLayers.Util.applyDefaults({
+                    "Priority": function(node, obj) {
+                        var value = this.readers.ogc._expression.call(this, node);
+                        if (value) {
+                            obj.priority = value;
+                        }
+                    },
+                    "VendorOption": function(node, obj) {
+                        if (!obj.vendorOptions) {
+                            obj.vendorOptions = {};
+                        }
+                        obj.vendorOptions[node.getAttribute("name")] = this.getChildValue(node);
+                    },
+                    "TextSymbolizer": function(node, rule) {
+                        OpenLayers.Format.SLD.v1_0_0.prototype.readers.sld.TextSymbolizer.apply(this, arguments);
+                        var symbolizer = this.multipleSymbolizers ? rule.symbolizers[rule.symbolizers.length-1] : rule.symbolizer["Text"];
+                        if (symbolizer.graphic === undefined) {
+                            symbolizer.graphic = false;
+                        }
+                    },
+                    "GraphicFill": function(node, symbolizer) {
+                        symbolizer.graphicFill = true;
+                        this.readChildNodes(node, symbolizer);
+                    },
+                    "GraphicStroke": function(node, symbolizer) {
+                        symbolizer.graphicStroke = true;
+                        this.readChildNodes(node, symbolizer);
+                    }
+                }, OpenLayers.Format.SLD.v1_0_0.prototype.readers["sld"])
+            }, OpenLayers.Format.SLD.v1_0_0.prototype.readers),
+
+            /**
+             * Property: writers
+             * As a compliment to the readers property, this structure contains public
+             *     writing functions grouped by namespace alias and named like the
+             *     node names they produce.
+             */
+            writers: OpenLayers.Util.applyDefaults({
+                "sld": OpenLayers.Util.applyDefaults({
+                    "Priority": function(priority) {
+                        return this.writers.sld._OGCExpression.call(
+                                this, "sld:Priority", priority
+                        );
+                    },
+                    "VendorOption": function(option) {
+                        return this.createElementNSPlus("sld:VendorOption", {
+                            attributes: {name: option.name},
+                            value: option.value
+                        });
+                    },
+                    "TextSymbolizer": function(symbolizer) {
+                        var writers = OpenLayers.Format.SLD.v1_0_0.prototype.writers;
+                        var node = writers["sld"]["TextSymbolizer"].apply(this, arguments);
+                        if (symbolizer.graphic !== false && (symbolizer.externalGraphic || symbolizer.graphicName)) {
+                            this.writeNode("Graphic", symbolizer, node);
+                        }
+                        if ("priority" in symbolizer) {
+                            this.writeNode("Priority", symbolizer.priority, node);
+                        }
+                        return this.addVendorOptions(node, symbolizer);
+                    },
+                    "PointSymbolizer": function(symbolizer) {
+                        var writers = OpenLayers.Format.SLD.v1_0_0.prototype.writers;
+                        var node = writers["sld"]["PointSymbolizer"].apply(this, arguments);
+                        return this.addVendorOptions(node, symbolizer);
+                    },
+                    "LineSymbolizer": function(symbolizer) {
+                        var writers = OpenLayers.Format.SLD.v1_0_0.prototype.writers;
+                        var node = writers["sld"]["LineSymbolizer"].apply(this, arguments);
+                        return this.addVendorOptions(node, symbolizer);
+                    },
+                    "PolygonSymbolizer": function(symbolizer) {
+                        var writers = OpenLayers.Format.SLD.v1_0_0.prototype.writers;
+                        var node = writers["sld"]["PolygonSymbolizer"].apply(this, arguments);
+                        return this.addVendorOptions(node, symbolizer);
+                    },
+                    "Fill": function(symbolizer) {
+                        var node;
+                        if(symbolizer.graphicFill) {
+                            node = this.createElementNSPlus("sld:Fill");
+                            this.writeNode("GraphicFill", symbolizer, node);;
+                        } else {
+                            var writers = OpenLayers.Format.SLD.v1_0_0.prototype.writers;
+                            node = writers["sld"]["Fill"].apply(this, arguments);
+                        }
+                        return node;
+                    },
+                    "GraphicFill": function(symbolizer) {
+                        var node = this.createElementNSPlus("sld:GraphicFill");
+                        this.writeNode("Graphic", symbolizer, node);
+                        return node;
+                    },
+                    "Stroke": function(symbolizer) {
+                        var node;
+                        if(symbolizer.graphicStroke) {
+                            node = this.createElementNSPlus("sld:Stroke");
+                            this.writeNode("GraphicStroke", symbolizer, node);;
+                        } else {
+                            var writers = OpenLayers.Format.SLD.v1_0_0.prototype.writers;
+                            node = writers["sld"]["Stroke"].apply(this, arguments);
+                        }
+                        return node;
+                    },
+                    "GraphicStroke": function(symbolizer) {
+                        var node = this.createElementNSPlus("sld:GraphicStroke");
+                        this.writeNode("Graphic", symbolizer, node);
+                        return node;
+                    }
+
+                }, OpenLayers.Format.SLD.v1_0_0.prototype.writers["sld"])
+            }, OpenLayers.Format.SLD.v1_0_0.prototype.writers),
+
+            /**
+             * Method: addVendorOptions
+             * Add in the VendorOption tags and return the node again.
+             *
+             * Parameters:
+             * node - {DOMElement} A DOM node.
+             * symbolizer - {Object}
+             *
+             * Returns:
+             * {DOMElement} A DOM node.
+             */
+            addVendorOptions: function(node, symbolizer) {
+                var options = symbolizer.vendorOptions;
+                if (options) {
+                    for (var key in symbolizer.vendorOptions) {
+                        this.writeNode("VendorOption", {
+                            name: key,
+                            value: symbolizer.vendorOptions[key]
+                        }, node);
+                    }
+                }
+                return node;
+            },
+
+            CLASS_NAME: "OpenLayers.Format.SLD.v1_0_0_GeoServer"
+
+        });
+
+
+Ext.application({
+
+    name: 'GeoStyler',
+
+    styler: function() {
+        var format = new OpenLayers.Format.SLD({
+            profile: "GeoServer",
+            multipleSymbolizers: true,
+            namedLayersAsArray: true,
+            schemaLocation: "http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+        });
+
+        //console.log(format)
+        CWN2.Util.ajaxRequest({
+            type: "XML",
+            //url: "http://localhost:8080/geoserver/rest/styles/polygon.sld",
+            url: "/geoviewer/pages/apps/geostyler/test.sld",
+            callBack: function(sld) {
+
+
+                // PARSING SLD
+                var data = format.read(sld);
+                var rules = data.namedLayers[0].userStyles[0].rules;
+                console.log("0: POLYGON SimpleFill");
+                console.log(rules[0].symbolizers[0]);
+                console.log("1: POLYGON GraphicFill/ExternalGraphic");
+                console.log(rules[0].symbolizers[1]);
+                console.log("2: POLYGON GraphicFill/Mark");
+                console.log(rules[0].symbolizers[2]);
+                console.log("3: POLYGON GraphicFill/TTF");
+                console.log(rules[0].symbolizers[3]);
+                console.log("4: LINE DashArray");
+                console.log(rules[0].symbolizers[4]);
+                console.log("5: LINE GraphicStroke");
+                console.log(rules[0].symbolizers[5]);
+                console.log("6: POINT WKN");
+                console.log(rules[0].symbolizers[6]);
+                console.log("7: POINT ExternalGraphics");
+                console.log(rules[0].symbolizers[7]);
+
+
+
+                // SCRITTURA SLD
+                var rule = new OpenLayers.Rule({
+                    symbolizer: {"Polygon": {
+                        externalGraphic: "colorblocks.png",
+                        fill: true,
+                        graphic: true,
+                        graphicFill: true ,
+                        graphicFormat: "image/png",
+                        pointRadius: 46.5 ,
+                        stroke: true  ,
+                        strokeColor: "#FFFFFF" ,
+                        strokeWidth: "2"
+                    }}
+                });
+                var style = new OpenLayers.Style("MyStyle", {
+                    rules: [rule]
+                });
+                var strSld = format.write({
+                    namedLayers: [{
+                        name: "MyWorkspace:MyLayer",
+                        userStyles: [style]
+                    }]
+                });
+                //console.log(strSld)
+
+            }
+        });
+    },
+
+
+
+    launch: function() {
+        var navigazione = {
+            "items": [
+                { "name": "pan" },
+                { "name": "zoomin" },
+                { "name": "zoomout" },
+                { "name": "fitall" },
+                { "name": "zoomToInitialExtent" },
+                { "name": "zoomprevious" },
+                { "name": "zoomnext" }
+            ]
+        };
+
+        var avanzate = {
+            "name": "avanzate",
+            "items": [
+                {"name": "infowms" },
+                {"name": "transparency" },
+                {"name": "loadlayers",
+                    "panels": [
+                        {
+                            "type": "layerTree",
+                            "name": "Temi",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/corem/load_layer_tree/",
+                                "layersConfigServiceUrl": "/geoservices/REST/corem/load_layer_config/"
+                            }
+                        },
+                        {
+                            "type": "mapTree",
+                            "name": "PTR",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/config/ag_canale_tree/102"
+                            }
+                        },
+                        {
+                            "type": "mapTree",
+                            "name": "Repertorio Cartografico",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/config/rep_carto_tree/03"
+                            }
+                        }
+                    ]
+                },
+                {"name": "removelayers" },
+                {"name": "find",
+                    "panels": [
+                        {
+                            "type": "indirizzo",
+                            "name": "Indirizzo"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var legenda = {
+            "align": "right",
+            "items": [
+                {"name": "simpleLegend"}
+            ]
+        };
+
+        var toolbarConfig = {
+            "itemGroups": [
+                navigazione
+            ]
+        };
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    "maxScale": "50000",
+                    "restrictedExtent": "830036,5402959,1123018,5597635"
+                },
+                "layout": {
+                    "statusBar": true,
+                    "legend": null,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east",
+                        "collapsed": false
+                    },
+                    "widgets": [
+                        { "name": "Scale" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": toolbarConfig
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base" },
+                { "type": "google_satellite", "visible": true},
+                { "type": "rl_ortofoto_2013" }
+            ],
+            "layers": []
+        };
+
+        CWN2.app.load({
+            appConfig: config,
+            divID: "cwn2_map",
+            callBack: this.styler,
+            idMap: "56", //"1439",
+            debug: true
+        });
+
+    } //eo launch
+
+});
+
+
+</script>
+
+</body>
+</html>

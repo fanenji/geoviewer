@@ -1,0 +1,74 @@
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Interfaccia Cartografica Web</title>
+    <link rel="stylesheet" href="http://www.cartografiarl.regione.liguria.it/cartowebnet/stili/repertoriocartografico/base.css" type="text/css"></head>
+
+<body>
+<p></p>
+<br><center><table border="0" width="90%" cellpadding="2"><tbody><tr><td class="sfondoBianco"><center>
+    <table width="92%"><tbody><tr>
+        <td class="fogliaBT2" width="10%"><img src="http://www.cartografiarl.regione.liguria.it/cartowebnet/images/repertoriocartografico/logo_reg.gif" border="0" vspace="15"></td>
+        <td id="Titolo" class="fogliaBT2">Tipologia</td>
+    </tr></tbody></table>
+    <table width="92%">
+        <tbody><tr><th colspan="2" class="fogliaT"><font color="#FFFFFF" size="-1">Risultato della Selezione</font></th></tr>
+        <tr>
+            <td class="fogliaL">Comune</td>
+            <td class="foglia">Serra Riccò</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Indirizzo</td>
+            <td class="foglia">Via Caffaro, 10</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Tipologia</td>
+            <td class="foglia">immobile uscito dalla gestione</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Sottotipologia</td>
+            <td class="foglia">abitazione indipendente</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Numero cespiti</td>
+            <td class="foglia">1</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Data confisca definitiva</td>
+            <td class="foglia">09/12/2009</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Organizzazione criminale</td>
+            <td class="foglia">altre associazioni a delinquere</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Stato procedura di destinazione</td>
+            <td class="foglia">uscito dalla gestione</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Data destinazione</td>
+            <td class="foglia">24/09/2010</td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Ente destinatario</td>
+            <td class="foglia"></td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Utilizzatore</td>
+            <td class="foglia"></td>
+        </tr>
+        <tr>
+            <td class="fogliaL">Finalita'</td>
+            <td class="foglia"></td>
+        </tr>
+        <tr><td class="centro" colspan="2"><a target="_blank" href="http://www.cartografiarl.regione.liguria.it/Img/Beni_Confiscati/FOTO/010058_001_F.pdf"><b>Consulta la foto</b></a></td></tr>
+        <tr><td class="centro" colspan="2"><a target="_blank" href="http://www.cartografiarl.regione.liguria.it/Img/Beni_Confiscati/SCHEDE_PREV/PRO_sofra_giuseppe.pdf"><b>Consulta il profilo del prevenuto</b></a></td></tr>
+        <tr><td class="centro" colspan="2"><a href="http://www.cartografiarl.regione.liguria.it/mapfiles/info/repertoriocartografico/BENI_CONFISCATI_DATI.asp?cod_bene=010058_001" target="_blank"><b>Consulta la scheda di dettaglio</b></a></td></tr>
+        </tbody></table>
+    <br><table width="92%" cellpadding="0" cellspacing="0" border="0">
+    <tbody><tr><td id="linkGestionale" colspan="2"></td></tr>
+    <tr><td align="left"><img src="http://www.cartografiarl.regione.liguria.it/cartowebnet/images/repertoriocartografico/solo_sitar.gif" border="0" align="absmiddle" vspace="15"></td></tr>
+    </tbody></table>
+    <br>
+</center></td></tr></tbody></table></center>
+
+</body></html>

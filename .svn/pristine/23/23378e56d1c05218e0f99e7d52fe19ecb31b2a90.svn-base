@@ -1,0 +1,62 @@
+{
+  "StyledLayerDescriptor": {
+    "NamedLayer": {
+      "Name": "4596",
+      "UserStyle": {
+        "Name": "4596",
+        "FeatureTypeStyle": {
+          "Name": "name",
+          "Rule": [
+            {
+              "Name": "R0",
+              "Title": "Classe Base",
+              "LineSymbolizer": {
+                "Stroke": {
+                  "GraphicStroke": {
+                    "Graphic": {
+                      "Mark": {
+                        "WellKnownName": "circle",
+                        "Fill": {
+                          "CssParameter": [
+                            {
+                              "_name": "fill",
+                              "__text": "#666666"
+                            }
+                          ]
+                        },
+                        "Stroke": {
+                          "CssParameter": [
+                            {
+                              "_name": "stroke",
+                              "__text": "#333333"
+                            }
+                          ]
+                        }
+                      },
+                      "Size": "6"
+                    }
+                  },
+                  "CssParameter": [
+                    {
+                      "_name": "stroke",
+                      "__text": "#333333"
+                    },
+                    {
+                      "_name": "stroke-dasharray",
+                      "__text": "4.0 6.0"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "_xmlns": "http://www.opengis.net/sld",
+    "_xmlns:sld": "http://www.opengis.net/sld",
+    "_xmlns:ogc": "http://www.opengis.net/ogc",
+    "_xmlns:gml": "http://www.opengis.net/gml",
+    "_version": "1.0.0"
+  }
+}

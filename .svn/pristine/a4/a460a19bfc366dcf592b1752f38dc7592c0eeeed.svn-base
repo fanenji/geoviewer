@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Geocoder Regione Liguria</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css" />
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css" />
+    <link rel="stylesheet" type="text/css" href="geocoder.css" />
+
+    <script src="http://maps.google.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+    <script src="/geoviewer/lib/ExtJs/ext.js"></script>
+    <script src="/geoviewer/lib/ExtJs/locale/ext-lang-it.js"></script>
+    <script src="/geoviewer/lib/ExtJs/src/ux/liveSearchGridPanel.js"></script>
+    <script src="/geoviewer/lib/ExtJs/src/util/KeyMap.js"></script>
+
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+    <script src="geocoder.js"></script>
+</head>
+<body></body>
+</html>

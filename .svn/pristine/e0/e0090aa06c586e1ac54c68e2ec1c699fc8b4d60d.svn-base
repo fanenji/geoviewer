@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+
+    <title>Test servizi Geoserver</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+    <script src="/geoviewer/lib/Cwn2/deploy-config.js"></script>
+
+</head>
+<body>
+
+<script>
+
+Ext.application({
+
+    name: 'CWN2_APP',
+
+    loadMap: function(idMap) {
+        CWN2.app.loadMap({
+            idMap: idMap,
+            flagGeoserver: true
+        })
+    },
+
+    launch: function() {
+        var navigazione = {
+            "items": [
+                { "name": "pan" },
+                { "name": "zoomin" },
+                { "name": "zoomout" },
+                { "name": "fitall" },
+                { "name": "zoomToInitialExtent" },
+                { "name": "zoomprevious" },
+                { "name": "zoomnext" }
+            ]
+        };
+
+        var misurazioni = {
+            "items": [
+                { "name": "measureline" },
+                { "name": "measurearea" }
+            ]
+        };
+
+        var avanzate = {
+            "name": "avanzate",
+            "items": [
+                {"name": "infowms" },
+                {"name": "transparency" },
+                {"name": "loadlayers",
+                    "panels": [
+                        {
+                            "type": "layerTree",
+                            "name": "Temi",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/geoserver/load_layer_tree/",
+                                "layersConfigServiceUrl": "/geoservices/REST/config/layer/"
+                            }
+                        },
+                        {
+                            "type": "mapTree",
+                            "name": "PTR",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/config/ag_canale_tree/102"
+                            }
+                        },
+                        {
+                            "type": "mapTree",
+                            "name": "Repertorio Cartografico",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/config/rep_carto_tree/03"
+                            }
+                        }
+                    ]
+                },
+                {"name": "removelayers" },
+                {"name": "find",
+                    "panels": [
+                        {
+                            "type": "layer",
+                            "name": "Livello"
+                        },
+                        {
+                            "type": "indirizzo",
+                            "name": "Indirizzo"
+                        }
+                    ]
+                },
+                {"name": "selectfeature",
+                    "options": {
+                        "idLayer": "L26,L27,L28",
+                        "flagSelezioneSingola": true,
+                        "radius": 5
+                    }
+                },
+                {"name": "routeplanner",
+                    "options": {
+                        "flagLimitaTerritorioLigure": "true"
+                    }
+                },
+                {"name": "s3ricerche",
+                    "options": {
+                        id: "s3ricerche",
+                        url: "/sigmater/script/CwRicercaParticellaRepertorio.asp",
+                        render: "panel"
+                    }
+                } ,
+                {"name": "print" }
+            ]
+        };
+
+        var toolbarConfig = {
+            "itemGroups": [
+                navigazione,
+                //misurazioni,
+                avanzate
+            ]
+        };
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    //"maxScale": "50000",
+                    //"restrictedExtent": "830036,5402959,1123018,5597635",
+                    "displayProjection": "EPSG:3003"
+                },
+                "layout": {
+                    "statusBar": true,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east",
+                        "collapsed": false
+                    },
+                    "widgets": [
+                        { "name": "ScaleCombo" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": toolbarConfig
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base" },
+                { "type": "rl_ortofoto_2013" },
+                { "type": "rl_carte_base"},
+                { "type": "google_satellite", "visible": true}
+                /*,
+                { "type": "OSM" },
+                { "type": "google_terrain" },
+                { "type": "google_roadmap" },
+                { "type": "bing_aerial", "visible": true}
+                */
+            ],
+            "layers": []
+        };
+
+        var idMap = decodeURIComponent(getUrlParam('id'));
+        var target = decodeURIComponent(getUrlParam('target'));
+        var geoserverUrl = decodeURIComponent(getUrlParam('geoserver_url')) + "/";
+
+        switch (target) {
+            case "PROD":
+                geoserverUrl = "http://geoservizi.regione.liguria.it/";
+                break;
+            case "PROD_MASTER":
+                geoserverUrl = "http://geoservizi.regione.liguria.it:8080/";
+                break;
+            case "PROD_SLAVE1":
+                geoserverUrl = "http://geoservizi.regione.liguria.it:8081/";
+                break;
+            case "PROD_SLAVE2":
+                geoserverUrl = "http://geoservizi.regione.liguria.it:8082/";
+                break;
+            case "PROD_SLAVE3":
+                geoserverUrl = "http://geoservizi.regione.liguria.it:8083/";
+                break;
+            case "TEST":
+                geoserverUrl = "http://geoservizi.datasiel.net:8080/";
+                break;
+        }
+
+        CWN2.app.load({
+            appConfig: config,
+            divID: "cwn2_map",
+            idMap: idMap,
+            flagGeoserver: true,
+            geoserverUrl: geoserverUrl,
+            debug: true
+        });
+
+    } //eo launch
+
+});
+
+function getUrlParam (paramName) {
+    var results = new RegExp("[\\?&]" + paramName + "=([^&#]*)").exec(window.location.href);
+    return results ? decodeURIComponent(results[1]) : null;
+}
+
+</script>
+
+<div id="cwn2_map"></div>
+
+
+</body>
+</html>

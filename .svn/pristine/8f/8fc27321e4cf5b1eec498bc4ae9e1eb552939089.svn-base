@@ -1,0 +1,93 @@
+
+<html> 
+    <head> 
+        <title>Applicazioni ed esempi cwn2</title> 
+	</head>
+	<body>
+
+
+
+        <br>
+        <b>APPLICAZIONI</b>
+        <br><br>
+        <a href='apps/Geoportale/GeoportalViewer.html?title=RCL+-+Rete+Ciclabile+Regionale+-+ed.+2013&resource=wms%3Ahttp%3A%2F%2Fwww.cartografiarl.regione.liguria.it%2Fmapserver%2Fmapserv.exe%3FMAP%3DE%3A%2FProgetti%2Fmapfiles%2Frepertoriocartografico%2FTRASPORTI%2F1595.map%26REQUEST%3DGetCapabilities%26SERVICE%3DWMS%26VERSION%3D1.3'>Geoportal Viewer</a><br>
+        <a href='apps/repertorio/repertorio.html?id=56'>Repertorio Cartografico RL</a><br>
+        <a href='http://geoportale.regione.liguria.it/geoviewer/pages/apps/repertorio/repertorio.html?id=56'>Repertorio Cartografico RL (ESERCIZIO)</a><br>
+        <a href='apps/repertorio/selezione_fogli.html?cod_catalogo=63&cod_formato=SU%20CARTA&cod_supporto=1.3&numero_ordine=&dom=03'>Repertorio - Selezione fogli per acquisto</a><br>
+        <br>
+        <a href='http://localhost/Fototeca/Fototeca.html'>Fototeca</a><br>
+        <a href='apps/PTR/MappaPTR.html'>PTR - Mappa</a><br>
+        <a href='apps/SICoast/Mappa.html?id=1231'>SICoast</a><br>
+        <a href='apps/Biomassa/Mappa.html'>Biomassa - Mappa</a><br>
+        <a href='apps/vincoli/mappa.html'>Vincoli</a><br>
+        <br>
+        <a href='apps/corem/VisualizzazioneSpecie.html'>COREM/BIODIVAM - Visualizzazione Distribuzione Specie</a><br>
+        <a href='apps/Libioss/SelezioneHabitat.html?ID_SESSION=1'>LIBIOSS - Selezione Habitat</a><br>
+        <a href='apps/Libioss/SelezioneSpecie.html?ID_SESSION=1&TIPO=4'>LIBIOSS - Selezione Specie</a><br>
+        <a href='apps/Libioss/SelezioneCoordinate.html?ID_SESSION=1'>LIBIOSS - Selezione Coordinate</a><br>
+        <a href='apps/Libioss/FindHabitat.html?ID_LAYER=P&ID_STAZ=15188'>LIBIOSS - Find Habitat</a><br>
+        <a href='apps/corem/Cartografia.html?ID_MAP=1662'>LIBIOSS - Cartografia Specie</a><br>
+        <br>
+        <a href='http://localhost/Sigmater/script/requestIntraGenio.asp?LAYER=PRATICA&CODICE=ES01526'>Sigmater - GenioWeb Intra GE</a><br>
+        <br>
+        <a href='apps/scaridri/MappaFind.html?CODICE_CONDOTTA=008065E'>SCARIDRI - Find</a><br>
+        <a href='apps/ambienteinliguria/gestionale.html?idRichiesta='>AmbienteInLiguria - Gestionale</a><br>
+        <a href='apps/ambienteinliguria/mappa.html?id=1277'>AmbienteInLiguria - Cartografia </a><br>
+        <br>
+        <a href='apps/geostyler/geostyler.html?id=1700'>GeoStyler</a><br>
+        <a href='http://geoportale.regione.liguria.it/geoviewer/pages/apps/geostyler/geostyler.html?id=1700'>GeoStyler (ESERCIZIO)</a><br>
+        <br>
+        <a href='apps/qpg/statistica.html?id=1700'>QPG</a><br>
+
+
+        <br><br>
+        <b>TEST</b>
+        <br><br>
+        <a href='test/base.html'>Base CWN2.1</a><br>
+        <a href='test/mapproxy.html'>MapProxy</a><br>
+        <a href='test/geoserver.html?id=56'>GeoServer</a><br>
+
+
+<!--
+        <br>
+        <b>Esempi</b>
+        <br><br>
+        <a href='esempi/EsempioSimple.html'>Layout di tipo Simple con caricamento dinamico di feature (via javascript)</a><br>
+        <a href='esempi/EsempioPanel.html'>Layout di tipo Panel (div all'interno della pagina)</a><br>
+        <a href='esempi/EsempioWindow.html'>Layout di tipo Window (finestra in pop-up)</a><br>
+        <a href='esempi/EsempioWFS.html'>Esempio di livelli WFS/GeoJSON MapServer</a><br>
+        <a href='esempi/EsempioSfondi.html'>Esempio sfondi disponibili</a><br>
+        <a href='esempi/EsempioSinglePointEditing.html'>Esempio Editing (punto singolo)</a><br>
+        <a href='esempi/EsempioEditing.html'>Esempio Editing</a><br>
+        <a href='esempi/EsempioCluster.html'>Esempio Cluster</a><br>
+        <a href='esempi/EsempioMappaCatalogo.html?ID_MAP=56'>Esempio Mappa Catalogo SIT</a><br>
+        <a href='esempi/EsempioFindWMS.html?ID_MAP=56&FIND_LAYER=L3&FIND_FIELD=ID&FIND_VALUES=30|31'>Esempio Find WMS</a><br>
+        <a href='esempi/EsempioAcquisizioneCoordinate.html'>Esempio Acquisizione Coordinate</a><br>
+        <a href='esempi/EsempioCaricamentoFeaturePerIndirizzo.html'>Esempio Caricamento Feature Per Indirizzo</a><br>
+
+
+        <br>
+        <b>Test Applicativi</b>
+        <br><br>
+        <a href='test/TestFunzioni.html'>Test Funzioni Base</a><br>
+        <a href='test/TestAlfaGis.html?idRichiesta=77289215632491&debug=true'>Test AlfaGis</a><br>
+        <a href='test/TestInfoWms.html?idMap=56'>Test InfoWms</a><br>
+
+        <br>
+        <b>Test Suite</b>
+        <br><br>
+        <a href='/geoviewer/lib/Cwn2/test/CWN2_UNIT_TEST.html'>Unit Test</a><br>
+        <a href='/geoviewer/lib/Cwn2/test/CWN2_SYSTEM_TEST.html'>System Test</a><br>
+        <a href='/geoviewer/lib/Cwn2/test/CWN2_INTEGRATION_TEST.html'>Integration Test</a><br>
+-->
+<!--
+        <br>
+        <b>Prove</b>
+        <br><br>
+        <a href='prove/ProvaSquadri5000.html'>Prova Squadri 5000</a><br><br>
+        <a href='prove/ProvaPrestazioni.html'>Prova Livelli Chrome</a><br><br>
+-->
+
+	</body>
+</html>
+

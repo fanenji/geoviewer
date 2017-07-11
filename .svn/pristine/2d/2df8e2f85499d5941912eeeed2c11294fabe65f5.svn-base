@@ -1,0 +1,102 @@
+{
+  "StyledLayerDescriptor": {
+    "NamedLayer": {
+      "Name": "4588",
+      "UserStyle": {
+        "Name": "4588",
+        "FeatureTypeStyle": {
+          "Name": "name",
+          "Rule": [
+            {
+              "Name": "R0",
+              "Title": "POLYGON / Fill Simple + Stroke Simple",
+              "PolygonSymbolizer": {
+                "Fill": {
+                  "CssParameter": [
+                    {
+                      "_name": "fill",
+                      "__text": "#00ff00"
+                    },
+                    {
+                      "_name": "fill-opacity",
+                      "__text": "0.24"
+                    }
+                  ]
+                },
+                "Stroke": {
+                  "CssParameter": [
+                    {
+                      "_name": "stroke",
+                      "__text": "#fdff00"
+                    },
+                    {
+                      "_name": "stroke-width",
+                      "__text": "4"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "Name": "LABEL",
+              "MaxScaleDenominator": "100000.0",
+              "TextSymbolizer": {
+                "Label": {
+                  "PropertyName": "NUMERO_PRATICA"
+                },
+                "Font": {
+                  "CssParameter": [
+                    {
+                      "_name": "font-family",
+                      "__text": "Verdana"
+                    },
+                    {
+                      "_name": "font-size",
+                      "__text": "8"
+                    },
+                    {
+                      "_name": "font-style",
+                      "__text": "normal"
+                    },
+                    {
+                      "_name": "font-weight",
+                      "__text": "normal"
+                    }
+                  ]
+                },
+                "LabelPlacement": {
+                  "PointPlacement": {
+                    "AnchorPoint": {
+                      "AnchorPointX": "0.5",
+                      "AnchorPointY": "0.5"
+                    }
+                  }
+                },
+                "Halo": {
+                  "Radius": "3",
+                  "Fill": {
+                    "CssParameter": {
+                      "_name": "fill",
+                      "__text": "#F5FFFA"
+                    }
+                  }
+                },
+                "Fill": {
+                  "CssParameter": {
+                    "_name": "fill",
+                    "__text": "#000000"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "_xmlns": "http://www.opengis.net/sld",
+    "_xmlns:sld": "http://www.opengis.net/sld",
+    "_xmlns:ogc": "http://www.opengis.net/ogc",
+    "_xmlns:gml": "http://www.opengis.net/gml",
+    "_version": "1.0.0"
+  }
+}

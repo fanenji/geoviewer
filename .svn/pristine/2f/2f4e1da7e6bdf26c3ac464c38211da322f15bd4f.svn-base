@@ -1,0 +1,96 @@
+{
+  "StyledLayerDescriptor": {
+    "NamedLayer": {
+      "Name": "4594",
+      "UserStyle": [
+        {
+          "Name": "4594",
+          "FeatureTypeStyle": {
+            "Name": "name",
+            "Rule": [
+              {
+                "Name": "R0",
+                "Title": "POINT / Graphic",
+                "PointSymbolizer": {
+                  "Graphic": {
+                    "ExternalGraphic": {
+                      "OnlineResource": {
+                        "_xmlns:xlink": "http://www.w3.org/1999/xlink",
+                        "_xlink:type": "simple",
+                        "_xlink:href": "http://geoportale.regione.liguria.it/geoservices/geoserver_sld/sld/img/point-black.png"
+                      },
+                      "Format": "image/png"
+                    },
+                    "Size": "10"
+                  }
+                }
+              },
+              {
+                "Name": "LABEL",
+                "Title": "",
+                "MaxScaleDenominator": "100000.0",
+                "TextSymbolizer": {
+                  "Label": {
+                    "PropertyName": "NUMERO_PRATICA"
+                  },
+                  "Font": {
+                    "CssParameter": [
+                      {
+                        "_name": "font-family",
+                        "__text": "Verdana"
+                      },
+                      {
+                        "_name": "font-size",
+                        "__text": "8"
+                      },
+                      {
+                        "_name": "font-style",
+                        "__text": "normal"
+                      },
+                      {
+                        "_name": "font-weight",
+                        "__text": "normal"
+                      }
+                    ]
+                  },
+                  "LabelPlacement": {
+                    "PointPlacement": {
+                      "AnchorPoint": {
+                        "AnchorPointX": "1",
+                        "AnchorPointY": "1"
+                      },
+                      "Displacement": {
+                        "DisplacementX": "5",
+                        "DisplacementY": "5"
+                      }
+                    }
+                  },
+                  "Halo": {
+                    "Radius": "3",
+                    "Fill": {
+                      "CssParameter": {
+                        "_name": "fill",
+                        "__text": "#F5FFFA"
+                      }
+                    }
+                  },
+                  "Fill": {
+                    "CssParameter": {
+                      "_name": "fill",
+                      "__text": "#000000"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "_xmlns": "http://www.opengis.net/sld",
+    "_xmlns:sld": "http://www.opengis.net/sld",
+    "_xmlns:ogc": "http://www.opengis.net/ogc",
+    "_xmlns:gml": "http://www.opengis.net/gml",
+    "_version": "1.0.0"
+  }
+}

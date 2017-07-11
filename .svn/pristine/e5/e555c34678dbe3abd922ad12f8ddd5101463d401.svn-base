@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+    <title>Visualizzazione Info Cella</title>
+
+
+
+
+</head>
+
+<body>
+
+<div id="mapdiv"></div>
+
+<script>
+
+    var getUrlParam = function(paramName) {
+        var results = new RegExp("[\\?&]" + paramName + "=([^&#]*)").exec(window.location.href);
+        return results ? decodeURIComponent(results[1]) : null;
+    };
+
+    var geometria = decodeURIComponent(getUrlParam('ID_OSS')).replace("70","");
+    var layer = decodeURIComponent(getUrlParam('LAYER'));
+    var ruolo = decodeURIComponent(getUrlParam('RUOLO'));
+
+
+    if (layer === null) {
+        document.write("Nessuna scheda trovata")
+    } else {
+        window.location.href = "http://www.cartografiarl.regione.liguria.it/mapfiles/info/repertoriocartografico/siraLibiossHabitat_Dettagli.asp?layer=" + layer + "&geometria=" + geometria;
+    }
+
+</script>
+
+</body>
+</html>
+		

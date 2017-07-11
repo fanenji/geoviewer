@@ -1,0 +1,80 @@
+/**
+ *
+ * Class: CWN2.SimpleLegendPanel
+ *
+ * Pannello contenente la legenda di tipo ?simple?.
+ *
+ * Estende Ext.Panel
+ *
+ */
+
+Ext.define('CWN2.SimpleLegendPanel', {
+
+    extend: 'Ext.panel.Panel',
+
+    /**
+     *
+     * Constructor: CWN2.SimpleLegendPanel
+     * Costruisce il pannello legenda.
+     *
+     * Parameters:
+     * flagBtn - {Boolean} Indica se è richiamato dal bottone simpleLegend
+     *
+     * Return:
+     * {CWN2.SimpleLegendPanel}
+     *
+     */
+
+    constructor: function(flagBtn) {
+        /*global CWN2:false, window:false, OpenLayers:false, Ext:false, GeoExt:false */
+        "use strict";
+        CWN2.Util.log("CWN2.SimpleLegendPanel");
+
+        var legendConfig = CWN2.app.configuration.application.layout.legend,
+            panelId = (flagBtn) ? "cwn2-legend-panel-btn" : "cwn2-legend-panel";
+
+        var pos,
+            collapsed,
+            collapsible,
+            overlayGrid,
+            baseGrid;
+
+        if (legendConfig) {
+            pos = legendConfig.position || "east";
+            collapsed = (flagBtn) ? false : legendConfig.collapsed || false;
+            collapsible = (!flagBtn);
+        }
+
+        overlayGrid = new CWN2.SimpleLegendGridPanel("overlay");
+        baseGrid = new CWN2.SimpleLegendGridPanel("base");
+        var map = CWN2.app.map;
+
+        // Gestisco l'update della legenda sull'evento "zoomend" della mappa
+        map.events.register("zoomend",
+            map,
+            function(e) {
+                overlayGrid.getView().refresh();
+                baseGrid.getView().refresh();
+            }
+        );
+
+        var config = {
+            id: panelId,
+            width: 230,
+            autoScroll: true,
+            height: 100,
+            region: pos,
+            border: false,
+            collapsible: collapsible,
+            collapsed: collapsed,
+            items: [overlayGrid, baseGrid]
+        };
+
+        CWN2.SimpleLegendPanel.superclass.constructor.call(this, config);
+
+    }
+});
+
+	
+
+

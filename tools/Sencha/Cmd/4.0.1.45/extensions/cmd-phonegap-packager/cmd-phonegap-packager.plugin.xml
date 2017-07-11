@@ -1,0 +1,170 @@
+<!--
+    Copyright (c) 2012-2013, Sencha Inc.
+-->
+<project name="cmd-phonegap-packager">
+    <property name="help.sencha.phonegap"
+              value="Manage Cmd/PhoneGap integration"/>
+
+    <target name="sencha-phonegap-init" description="Adds PhoneGap Support to your application">
+        <if>
+            <isset property="app.dir"/>
+            <then>
+                 <if>
+                    <available file="${app.dir}/.sencha/app/cordova-impl.xml"/>
+                    <then>
+                        <echo>You cannot have PhoneGap and Cordova in the same Application</echo>
+                        <echo>You can remove Cordova by running 'sencha cordova remove'</echo>
+                    </then>
+                    <else>
+                        <if>
+                            <available file="${app.dir}/.sencha/app/phonegap-impl.xml"/>
+                            <then>
+                                <echo>This Application already has PhoneGap Packager Integration</echo>
+                            </then>
+                            <else>
+                                <x-ant-call target="init-phonegap"/>
+                            </else>
+                        </if>
+                    </else>
+                </if>
+            </then>
+            <else>
+                <echo>PhoneGap can only be initialized inside a Sencha Application folder</echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="sencha-phonegap-remove" description="Removes PhoneGap Support to your application">
+        <if>
+            <isset property="app.dir"/>
+            <then>
+                <x-ant-call target="remove-phonegap"/>
+            </then>
+            <else>
+                <echo>This command must be run from inside a Sencha Application folder</echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="init-phonegap">
+        <echo>Adding PhoneGap to Application</echo>
+        <x-script-def name="detect-phonegap-packager-enabled">
+            <![CDATA[
+                importPackage(com.sencha.util);
+                var framework = project.getProperty("framework.name");
+                
+                var frameworkVersion = String(project.getProperty("framework.version"));
+                frameworkVersion = new Version(frameworkVersion.replace(/[a-z]/gi, ""));
+                
+                if(framework == "ext" || (framework == "touch" && frameworkVersion.compareTo("2.3") >= 0)) {
+                    project.setProperty("phonegap.packager.enabled", "true");
+                } else {
+                    console.log("PhoneGap requires Sencha Touch 2.3 or greater")
+                    project.setProperty("phonegap.packager.enabled", "false");
+                }
+            ]]>
+        </x-script-def>
+        <detect-phonegap-packager-enabled/>
+
+        <if>
+            <equals arg1="${phonegap.packager.enabled}" arg2="true"/>
+            <then>
+                <echo>Adding PhoneGap template files</echo>
+                 <x-generate dir="${cmd.dir}/extensions/cmd-phonegap-packager/templates/App" todir="${app.dir}"
+                            store="${app.dir}/.sencha/app/codegen.json"
+                            basedir="${app.dir}">
+                </x-generate>
+
+                <echo>Adding Native properties</echo>
+                <x-property-file file="${app.dir}/.sencha/app/native.properties">
+                        <entry type="string"
+                            operation="="
+                            key="build.dir"
+                            value="${app.phonegap.www.dir}"/>
+                </x-property-file>
+
+                <x-property-file file="${app.dir}/.sencha/app/build.properties">
+                    <entry type="string"
+                            operation="="
+                            key="app.phonegap.dir"
+                            value="$${app.dir}/phonegap"/>
+                        <entry type="string"
+                            operation="="
+                            key="app.phonegap.www.dir"
+                            value="${app.phonegap.dir}/www"/>
+                </x-property-file>
+
+                <echo>Patching build.xml for PhoneGap Support</echo>
+
+                <!-- Some IDEs do not support showing targets from multiple nextes imports, so we append this at the top -->
+                <replace file="${app.dir}/build.xml">
+                <replacetoken><![CDATA[<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacetoken>
+                <replacevalue><![CDATA[<import file="${basedir}/.sencha/app/phonegap-impl.xml"/>
+<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacevalue>
+                </replace> 
+
+                <property name="app.phonegap.dir" value="${app.dir}/phonegap"/>
+                <property name="app.phonegap.www.dir" value="${app.phonegap.dir}/www"/>
+
+                <if>
+                    <isset property="args.0"/>
+                    <then>
+                        <property name="phonegap.id" value="${args.0}"/>
+                    </then>
+                    <else>
+                        <property name="phonegap.id" value="foo.bar.${app.name}"/>
+                        <echo>ApplicationID was NOT specified, defaulting to ${phonegap.id}. You can edit this in your PhoneGap config.json</echo>
+                    </else>
+                </if>
+                <property name="phonegap.id" value="foo.bar.${app.name}"/>
+
+                <if>
+                    <isset property="args.1"/>
+                    <then>
+                        <property name="phonegap.name" value="${args.1}"/>
+                    </then>
+                </if>
+                <property name="phonegap.name" value="${app.name}"/>
+
+
+                <echo>Building PhoneGap App</echo>
+                <x-shell reloadprofile="true" dir="${app.dir}">
+                    phonegap create "${app.phonegap.dir}" ${phonegap.id} ${phonegap.name}
+                </x-shell>
+
+                 <echo>Adding PhoneGap config.xml to App</echo>
+                <copy file="${app.phonegap.www.dir}/config.xml" todir="${app.dir}"/>
+
+                <property name="TAB" value="&#x9;"/>
+                <echo>Adding phonegap.js to app.json</echo>
+                <replace file="${app.dir}/app.json" token='"js": [' value='"js": [${line.separator}${TAB}${TAB}{${line.separator}${TAB}${TAB}${TAB}"path": "phonegap.js",${line.separator}${TAB}${TAB}${TAB}"remote": true${line.separator}${TAB}${TAB}},'/>
+
+                <echo>Adding config.xml to Resources in app.json</echo>
+                <replace file="${app.dir}/app.json" token='"resources": [' value='"resources": [${line.separator}${TAB}${TAB}"config.xml",'/>
+            </then>
+        </if>
+    </target>
+
+    <target name="remove-phonegap" description="Removes PhoneGap Support from your application">
+        <echo>Removing PhoneGap from Application</echo>
+        <replace file="${app.dir}/build.xml">
+        <replacevalue><![CDATA[<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacevalue>
+        <replacetoken><![CDATA[<import file="${basedir}/.sencha/app/phonegap-impl.xml"/>
+<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacetoken>
+        </replace> 
+
+        <delete dir="${app.dir}/phonegap"/>
+        <delete file="${app.dir}/config.xml"/>
+        <delete file="${app.dir}/phonegap.local.properties"/>
+        <delete file="${app.dir}/.sencha/app/phonegap-impl.xml"/>
+
+        <replace file="${app.dir}/.sencha/app/native.properties" token="build.dir=${app.phonegap.www.dir}" value=""/>
+        <replace file="${app.dir}/.sencha/app/build.properties" token="app.phonegap.dir=${app.dir}/phonegap" value=""/>
+        <replace file="${app.dir}/.sencha/app/build.properties" token="app.phonegap.www.dir=${app.phonegap.dir}/www" value=""/>
+
+        <property name="TAB" value="&#x9;"/>
+        <replace file="${app.dir}/app.json" value='"js": [' token='"js": [${line.separator}${TAB}${TAB}{${line.separator}${TAB}${TAB}${TAB}"path": "phonegap.js",${line.separator}${TAB}${TAB}${TAB}"remote": true${line.separator}${TAB}${TAB}},'/>
+        <replace file="${app.dir}/app.json" value='"resources": [' token='"resources": [${line.separator}${TAB}${TAB}"config.xml",'/>
+    </target>
+
+</project>

@@ -1,0 +1,261 @@
+
+
+
+BODY 
+{ 
+	background-color:#ffffff; width:100%; color:blue; font-family: Verdana; 
+}
+
+#TITOLO { 
+  font-size:16px;
+}
+
+
+#LEGTABLE
+{
+	font-size:10px
+}
+
+@import url(../../../vincoli/cssFiles/basicLayout.css);
+
+.nascosta {
+	position: absolute;
+	top: -100px;
+	
+}
+
+body a {
+	color: #811354;
+	background-color:#FFFFFF;
+	text-decoration:none;
+	font-weight:bold;
+}
+
+img {
+	border:0px;
+}
+
+#container {
+	width:944px;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+	/*background-color:#fff;*/
+	background-image: url(../img/linea_pagina.gif);
+	background-repeat: repeat-y;	
+}
+
+
+content a{
+	color:#811354;
+	background-color: #ffffff;
+}
+#content {
+	padding-bottom: 10px;
+}
+#header {margin: 0px;color:#FFFFFF;background-color:#ff8106;height:85px;clear: both;}
+
+
+#subheader {
+	margin: 0px;
+	background-color:#eca393;
+	color:black;
+	text-align: right;
+	text-decoration: none;
+	clear: both;
+	height: auto;
+	border-bottom-style: solid;
+	border-bottom-color: #FF8106;
+	border-bottom-width: 1px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	font-weight: bold;
+	padding: 5px;
+}
+#loghi_dx {
+	float:right;margin: 0px;height:84px;
+}
+#loghi_sx {
+	float:left;margin: 0px;height:84px;
+}
+#content{
+
+} 
+#fasciaSX{
+	margin:0px;
+	padding:0px;
+	float:left;
+	width:50px;
+		/*clear:right;*/
+	/*border: 1px solid #000;*/
+}
+
+
+#dati{
+	float:left;
+	padding:5px;
+	width:42%;
+} 
+#dati p{
+	color:#000000;
+	background-color: #ffffff;
+	margin-top:5px;
+	margin-left:5px;
+	
+}
+#dati h1{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #000000;
+	margin-left:40px;
+}
+.hidden {
+	visibility: hidden;
+	width: 1px;
+	height: 1px;
+	font-size: 1pt;
+}
+
+form 
+{
+	text-align:left;
+	margin: 0px;
+	padding:0px;
+}
+form br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
+}
+
+fieldset
+{
+    padding-right: 0.1em;
+    margin-top: 0.5em;
+    padding-left:5px;
+    padding-bottom: 0.5em;
+    margin-left: 30px;
+    margin-right: 0px;
+    padding-top: 0.5em;
+}
+
+
+fieldset legend
+{
+	padding-right: 0.5ex;
+	padding-left: 0.4ex;
+	padding-bottom: 0.1ex;
+	color: #000;
+	padding-top: 0.1ex;
+	font-weight:bold;
+	/*width: 10em;*/
+}
+form input, form textarea, form select {
+	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
+	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
+	margin:5px 0 0 5px; /* set margin on left of form elements rather than right of
+                              label aligns textarea better in IE */
+}
+
+form label { 
+	display: block;  /* block float the labels to left column, set a width */
+	float: left; 
+	width: 20%; 
+	padding: 0; 
+	margin: 10px 0 0 0px; /* set top margin same as form input - textarea etc. elements */
+	text-align: right; 
+	font-weight:bold;
+}
+
+.nolabel 	{display:none;}
+
+#testo{
+	color:#000000;
+	float:right;
+	width:500px;
+	margin-top: 20px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	margin-left: 0px;
+	padding-top: 20px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	overflow:hidden;
+}
+
+#footer{
+	color: #ffffff;
+	background-color: #811354;
+	margin:0px;
+	clear:both;
+	
+}	
+#footer_left{
+	float:left;
+	width:12%;
+	margin: 0px;
+	padding: 1%;
+	
+
+}
+.footer_left_p{
+	font-family: "Times New Roman", Times, serif;
+	font-size: 1.2em;
+	font-style: normal;
+	/*color: #ffffff;*/
+	text-decoration: none;
+	text-align: left;
+}
+#footer_middle{
+	float:left;
+	width:70%;
+	margin: 0px;
+	padding: 1%;
+	/*background-color: #811354;
+	*/
+}
+.footer_middle_p{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.9em;
+	font-style: normal;
+	/*color: #ffffff;*/
+	text-decoration: none;
+	text-align: center;
+}
+#footer_right{
+	float:left;
+	width:12%;
+	margin: 0px;
+	padding: 1%;
+	/*
+	background-color: #811354;
+	*/
+}
+
+div.clearer {clear: left; line-height: .1em; height: 0;}
+table {
+	width: 100%;
+}
+.scheda {
+	width: 1%;
+}
+
+
+.tdCol {
+	background-color: #becefb;
+	width: 97%;
+}
+.carta {
+	width: 1%;
+}
+
+.tdTrans {
+	background-color: #ffffff;
+	width: 40%;
+}
+
+#footer a{
+color:#ffffff;
+background-color:#811354;
+}

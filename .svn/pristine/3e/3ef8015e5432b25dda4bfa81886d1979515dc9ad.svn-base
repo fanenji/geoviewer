@@ -1,0 +1,15 @@
+Ext.define('CWN2.button.GeocoderCombo', {
+    alias: 'widget.cwn2-combo-geocoder',
+
+    constructor: function(config) {
+
+        return Ext.create("CWN2.GeocoderComboBox", {
+            id: 'combo-geocoder',
+            map: CWN2.app.map,
+            hilite: false,
+            service: "google",
+            width: 200
+        });
+    }
+});
+

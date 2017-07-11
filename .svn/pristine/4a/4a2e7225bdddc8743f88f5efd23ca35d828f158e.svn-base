@@ -1,0 +1,207 @@
+
+.olControlLoadingPanel {
+    background-image:url("icons/loading.gif");
+/*    margin-left: 40%;
+    margin-top: 25%;*/
+    margin-left: 1px;
+    margin-top: 1px;
+    position: relative;
+    width: 195px;
+    height: 11px;
+    background-position:center;
+    background-repeat:no-repeat;
+    display: none;
+}
+
+.olImageLoadError {
+    background-color: transparent !important;
+}
+
+
+/*!
+ *
+ *  DEFINIZIONE STILE PER POPUP DI DEFAULT
+ *
+ */
+
+
+div.defaultPopUpTitle {
+    font: italic bold 15px arial;
+    text-decoration: underline;
+    color: #4F81BD
+}
+
+div.defaultPopUpLabel {
+    font: 15px arial;
+    color: black
+}
+
+div.defaultPopUpLink {
+    font: 15px arial;
+    color: black
+}
+
+/*!
+ * 
+ *  DEFINIZIONE STILE BOTTONI
+ *  
+ */
+
+.help {
+  background-image:url("icons/help.png") !important;
+}
+.zoomin {
+  background-image:url("icons/magnifier_zoom_in.png") !important;
+}
+.zoomout {
+  background-image:url("icons/magnifier_zoom_out.png") !important;
+}
+.fit {
+  background-image:url("icons/fit_all.png") !important;
+}
+.zoomToInitialExtent {
+  background-image:url("icons/zoomToInitialExtent.png") !important;
+}
+.pan {
+  background-image:url("icons/pan.png") !important;
+}
+.zoomprevious {
+  background-image:url("icons/zoom_previous.png") !important;
+}
+.zoomnext {
+  background-image:url("icons/zoom_next.png") !important;
+}
+.measureline {
+  background-image:url("icons/ruler.png") !important;
+}
+.measurearea {
+  background-image:url("icons/ruler_square.png") !important;
+}
+.loadlayers {
+  background-image:url("icons/load_layers.png") !important;
+}
+.removelayers {
+  background-image:url("icons/remove_layers.png") !important;
+}
+.transparency {
+  background-image:url("icons/transparency.png") !important;
+}
+.find {
+  background-image:url("icons/find.png") !important;
+}
+.routeplanner {
+  background-image:url("icons/routeplanner.png") !important;
+}
+.routeplanner-swap {
+  background-image:url("icons/routeplanner-swap.png") !important;
+}
+.routeplanner-map {
+  background-image:url("icons/routeplanner-map.png") !important;
+}
+.infowms {
+  background-image:url("icons/information.png") !important;
+}
+.drawPoint {
+  background-image:url("icons/drawPoint.png") !important;
+}
+.drawLine {
+  background-image:url("icons/drawLine.png") !important;
+}
+.drawPolygon {
+  background-image:url("icons/drawPolygon.png") !important;
+}
+.modifyFeature {
+  background-image:url("icons/modifyFeature.png") !important;
+}
+.dragFeature {
+  background-image:url("icons/dragFeature.png") !important;
+}
+.deleteFeature {
+  background-image:url("icons/deleteFeature.png") !important;
+}
+.legend {
+  background-image:url("icons/legend.png") !important;
+}
+.select {
+  background-image:url("icons/select.png") !important;
+}
+.s3ricerche {
+  background-image:url("icons/s3ricerche.gif") !important;
+}
+.s3ritorno {
+    background-image:url("icons/S3Ritorno.gif") !important;
+}
+.s3RicercaPraticaGenioWeb {
+  background-image:url("icons/s3RicercaPraticaGenioWeb.gif") !important;
+}
+.metadati {
+    background-image:url("icons/metadati.gif") !important;
+}
+.print {
+    background-image:url("icons/print.png") !important;
+}
+.selezioneCerchio {
+    background-image:url("icons/selezionecerchio.gif") !important;
+}
+.selezioneOggetti {
+    background-image:url("icons/selezioneoggetti.gif") !important;
+}
+.selezionePoligono {
+    background-image:url("icons/selezionepoligono.gif") !important;
+}
+.selezioneRettangolo {
+    background-image:url("icons/selezionerettangolo.gif") !important;
+}
+.selezioneAnnulla {
+    background-image:url("icons/selezioneannulla.gif") !important;
+}
+.styler {
+    background-image:url("icons/styler.png") !important;
+}
+.tematismi {
+    background-image:url("icons/tematismi.gif") !important;
+}
+
+.risknat {
+    background-image:url("icons/risknat.gif") !important;
+}
+
+/**
+ * Bing Maps
+ */
+.olBingAttribution {
+    color: #DDD;
+}
+.olBingAttribution.road {
+    color: #333;
+}
+.olControlAttribution {
+    bottom: 5px;
+}
+
+/**
+ * Table disabilito border per ExtJS
+ */
+
+tr, td
+{
+	border:none !important;
+}
+
+/**
+ * disabilito cella selezionata per simpleLegendGrid ExtJS
+
+.x-grid-row .x-grid-cell-selected {
+    background-color: #ffffff !important;
+}
+*/
+
+/**
+ * disabilito righe alternate
+*/
+
+/*
+.x-grid-row-alt .x-grid-td {
+    background-color: #ffffff !important;
+}
+*/

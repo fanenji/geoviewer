@@ -1,0 +1,76 @@
+
+
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="index, all" />
+    <title>ol3cesium exported methods example</title>
+    <link rel="stylesheet" href="/geoviewer/lib/ol3-cesium-v1.0.0/ol3/css/ol.css" type="text/css">
+    <script src="/geoviewer/lib/ol3-cesium-v1.0.0/ol3/ol-debug.js"></script>
+    <script src="/geoviewer/lib/ol3-cesium-v1.0.0/Cesium/Cesium.js"></script>
+    <script src="/geoviewer/lib/ol3-cesium-v1.0.0/ol3cesium.js"></script>
+
+</head>
+<body>
+<div id="map" style="width:1200px;height:900px;float:left;"></div>
+
+
+
+<script>
+    var TMSlayer = new ol.layer.Tile({
+        name: 'TMS',
+        source: new ol.source.XYZ({
+            tileUrlFunction: function(coordinate) {
+                if(coordinate == null){
+                    return "";
+                }
+                var z = coordinate[0];
+                //var y = coordinate[1];
+                var x = coordinate[1];
+                var y = (1 << z) - coordinate[2] - 1;
+//                return '/geoservices/proxy/proxy.jsp?url=http://mapproxy.regione.liguria.it/mapproxy/1661/tms/1.0.0/L4419/webmercator/'+z+'/'+x+'/'+y+'.png';
+                return '/geoservices/proxy/proxy.jsp?url=http://geoservizi.datasiel.net:8080/geoserver/gwc/service/tms/1.0.0/M56%3AL3@EPSG%3A900913@png/'+z+'/'+x+'/'+y+'.png';
+
+            }
+        })
+    });
+    var OSMLayer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+    var BingLayer = new ol.layer.Tile({
+        visible: false,
+        preload: Infinity,
+        source: new ol.source.BingMaps({
+            key: 'Agzh6x2xuNQ4qhwHW_yc0Yd8vhb-5pMRsAHjkneosLHLesOAGqxv35yqxZBlqqVa',
+            imagerySet: 'Aerial'
+        })
+    });
+
+    var ol2d = new ol.Map({
+        layers: [
+            TMSlayer
+        ],
+        target: 'map',
+        view: new ol.View({
+            center: [943030,5487256],
+            zoom: 9
+        })
+    });
+
+    var ol3d = new olcs.OLCesium(ol2d);
+    var scene = ol3d.getCesiumScene();
+    var terrainProvider = new Cesium.CesiumTerrainProvider({
+        url : '//cesiumjs.org/stk-terrain/tilesets/world/tiles'
+    });
+    scene.terrainProvider = terrainProvider;
+
+    ol3d.setEnabled(true);
+    var camera = ol3d.getCamera();
+
+
+</script>
+</body>
+</html>
+

@@ -1,0 +1,4 @@
+#Tue Jul 07 17:18:08 CEST 2015
+repo.remote.priority=0
+repo.remote.url=http\://cdn.sencha.com/cmd/packages/
+repo.remote.type=HTTP

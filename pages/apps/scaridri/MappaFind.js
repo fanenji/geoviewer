@@ -1,0 +1,97 @@
+
+Ext.application({
+    name: 'ScaridriFind',
+
+    launch: function() {
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    "restrictedExtent": "830036,5402959,1123018,5597635"
+                },
+                "layout": {
+                    "statusBar": true,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east",
+                        "collapsed": false
+                    },
+                    "widgets": [
+                        { "name": "Scale" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": {
+                        "itemGroups": [
+                            {
+                                "items": [
+                                    { "name": "pan" },
+                                    { "name": "zoomin" },
+                                    { "name": "zoomout" },
+                                    { "name": "fitall" },
+                                    { "name": "zoomToInitialExtent" },
+                                    { "name": "zoomprevious" },
+                                    { "name": "zoomnext" }
+                                ]
+                            },
+                            {
+                                "items": [
+                                    { "name": "measureline" },
+                                    { "name": "measurearea" }
+                                ]
+                            },
+                            {
+                                "items": [
+                                    {"name": "infowms" },
+                                    {"name": "transparency" },
+                                    {"name": "loadlayers",
+                                        "panels": [
+                                            {
+                                                "type": "mapTree",
+                                                "name": "Repertorio Cartografico",
+                                                "options": {
+                                                    "treeServiceUrl": "http://geoportale.regione.liguria.it/geoservices/REST/config/rep_carto_tree/03"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {"name": "removelayers" },
+                                    {"name": "routeplanner", "options": { "flagLimitaTerritorioLigure": "true" }},
+                                    {"name": "print" },
+                                    {"type": "combo", "name": "geocoder"}
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base" },
+                { "type": "OSM" },
+                { "type": "rl_ortofoto_2013" },
+                { "type": "google_terrain" },
+                { "type": "google_roadmap" },
+                { "type": "google_satellite", "visible": true}
+            ]
+        };
+
+        // imposto i parametri leggendo la querystring
+        var idMap = decodeURIComponent(CWN2.Util.getUrlParam('ID_MAP'));
+        var idLayer = "L" + decodeURIComponent(CWN2.Util.getUrlParam('ID_LAYER'));
+        var campoPk = decodeURIComponent(CWN2.Util.getUrlParam('FIELD'));
+        var values = decodeURIComponent(CWN2.Util.getUrlParam('CODICE_CONDOTTA')); //008065E
+
+        // carico la mappa
+        CWN2.app.load({
+            appConfig: config,
+            proxy: "/geoservices/proxy/proxy.jsp?url=",
+            idMap: idMap,
+            findOptions: {
+                layers: [idLayer],
+                fields: campoPk,
+                values: values,
+                zoomLevel: null
+            },
+            debug: false
+        });
+    }
+});

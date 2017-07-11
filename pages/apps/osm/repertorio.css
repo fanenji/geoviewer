@@ -1,0 +1,21 @@
+body {
+    background-color: #9CC;
+}
+
+#gptMainWrap {
+    margin: 0pt auto;
+    width: 880px;
+    width: expression(document.body.clientWidth > 1070 ? "1068px" : "auto" );
+    border-left: 1px #666666;
+    border-right: 1px #666666;
+    padding: 0;
+    position: static;
+}
+
+#titolo {
+    color: #295758;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: tahoma, arial, verdana, sans-serif;
+    border-color: #78bec0;
+}

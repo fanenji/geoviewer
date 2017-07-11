@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Test leaflet ldMaps</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="/geoviewer/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="test.css" />
+</head>
+<body>
+<div id="map"></div>
+<script src="/geoviewer/lib/jQuery/jquery-1.7.min.js"></script>
+<script src="/geoviewer/lib/leaflet/leaflet.js"></script>
+
+<script src="ldMaps.js"></script>
+<script src="test.js"></script>
+
+</body>
+</html>

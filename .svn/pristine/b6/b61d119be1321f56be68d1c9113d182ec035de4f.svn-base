@@ -1,0 +1,1 @@
+Contiene le immagini per la vestizione delle pagine di info

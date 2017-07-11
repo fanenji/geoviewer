@@ -1,0 +1,609 @@
+<!DOCTYPE HTML>
+
+<html> 
+    <head> 
+        <title>Esempio Panel</title> 
+        <meta charset="UTF-8">
+
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="/cartowebNet2/lib/ExtJs/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="/cartowebNet2/lib/ExtJs/resources/css/xtheme-gray.css" />
+        <link rel="stylesheet" type="text/css" href="/cartowebNet2/stili/default/base.css" />
+		<!-- librerie js -->
+        <script src="http://maps.google.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+		<script src="/cartowebNet2/lib/OL/OpenLayers.js" type="text/javascript"></script>
+        <!-- proj4js -->
+		<script src='/cartowebNet2/lib/proj4js/lib/proj4js-min.js'></script>
+		<!-- jQuery -->
+        <script src="/cartowebNet2/lib/jQuery/jquery-1.7.min.js"></script>
+		<!-- ExtJs -->
+        <script src="/cartowebNet2/lib/ExtJs/ext-all-full.js"></script>
+ 		<!-- GeoExt -->
+		<script src="/cartowebNet2/lib/GeoExt/script/GeoExt.js"></script>
+		<!-- CWN2 -->
+		<script src="/cartowebNet2/lib/Cwn2/cwn2-debug.js"></script>
+
+	</head>
+	<body>
+
+		<br><br>
+		Esempio di layout di tipo "Panel". <br><br>
+		La mappa viene visualizzata all'interno di un div della pagina. <br><br>
+		Vengono evidenziati dinamicamente (via javascript) gli oggetti con ID=1 e ID=2<br><br>
+		<!-- div contenente la mappa -->
+		<div id="mappanel"></div>
+
+
+		<!-- codice js della applicazione -->
+		<script>
+				
+			Ext.onReady(function() {
+			
+			    //Ext.QuickTips.init();
+
+                var config = {
+                   "_id": "EsempioPanel",
+                   "_rev": "24-43f20a6c91387e2e1684521795c380d4",
+                   "descrizione": "Esempio Panel",
+                   "application": {
+                       "id": 1,
+                       "name": "Repertorio Cartografico Regione Liguria",
+                       "codRepertorio": "03",
+                       "mapOptions": {
+                           "restrictedExtent": "830036,5402959,1123018,5597635",
+                           "olControls": [
+                               {
+                                   "name": "LayerSwitcher2"
+                               },
+                               {
+                                   "name": "Zoom"
+                               }
+                           ]
+                       },
+                       "layout": {
+                           "id": 1,
+                           "type": "panel",
+                           "title": "Esempio Panel",
+                           "language": "it",
+                           "statusBar": true,
+                           "extRequired": true,
+                           "width": 800,
+                           "height": 600,
+                           "legend": null,
+                           "widgets": [
+                               {
+                                   "id": 1,
+                                   "type": "widget",
+                                   "name": "Scale"
+                               },
+                               {
+                                   "id": 2,
+                                   "type": "widget",
+                                   "name": "CoordinateReadOut"
+                               }
+                           ],
+                           "toolbar": {
+                               "id": 1,
+                               "name": "ToolBar Prova su EULERO",
+                               "itemGroups": [
+                                   {
+                                       "name": "navigazione",
+                                       "items": [
+                                           {
+                                               "type": "button",
+                                               "name": "pan",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "zoomin",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "zoomout",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "fitall",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "zoomToInitialExtent",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "zoomprevious",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "zoomnext",
+                                               "options": {
+                                               }
+                                           }
+                                       ]
+                                   },
+                                   {
+                                       "name": "misurazioni",
+                                       "items": [
+                                           {
+                                               "type": "button",
+                                               "name": "measureline",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "measurearea",
+                                               "options": {
+                                               }
+                                           }
+                                       ]
+                                   },
+                                   {
+                                       "name": "avanzate",
+                                       "items": [
+                                           {
+                                               "type": "button",
+                                               "name": "transparency",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "loadlayers",
+                                               "options": {
+                                                   "getLayersConfigServiceUrl": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/services/configuration/getLayersConfig.ashx?idLayers=",
+                                                   "getCanaliTematiciServiceUrl": "http://parodis-dts-pc.datasiel.net/cartowebnet2/services/Configuration/getCanaliTematiciTree.ashx?idApp=",
+                                                   "panels": "canali"
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "removelayers",
+                                               "options": {
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "find",
+                                               "options": {
+                                                   "panels": "indirizzo"
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "routeplanner",
+                                               "options": {
+                                                   "flagLimitaTerritorioLigure": "true"
+                                               }
+                                           },
+                                           {
+                                               "type": "button",
+                                               "name": "simpleLegend",
+                                               "options": {
+                                               }
+                                           }
+                                       ]
+                                   }
+                               ]
+                           }
+                       }
+                   },
+                    "baseLayers": [
+                        {
+                            "id": 5,
+                            "idAppl": 1,
+                            "idBaseLayer": 1,
+                            "type": "no_base",
+                            "name": "sfondo_bianco",
+                            "minZoomLevel": 0,
+                            "maxZoomLevel": 0,
+                            "projection": null,
+                            "legend": {
+                                "label": "Sfondo Bianco",
+                                "icon": "http://srvcarto.regione.liguria.it/CartoWebNet2/img/legend/bianco.gif",
+                                "popUpUrl": null,
+                                "popUpWidth": 0,
+                                "popUpHeight": 0
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "bing_road",
+                            "name": "bing_road",
+                            "legend": {
+                                "label": "Bing Road",
+                                "icon": "http://srvcarto.regione.liguria.it/CartoWebNet2/img/legend/bing.jpeg"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "bing_hybrid",
+                            "name": "bing_hybrid",
+                            "legend": {
+                                "label": "Bing Hybrid",
+                                "icon": "http://srvcarto.regione.liguria.it/CartoWebNet2/img/legend/bing.jpeg"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "bing_aerial",
+                            "name": "bing_aerial",
+                            "legend": {
+                                "label": "Bing Aerial",
+                                "icon": "http://srvcarto.regione.liguria.it/CartoWebNet2/img/legend/bing.jpeg"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "google_roadmap",
+                            "name": "google_roadmap",
+                            "legend": {
+                                "label": "Google Stradario",
+                                "icon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/legend/google.png"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "google_hybrid",
+                            "name": "google_hybrid",
+                            "legend": {
+                                "label": "Google Ibrido",
+                                "icon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/legend/google.png"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "google_terrain",
+                            "name": "google_terrain",
+                            "legend": {
+                                "label": "Google Terreno",
+                                "icon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/legend/google.png"
+                            },
+                            "visible": false
+                        },
+                        {
+                            "type": "google_satellite",
+                            "name": "google_satellite",
+                            "legend": {
+                                "label": "Google Satellite",
+                                "icon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/legend/google.png"
+                            },
+                            "visible": true
+                        }
+                    ],
+                   "layers": [
+                       {
+                           "id": 1,
+                           "idMap": 56,
+                           "type": "WMS",
+                           "name": "L1",
+                           "visible": true,
+                           "projection": "EPSG:3003",
+                           "attribution": null,
+                           "minScale": 0,
+                           "maxScale": 0,
+                           "opacity": 0.5,
+                           "legend": {
+                               "label": "Provinciè",
+                               "icon": "http://dcarto3.datasiel.net/mapfiles/repertoriocartografico/CONFINI/legenda/L1.png",
+                               "popUpUrl": null,
+                               "popUpWidth": 0,
+                               "popUpHeight": 0
+                           },
+                           "classes": [
+                               {
+                                   "id": 1000,
+                                   "idLayer": 1,
+                                   "numClass": 0,
+                                   "filter": null,
+                                   "legendLabel": "Classe Base",
+                                   "legendIcon": null,
+                                   "styleMaps": [
+                                       {
+                                           "id": 1,
+                                           "idLayer": 1,
+                                           "idClass": 1000,
+                                           "renderIntent": null,
+                                           "style": {
+                                               "fillColor": "100",
+                                               "fillOpacity": 1,
+                                               "strokeColor": "003",
+                                               "strokeOpacity": 1,
+                                               "strokeWidth": 2,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": null,
+                                               "graphicWidth": 0,
+                                               "graphicHeight": 0,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": 0,
+                                               "graphicYOffset": 0,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "cursor": null,
+                                               "display": null
+                                           }
+                                       }
+                                   ]
+                               }
+                           ],
+                           "wmsParams": {
+                               "url": "http://dcarto3.datasiel.net/mapserver/mapserv.exe?MAP=E:/progetti/mapfiles/repertoriocartografico/CONFINI/56.map&",
+                               "name": "L1",
+                               "transparent": true
+                           }
+                       },
+                       {
+                           "type": "GeoJSON",
+                           "name": "Prova",
+                           "projection": "EPSG:4326",
+                           "visible": true,
+                           "url": "http://dcarto3.datasiel.net/MapServer/6.0/mapserv.exe?MAP=E:\\progetti\\mapfiles\\test\\test.map&SERVICE=WFS&VERSION=1.0.0&REQUEST=getfeature&TYPENAME=GNSS&OUTPUTFORMAT=GeoJSON",
+                           "infoOptions": {
+                               "infoPopUp": "default",
+                               "infoLabelAttr": "NOME",
+                               "idAttr": "ID",
+                               "infoUrl": "${FOTO}",
+                               "infoTarget": "_blank"
+                           },
+                           "legend": {
+                               "label": "GNSS da Servizio GeoJSON",
+                               "icon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/alien.png"
+                           },
+                           "classes": [
+                               {
+                                   "filter": "ID = '1' OR ID = '2' OR ID = '3'",
+                                   "legendLabel": "Classe 1",
+                                   "legendIcon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/alien.png",
+                                   "styleMaps": [
+                                       {
+                                           "renderIntent": "default",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/alien.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "cursor": "pointer",
+                                               "graphicTitle": "${NOME}",
+                                               "display": null
+                                           }
+                                       },
+                                       {
+                                           "renderIntent": "hilite",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/alien_h.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       },
+                                       {
+                                           "renderIntent": "select",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/alien_s.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       },
+                                       {
+                                           "renderIntent": "hover",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/alien_s.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       }
+                                   ]
+                               },
+                               {
+                                   "filter": "ID = '5' OR ID = '4' OR ID = '6'",
+                                   "legendLabel": "Classe 2",
+                                   "legendIcon": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/ufo.png",
+                                   "styleMaps": [
+                                       {
+                                           "renderIntent": "default",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/ufo.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       },
+                                       {
+                                           "renderIntent": "hilite",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/ufo_h.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       },
+                                       {
+                                           "renderIntent": "select",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/ufo_s.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       },
+                                       {
+                                           "renderIntent": "hover",
+                                           "style": {
+                                               "fillColor": null,
+                                               "fillOpacity": 0,
+                                               "strokeColor": null,
+                                               "strokeOpacity": 0,
+                                               "strokeWidth": 0,
+                                               "strokeLinecap": null,
+                                               "strokeDashstyle": null,
+                                               "pointRadius": 0,
+                                               "externalGraphic": "http://parodis-dts-pc.datasiel.net/CartoWebNet2/img/icons/events/ufo_s.png",
+                                               "graphicWidth": 32,
+                                               "graphicHeight": 37,
+                                               "graphicOpacity": 1,
+                                               "graphicXOffset": -16,
+                                               "graphicYOffset": -37,
+                                               "rotation": 0,
+                                               "graphicName": null,
+                                               "graphicTitle": "${NOME}",
+                                               "cursor": "pointer",
+                                               "display": null
+                                           }
+                                       }
+                                   ]
+                               }
+                           ]
+                       }
+                   ]
+                };
+				
+				// Funzione che effettua l'highlite delle feature.
+                // app e' l'istanza di CWN2.Application
+				var hilite = function(app) {
+					var hiliteConf = {
+						"layerName": "Prova",
+						"filter" : {
+							"type": "BY_ATTRIBUTE",
+							"attrName": "ID",
+							"items": ["1","2"]
+						},
+						"options": {
+							"zoom": true
+						}
+					};
+					app.hiliteFeatures(hiliteConf);
+				};
+			
+				var initConfig = {
+					appConfig: config,
+					divID: 'mappanel',
+					callBack: hilite,
+                    proxy: "/CartoWebNet2/services/proxy/proxy.ashx?url=",
+					debug:true
+				};
+				var app = new CWN2.Application(initConfig);
+
+			});
+			
+		</script> 
+
+	</body>
+</html>

@@ -1,0 +1,292 @@
+/*
+ *  Class: OpenLayersExt.js
+ *  
+ *  Estensioni delle classi Openlayers.
+ *
+ *  Vengono implementati OVERRIDE di metodi OL per rimediare bug o personalizzare il comportamento
+ *  
+ */
+
+
+
+/*
+ *  Function: OpenLayers.Layer.Vector.setOpacity
+ *  
+ *  Serve per rimediare un bug OL:
+ *
+ *  Se ho attivo il controllo SelectFeature su più di un livello vettoriale il metodo non funziona.
+ *
+ *  Bisogna intervenire non sul livello stesso (this) ma sul layer di tipo RootContainer e in
+ *      particolare sul div che ha id = Layer.id + "_root"
+ *  
+ *  
+ */
+OpenLayers.Layer.Vector.prototype.setOpacity = function(opacity) {
+
+
+    //	CWN2.Util.log('Openlayers.Layer.Vector.setOpacity');
+
+    if (opacity != this.opacity) {
+        this.opacity = opacity;
+        for (var i = 0, len = this.div.childNodes.length; i < len; ++i) {
+            if (this.div.childNodes[i].firstChild) {
+                var element = this.div.childNodes[i].firstChild;
+                OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, opacity);
+            } else {
+                var elementRoot = document.getElementById(this.id + "_root");
+                if (elementRoot) {
+                    OpenLayers.Util.modifyDOMElement(elementRoot, null, null, null, null, null, null, opacity);
+                }
+            }
+        }
+        if (this.map != null) {
+            this.map.events.triggerEvent("changelayer", {
+                layer: this,
+                property: "opacity"
+            });
+        }
+    }
+};
+
+/*
+ *  Function: OpenLayers.Feature.isSelected
+ *
+ *
+ *  Nuovo metodo: ritorna true se la feature è tra quelle selezionate
+ *
+ */
+
+OpenLayers.Feature.prototype.isSelected = function() {
+
+    var selected = this.layer.selectedFeatures;
+
+    for (var i = 0; i < selected.length; i++) {
+        if (this === selected[i]) {
+            return true;
+        }
+    }
+    return false;
+
+};
+
+/*
+ *  Function: OpenLayers.Control.WMSGetFeatureInfo.findLayers
+ *
+ *
+ *  Override metodo findLayer: verifica che il layer sia nel range di scala
+ *
+ */
+
+OpenLayers.Control.WMSGetFeatureInfo.prototype.findLayers = function() {
+
+    var candidates = this.layers || this.map.layers;
+    var layers = [];
+    var layer, url;
+    for (var i = candidates.length - 1; i >= 0; --i) {
+        layer = candidates[i];
+// INIZIO MODIFICHE - verifico che il layer sia nel range di scala
+        if (layer instanceof OpenLayers.Layer.WMS &&
+            (!this.queryVisible || layer.getVisibility()) &&
+            layer.inRange) {
+//            if(layer instanceof OpenLayers.Layer.WMS &&
+//               (!this.queryVisible || layer.getVisibility())) {
+// FINE MODIFICHE
+            url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
+            // if the control was not configured with a url, set it
+            // to the first layer url
+            if (this.drillDown === false && !this.url) {
+                this.url = url;
+            }
+            if (this.drillDown === true || this.urlMatches(url)) {
+                layers.push(layer);
+            }
+        }
+    }
+    return layers;
+};
+
+/*
+ *  Function: OpenLayers.Control.WMSGetFeatureInfo.addLayers
+ *
+ *
+ *  Nuova funzione: permette di aggiungere layers all'array dei layer interrogabili
+ *
+ * Parameters:
+ * layers - {Array} Array dei layer OL da aggiungere
+ *
+ */
+
+OpenLayers.Control.WMSGetFeatureInfo.prototype.addLayers = function(layers) {
+
+    if (!this.layers) {
+        this.layers = [];
+    }
+    for (var i = 0; i < layers.length; i++) {
+        this.layers.push(layers[i])
+    }
+
+};
+
+/**
+ * Class: OpenLayers.Strategy.RuleCluster
+ * Strategy for vector feature clustering according to a given rule.
+ *
+ * Inherits from:
+ *  - <OpenLayers.Strategy.Cluster>
+ */
+OpenLayers.Strategy.RuleCluster = OpenLayers.Class(OpenLayers.Strategy.Cluster, {
+    /**
+     * the rule to use for comparison
+     */
+    rule: null,
+    /**
+     * Method: shouldCluster
+     * Determine whether to include a feature in a given cluster.
+     *
+     * Parameters:
+     * cluster - {<OpenLayers.Feature.Vector>} A cluster.
+     * feature - {<OpenLayers.Feature.Vector>} A feature.
+     *
+     * Returns:
+     * {Boolean} The feature should be included in the cluster.
+     */
+    shouldCluster: function(cluster, feature) {
+        var superProto = OpenLayers.Strategy.Cluster.prototype;
+        return this.rule.evaluate(cluster.cluster[0]) &&
+            this.rule.evaluate(feature) &&
+            superProto.shouldCluster.apply(this, arguments);
+    },
+    CLASS_NAME: "OpenLayers.Strategy.RuleCluster"
+});
+
+/*
+ *  Function: OpenLayers.Strategy.Cluster.cluster
+ *
+ *
+ *  Override metodo cluster: se un cluster è formato da una sola feature eredita gli attributi della feature
+ *
+ */
+// COMMENTO PERCHE' NON FUNZIONA CON NUOVA VERSIONE OL
+/*
+OpenLayers.Strategy.Cluster.prototype.cluster = function(event) {
+
+    if ((!event || event.zoomChanged) && this.features) {
+        var resolution = this.layer.map.getResolution();
+        if (resolution != this.resolution || !this.clustersExist()) {
+            this.resolution = resolution;
+            var clusters = [];
+            var feature, clustered, cluster;
+            for (var i = 0; i < this.features.length; ++i) {
+                feature = this.features[i];
+                if (feature.geometry) {
+                    clustered = false;
+                    for (var j = clusters.length - 1; j >= 0; --j) {
+                        cluster = clusters[j];
+                        if (this.shouldCluster(cluster, feature)) {
+                            this.addToCluster(cluster, feature);
+                            clustered = true;
+                            break;
+                        }
+                    }
+                    if (!clustered) {
+                        clusters.push(this.createCluster(this.features[i]));
+                    }
+                }
+            }
+            this.layer.removeAllFeatures();
+            if (clusters.length > 0) {
+                if (this.threshold > 1) {
+                    var clone = clusters.slice();
+                    clusters = [];
+                    var candidate;
+                    for (var i = 0, len = clone.length; i < len; ++i) {
+                        candidate = clone[i];
+                        if (candidate.attributes.count < this.threshold) {
+                            Array.prototype.push.apply(clusters, candidate.cluster);
+                        } else {
+                            clusters.push(candidate);
+                        }
+                    }
+                }
+                // INIZIO MODIFICHE - se cluster contiene una sola feature copio gli attributi della feature nel cluster
+                for (var i = 0, len = clusters.length; i < len; ++i) {
+                    cluster = clusters[i];
+                    if (cluster.attributes.count === 1) {
+                        feature = cluster.cluster[0].clone();
+                        cluster.attributes = feature.attributes;
+                        cluster.attributes.count = 1;
+                    }
+                }
+                // FINE MODIFICHE
+                this.clustering = true;
+                // A legitimate feature addition could occur during this
+                // addFeatures call.  For clustering to behave well, features
+                // should be removed from a layer before requesting a new batch.
+                this.layer.addFeatures(clusters);
+                this.clustering = false;
+            }
+            this.clusters = clusters;
+        }
+    }
+};
+
+*/
+
+/*
+ *  Function: OpenLayers.Bounds.transform
+ *
+ *
+ *  Override: Inserito hack per conversione gauss-boaga (shift coordinate)
+ *
+ * Parameters:
+ * layers - {Array} Array dei layer OL da aggiungere
+ *
+ */
+
+OpenLayers.Bounds.transform = function(source, dest) {
+
+    // clear cached center location
+    this.centerLonLat = null;
+    var ll = OpenLayers.Projection.transform(
+        {'x': this.left, 'y': this.bottom}, source, dest);
+    var lr = OpenLayers.Projection.transform(
+        {'x': this.right, 'y': this.bottom}, source, dest);
+    var ul = OpenLayers.Projection.transform(
+        {'x': this.left, 'y': this.top}, source, dest);
+    var ur = OpenLayers.Projection.transform(
+        {'x': this.right, 'y': this.top}, source, dest);
+    this.left   = Math.min(ll.x, ul.x);
+    this.bottom = Math.min(ll.y, lr.y);
+    this.right  = Math.max(lr.x, ur.x);
+    this.top    = Math.max(ul.y, ur.y);
+
+    // INIZIO MODIFICHE - HACK per Conversione GaussBoaga
+    if (source.projCode === "EPSG:3003") {
+        this.top = this.top + parseInt(120);
+        this.bottom = this.bottom + parseInt(120);
+        this.left = parseInt(this.left) - parseInt(40);
+        this.right = parseInt(this.right) - parseInt(40);
+    }
+    // FINE MODIFICHE
+
+    return this;
+
+};
+
+/*
+ *  Function: OpenLayers.Format.Filter.v1_1_0.prototype.readers.ogc.Literal
+ *
+ *
+ *  Override: non effettuo conversione in numerico perchè vengono eliminati eventuali "0" da campi alfanumerici
+ *  Es: "08" --> 8
+ *
+ *
+ */
+
+
+OpenLayers.Format.Filter.v1_1_0.prototype.readers.ogc.Literal = function(node, obj) {
+    //obj.value = OpenLayers.String.numericIf(
+    //    this.getChildValue(node), true);
+
+    obj.value = this.getChildValue(node);
+}

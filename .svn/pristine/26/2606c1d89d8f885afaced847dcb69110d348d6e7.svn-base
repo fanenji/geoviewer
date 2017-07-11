@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+
+    <title>Test base CWN2.1</title>
+
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/extjs/resources/css/ext-all-gray.css"/>
+    <link rel="stylesheet" type="text/css" href="/geoviewer/stili/default/base.css"/>
+
+    <!--         <script type="text/jvascript" src="/geoviewer/lib/ExtJs4/ext-all-debug.js"></script> -->
+    <!--         <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script> -->
+    <!--         <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext.js"></script> -->
+
+    <script type="text/javascript" src="/geoviewer/lib/ExtJs/ext-debug.js"></script>
+
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.2&language=it"></script>
+    <script src="/geoviewer/lib/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+    <script src='/geoviewer/lib/proj4js/lib/proj4js-min.js'></script>
+
+    <script src="/geoviewer/lib/Cwn2/cwn2-debug.js"></script>
+
+</head>
+<body>
+
+<script>
+
+Ext.application({
+
+    name: 'CWN2_APP',
+
+    ricercaParticellaCatastale: function (codiceLivello, bounds, layer, chiave, valore) {
+        var searchBounds = (CWN2.app.map.projection !== "EPSG:3003")?
+                OpenLayers.Bounds.fromString(CWN2.Util.transformStrBounds("EPSG:3003", CWN2.app.map.projection, bounds)) :
+                OpenLayers.Bounds.fromString(bounds);
+
+        if (!CWN2.app.map.restrictedExtent.containsBounds(searchBounds,true)) {
+            CWN2.Util.messageBox("Il risultato è fuori dai limiti della mappa!");
+            return;
+        }
+
+
+        CWN2.app.findWMS({
+            layerName: "L" + codiceLivello,
+            fields: chiave,
+            values: valore,
+            maxZoomLevel: 16,
+            bounds: searchBounds
+        });
+    },
+
+    testZoomify: function() {
+        var imgUrl = "http://geoportale.regione.liguria.it/Fototeca/voli/VOLO62/003_1097/";
+
+        var win = new Ext.Window({
+            title: "test zoomify",
+            id: "foto-win",
+            height: 500,
+            width: 500,
+            layout: "fit",
+            resizable: false
+        });
+
+        var foto = new CWN2.ZoomifyPanel({
+            imgUrl: imgUrl,
+            win: win
+        });
+    },
+
+    buildConfigStore: function() {
+
+        Ext.define('CWN2.Configuration', {
+            extend: 'Ext.data.Model',
+            fields: ['application', 'baseLayers', 'layers', 'descrizione']
+        });
+
+        var configurationStore = new Ext.data.Store({
+            storeId: 'config',
+            data: CWN2.app.configuration,
+            model: 'CWN2.Configuration',
+            getConfiguration: function() {
+                return this.data.items[0].data;
+            },
+            getLayers: function() {
+                return this.data.items[0].data.layers;
+            },
+            getBaseLayers: function() {
+                return this.data.items[0].data.baseLayers;
+            },
+            getToolbarButtons: function() {
+                var buttons = [];
+                var groups = this.data.items[0].data.application.layout.toolbar.itemGroups;
+                groups.map(function(group) {
+                    group.items.map(function(button) {
+                        buttons.push(button)
+                    });
+                });
+                return buttons;
+            }
+        });
+
+        //console.log(configurationStore.getToolbarButtons())
+
+    },
+
+    impostaFunzioniCallback: function() {
+        var callBacks = {
+            "submit": function(data) {
+                console.log(data);
+            },
+            "cancel": function(data) {
+                Ext.MessageBox.confirm(
+                        CWN2.I18n.get('Conferma'),
+                        CWN2.I18n.get('Sei sicuro?'),
+                        function(btn) {
+                            if (btn === "yes") {
+                                console.log(data);
+                            }
+                        }
+                );
+            }
+        };
+        CWN2.app.setButtonOption("coordinate", "callBacks", callBacks);
+        CWN2.app.setButtonOption("selectfeature", "callBacks", callBacks);
+    },
+
+    init: function() {
+        CWN2.loadingScreen = Ext.getBody().mask('Caricamento Applicazione', 'loadingscreen');
+    },
+
+    launch: function() {
+        var navigazione = {
+            "items": [
+                { "name": "pan" },
+                { "name": "zoomin" },
+                { "name": "zoomout" },
+                { "name": "fitall" },
+                { "name": "zoomToInitialExtent" },
+                { "name": "zoomprevious" },
+                { "name": "zoomnext" }
+            ]
+        };
+
+        var misurazioni = {
+            "items": [
+                { "name": "measureline" },
+                { "name": "measurearea" }
+            ]
+        };
+
+        var avanzate = {
+            "name": "avanzate",
+            "items": [
+                {"name": "infowms" },
+                {"name": "transparency" },
+                {"name": "loadlayers",
+                    "panels": [
+                        {
+                            "type": "layerTree",
+                            "name": "Temi",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/corem/load_layer_tree/",
+                                "layersConfigServiceUrl": "/geoservices/REST/corem/load_layer_config/"
+                            }
+                        },
+                        {
+                            "type": "mapTree",
+                            "name": "PTR",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/config/ag_canale_tree/102"
+                            }
+                        },
+                        {
+                            "type": "mapTree",
+                            "name": "Repertorio Cartografico",
+                            "options": {
+                                "treeServiceUrl": "/geoservices/REST/config/rep_carto_tree/03"
+                            }
+                        }
+                    ]
+                },
+                {"name": "removelayers" },
+                {"name": "find",
+                    "panels": [
+                        {
+                            "type": "layer",
+                            "name": "Livello"
+                        },
+                        {
+                            "type": "indirizzo",
+                            "name": "Indirizzo"
+                        }
+                    ]
+                },
+                {"name": "selectfeature",
+                    "options": {
+                        "idLayer": "L26,L27,L28",
+                        "flagSelezioneSingola": true,
+                        "radius": 5
+                    }
+                },
+                {"name": "routeplanner",
+                    "options": {
+                        "flagLimitaTerritorioLigure": "true"
+                    }
+                },
+                {"name": "s3ricerche",
+                    "options": {
+                        id: "s3ricerche",
+                        url: "/sigmater/script/CwRicercaParticellaRepertorio.asp",
+                        render: "panel"
+                    }
+                }
+            ]
+        };
+
+        var editing = {
+            "items": [
+                {"name": "drawPoint"},
+                {"name": "drawLine"},
+                {"name": "drawPolygon"},
+                {"name": "drawRegularPolygon", "options": {"singleFeature": true}},
+                {"name": "modifyFeature"},
+                {"name": "dragFeature"},
+                {"name": "deleteFeature"},
+                {"name": "coordinate"}
+            ]
+        };
+
+        var combo = {
+            "items": [
+                {"type": "combo", "name": "geocoder"}
+            ]
+        };
+
+        var legenda = {
+            "align": "right",
+            "items": [
+                {"name": "simpleLegend"}
+            ]
+        };
+
+        var toolbarConfig = {
+            "itemGroups": [
+                navigazione,
+                misurazioni,
+                avanzate,
+                editing,
+                combo,
+                legenda
+            ]
+        };
+
+        var config = {
+            "application": {
+                "mapOptions": {
+                    //"maxScale": "50000",
+                    "restrictedExtent": "830036,5402959,1123018,5597635"
+                },
+                "layout": {
+//                               "header": {
+//                                   "html": "<div><table><tr><td><img src='http://srvcarto.regione.liguria.it/geoviewer/img/logo_regioneliguria.jpg' ></td><td>&nbsp;&nbsp;</td><td><div id='titolo'></div></td></tr></table></div>",
+//                                   "height": 85,
+//                                   "style": {
+//                                       "background-color":"#66999A"
+//                                   }
+//                               },
+                    "statusBar": true,
+//                               "legend": null,
+                    "legend": {
+                        "type": "simple",
+                        "position": "east",
+                        "collapsed": false
+                    },
+                    "widgets": [
+                        { "name": "Scale" },
+                        { "name": "CoordinateReadOut" }
+                    ],
+                    "toolbar": toolbarConfig
+                }
+            },
+            "baseLayers": [
+                { "type": "no_base" },
+                { "type": "rl_carte_base", visible: true},
+                { "type": "rl_ortofoto_2010" },
+                { "type": "OSM" },
+                { "type": "bing_aerial"},
+                { "type": "bing_road" },
+                { "type": "bing_hybrid" },
+                { "type": "google_roadmap" },
+                { "type": "google_hybrid" },
+                { "type": "google_terrain" },
+                { "type": "google_satellite" },
+                {
+                    "wmsParams": {
+                        "url": "http://mapproxy.regione.liguria.it/mapproxy/1505/service?",
+                        "name": "L3861",
+                        "transparent": true,
+                        "format": "image/png"
+                    },
+                    "type": "WMS",
+                    "name": "L3861",
+                    "projection": "EPSG:3003",
+                    "geomType": "RASTER",
+                    "geomSubType": "RASTER",
+                    "legend": {
+                        "label": "Ortofoto AGEA 2010 MapProxy WMS Cache",
+                        "icon": "/geoviewer/img/legend/raster.gif"
+                    },
+                    "visible": false
+                },
+                {
+                    "type": "MapProxyTMS",
+                    "url": "http://mapproxy.regione.liguria.it/mapproxy/1587/tms/",
+                    "name": "L4101/webmercator",
+                    "visible": false,
+                    "minScale": 10000,
+                    "maxScale": 1000,
+                    "maxZoomLevel": 17,
+                    "projection": "EPSG:3857",
+                    "attribution": "Regione Liguria",
+                    "legend": {
+                        "label": "CTR 1:5000",
+                        "icon": "/geoviewer/img/legend/raster.gif"
+                    }
+                },
+                {
+                    "type": "MapProxyTMS",
+                    "url": "http://mapproxy.regione.liguria.it/mapproxy/1407/tms/",
+                    "name": "L3627/webmercator",
+                    "visible": false,
+                    "minScale": 20000,
+                    "maxScale": 1000,
+                    "maxZoomLevel": 16,
+                    "projection": "EPSG:3857",
+                    "attribution": "Regione Liguria",
+                    "legend": {
+                        "label": "CTR 1:10000",
+                        "icon": "/geoviewer/img/legend/raster.gif"
+                    }
+                },
+                {
+                    "type": "MapProxyTMS",
+                    "url": "http://mapproxy.regione.liguria.it/mapproxy/7/tms/",
+                    "name": "L2073/webmercator",
+                    "visible": false,
+                    "maxScale": 0,
+                    "maxZoomLevel": 16,
+                    "projection": "EPSG:3857",
+                    "attribution": "Regione Liguria",
+                    "legend": {
+                        "label": "CTR 1:25000",
+                        "icon": "/geoviewer/img/legend/raster.gif"
+                    }
+                }
+            ],
+            "layers": [
+
+            ]
+        };
+
+        var findOptions = {
+            layerName: "L3",
+            fields: "ID",
+            values: ["30", "31"],
+            zoomLevel: null
+        };
+
+        CWN2.app.load({
+            appConfig: config,
+            divID: "cwn2_map",
+            //callBack: this.impostaFunzioniCallback,
+            idMap: "56", //"1439",
+            //findOptions: findOptions,
+//            idLayer: "27,28",
+//            idLayer: "86,87,88",
+            debug: true
+        });
+
+        getPointCoordinate = function() {
+            var geom = CWN2.Editor.getEditingGeom(CWN2.app.map, null);
+            if (geom) {
+                console.log(geom);
+            } else {
+                console.log(null);
+            }
+        };
+
+    } //eo launch
+
+});
+
+
+</script>
+
+<div id="cwn2_map"></div>
+<input type=button value=' Coordinate ' onclick='javascript:getPointCoordinate();'><br><br>
+
+</body>
+</html>

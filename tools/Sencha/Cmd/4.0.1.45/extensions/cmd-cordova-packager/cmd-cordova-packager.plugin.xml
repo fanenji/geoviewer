@@ -1,0 +1,169 @@
+<!--
+    Copyright (c) 2012-2013, Sencha Inc.
+-->
+<project name="cmd-cordova-packager">
+    <property name="help.sencha.cordova"
+              value="Manage Cmd/Cordova integration"/>
+
+    <target name="sencha-cordova-init" description="Adds Cordova Support to your application">
+        <if>
+            <isset property="app.dir"/>
+            <then>
+                 <if>
+                    <available file="${app.dir}/.sencha/app/phonegap-impl.xml"/>
+                    <then>
+                        <echo>You cannot have PhoneGap and Cordova in the same Application</echo>
+                        <echo>You can remove PhoneGap by running 'sencha phonegap remove'</echo>
+                    </then>
+                    <else>
+                        <if>
+                            <available file="${app.dir}/.sencha/app/cordova-impl.xml"/>
+                            <then>
+                                <echo>This Application already has Cordova Packager Integration</echo>
+                            </then>
+                            <else>
+                                <x-ant-call target="init-cordova"/>
+                            </else>
+                        </if>
+                    </else>
+                </if>
+            </then>
+            <else>
+                <echo>Cordova can only be initialized inside a Sencha Application folder</echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="sencha-cordova-remove" description="Removes Cordova Support to your application">
+        <if>
+            <isset property="app.dir"/>
+            <then>
+                <x-ant-call target="remove-cordova"/>
+            </then>
+            <else>
+                <echo>This command must be run from inside a Sencha Application folder</echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="init-cordova">
+        <echo>Adding Cordova to Application</echo>
+        <x-script-def name="detect-cordova-packager-enabled">
+            <![CDATA[
+                importPackage(com.sencha.util);
+                var framework = project.getProperty("framework.name");
+                
+                var frameworkVersion = String(project.getProperty("framework.version"));
+                frameworkVersion = new Version(frameworkVersion.replace(/[a-z]/gi, ""));
+                
+                if(framework == "ext" || (framework == "touch" && frameworkVersion.compareTo("2.3") >= 0)) {
+                    project.setProperty("cordova.packager.enabled", "true");
+                } else {
+                    console.log("Cordova requires Sencha Touch 2.3 or greater")
+                    project.setProperty("cordova.packager.enabled", "false");
+                }
+            ]]>
+        </x-script-def>
+        <detect-cordova-packager-enabled/>
+
+        <if>
+            <equals arg1="${cordova.packager.enabled}" arg2="true"/>
+            <then>
+                <echo>Adding Cordova template files</echo>
+                 <x-generate dir="${cmd.dir}/extensions/cmd-cordova-packager/templates/App" todir="${app.dir}"
+                            store="${app.dir}/.sencha/app/codegen.json"
+                            basedir="${app.dir}">
+                </x-generate>
+
+                <echo>Adding Native properties</echo>
+                <x-property-file file="${app.dir}/.sencha/app/native.properties">
+                        <entry type="string"
+                            operation="="
+                            key="build.dir"
+                            value="${app.cordova.www.dir}"/>
+                </x-property-file>
+
+                <x-property-file file="${app.dir}/.sencha/app/build.properties">
+                    <entry type="string"
+                            operation="="
+                            key="app.cordova.dir"
+                            value="$${app.dir}/cordova"/>
+                        <entry type="string"
+                            operation="="
+                            key="app.cordova.www.dir"
+                            value="${app.cordova.dir}/www"/>
+                </x-property-file>
+
+                <echo>Patching build.xml for Cordova Support</echo>
+
+                <!-- Some IDEs do not support showing targets from multiple nextes imports, so we append this at the top -->
+                <replace file="${app.dir}/build.xml">
+                <replacetoken><![CDATA[<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacetoken>
+                <replacevalue><![CDATA[<import file="${basedir}/.sencha/app/cordova-impl.xml"/>
+<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacevalue>
+                </replace> 
+
+                <property name="app.cordova.dir" value="${app.dir}/cordova"/>
+                <property name="app.cordova.www.dir" value="${app.cordova.dir}/www"/>
+
+                <if>
+                    <isset property="args.0"/>
+                    <then>
+                        <property name="cordova.id" value="${args.0}"/>
+                    </then>
+                    <else>
+                        <property name="cordova.id" value="foo.bar.${app.name}"/>
+                        <echo>ApplicationID was NOT specified, defaulting to ${cordova.id}. You can edit this in your Cordova config.json</echo>
+                    </else>
+                </if>
+                
+                <if>
+                    <isset property="args.1"/>
+                    <then>
+                        <property name="cordova.name" value="${args.1}"/>
+                    </then>
+                </if>
+                <property name="cordova.name" value="${app.name}"/>
+
+
+                <echo>Building Cordova App</echo>
+                <x-shell reloadprofile="true" dir="${app.dir}">
+                    cordova create "${app.cordova.dir}" ${cordova.id} ${cordova.name}
+                </x-shell>
+
+                 <echo>Adding Cordova config.xml to App</echo>
+                <copy file="${app.cordova.www.dir}/config.xml" todir="${app.dir}"/>
+
+                <property name="TAB" value="&#x9;"/>
+                <echo>Adding cordova.js to app.json</echo>
+                <replace file="${app.dir}/app.json" token='"js": [' value='"js": [${line.separator}${TAB}${TAB}{${line.separator}${TAB}${TAB}${TAB}"path": "cordova.js",${line.separator}${TAB}${TAB}${TAB}"remote": true${line.separator}${TAB}${TAB}},'/>
+
+                <echo>Adding config.xml to Resources in app.json</echo>
+                <replace file="${app.dir}/app.json" token='"resources": [' value='"resources": [${line.separator}${TAB}${TAB}"config.xml",'/>
+            </then>
+        </if>
+    </target>
+
+    <target name="remove-cordova" description="Removes Cordova Support from your application">
+        <echo>Removing Cordova from Application</echo>
+        <replace file="${app.dir}/build.xml">
+        <replacevalue><![CDATA[<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacevalue>
+        <replacetoken><![CDATA[<import file="${basedir}/.sencha/app/cordova-impl.xml"/>
+<import file="${basedir}/.sencha/app/build-impl.xml"/>]]></replacetoken>
+        </replace> 
+
+        <delete dir="${app.dir}/cordova"/>
+        <delete file="${app.dir}/config.xml"/>
+        <delete file="${app.dir}/cordova.local.properties"/>
+        <delete file="${app.dir}/.sencha/app/cordova-impl.xml"/>
+
+        <replace file="${app.dir}/.sencha/app/native.properties" token="build.dir=${app.cordova.www.dir}" value=""/>
+        <replace file="${app.dir}/.sencha/app/build.properties" token="app.cordova.dir=${app.dir}/cordova" value=""/>
+        <replace file="${app.dir}/.sencha/app/build.properties" token="app.cordova.www.dir=${app.cordova.dir}/www" value=""/>
+
+        <property name="TAB" value="&#x9;"/>
+        <replace file="${app.dir}/app.json" value='"js": [' token='"js": [${line.separator}${TAB}${TAB}{${line.separator}${TAB}${TAB}${TAB}"path": "cordova.js",${line.separator}${TAB}${TAB}${TAB}"remote": true${line.separator}${TAB}${TAB}},'/>
+        <replace file="${app.dir}/app.json" value='"resources": [' token='"resources": [${line.separator}${TAB}${TAB}"config.xml",'/>
+    </target>
+
+</project>

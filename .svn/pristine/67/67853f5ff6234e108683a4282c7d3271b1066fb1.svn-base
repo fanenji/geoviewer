@@ -1,0 +1,344 @@
+Ext.define('CWN2.button.SelectFeature', {
+    extend: 'Ext.button.Button',
+    alias: 'widget.cwn2-button-selectfeature',
+
+    constructor: function(config) {
+        this.config = config;
+        var btnOptions = config.options,
+            map = CWN2.app.map,
+            id = "selectfeature",
+            me = this;
+
+        // instanzio i gestori dei layer di evidenziazione (uno per ogni livello)
+        this.layers = btnOptions.idLayer.split(",");
+        this.wmsSldHiliter = {};
+        for (var i = 0; i < this.layers.length; i++) {
+            this.wmsSldHiliter[this.layers[i]] = new CWN2.WmsSldHiliter(map, "_selezione_" + this.layers[i]);
+        }
+
+        // Creo il controllo OL per il bottone
+        var control = new OpenLayers.Control.WMSGetFeatureInfo({
+            layers: null,
+            queryVisible: true,
+            name: "selectfeature",
+            drillDown: true,
+            maxFeatures: 1,
+            vendorParams: (btnOptions.radius) ? {radius: btnOptions.radius} : null,
+            infoFormat: "application/vnd.ogc.gml",
+            output: "object",
+            eventListeners: {
+                getfeatureinfo: function(event) {
+                    me.fireEvent("getfeatureinfo", event);
+                }
+            }
+        });
+
+        map.addControl(control);
+
+        this.superclass.constructor.call(this, Ext.create('GeoExt.Action', {
+            id: id,
+            tooltip: CWN2.I18n.get("Seleziona"),
+            iconCls: (btnOptions && btnOptions.iconCls) ? btnOptions.iconCls : "select",
+            text: (btnOptions && btnOptions.text) ? btnOptions.text : "",
+            width: (btnOptions && btnOptions.width) ? btnOptions.width : 26,
+            enableToggle: true,
+            control: control,
+            toggleGroup: "mapInteractToggleGroup"
+        }));
+    }
+});
+
+Ext.define('CWN2.button.selectFeature.Store', {
+    extend: 'Ext.data.Store',
+    data: [],
+    autoLoad: false,
+    fields: [
+        {
+            name: "ID_LAYER", mapping: "ID_LAYER"
+        },
+        {
+            name: "ID", mapping: "ID"
+        },
+        {
+            name: "LABEL", mapping: "LABEL"
+        }
+    ]
+});
+
+Ext.define('CWN2.button.selectFeature.GridPanel', {
+    extend: 'Ext.grid.Panel',
+    alias: 'widget.cwn2-selectfeature-grid',
+    frame: true,
+    width: 300,
+    height: 300,
+    hideHeaders: true,
+    iconCls: "icon-grid",
+    store: Ext.create('CWN2.button.selectFeature.Store'),
+    columns: [
+        {
+            header: "ID",
+            sortable: true,
+            dataIndex: "ID",
+            width: 70
+        },
+        {
+            header: "LABEL",
+            sortable: true,
+            dataIndex: "LABEL",
+            width: 200
+        },
+        {
+            xtype: 'actioncolumn',
+            header: " ",
+            items: [
+                {
+                    icon: 'http://geoportale.regione.liguria.it/geoviewer/img/silk/delete.png',
+                    tooltip: 'Seleziona per cancellare'
+                }
+            ],
+            width: 30
+        }
+    ]
+});
+
+Ext.define('CWN2.button.selectFeature.Window', {
+    extend: 'Ext.window.Window',
+    alias: 'widget.cwn2-selectfeature-win',
+    title: CWN2.I18n.get("Oggetti Selezionati"),
+    width: 335,
+    height: 360,
+    layout: "fit",
+    closable: false,
+    closeAction: "hide",
+    items: [
+        Ext.create("CWN2.button.selectFeature.GridPanel")
+    ],
+    buttons: [
+        {
+            text: CWN2.I18n.get("Conferma"),
+            action: 'selectfeature-submit'
+        },
+        {
+            text: CWN2.I18n.get("Annulla"),
+            action: 'selectfeature-cancel'
+        }
+    ]
+});
+
+// CONTROLLER
+Ext.define('CWN2.controller.button.selectfeature', {
+    extend: 'Ext.app.Controller',
+
+    views: [
+        'CWN2.button.SelectFeature'
+    ],
+
+    refs: [
+        {
+            ref: 'button',
+            selector: 'cwn2-button-selectfeature'
+        },
+        {
+            ref: 'win',
+            selector: 'cwn2-selectfeature-win'
+        },
+        {
+            ref: 'grid',
+            selector: 'cwn2-selectfeature-grid'
+        }
+    ],
+
+    init: function(application) {
+        CWN2.Util.log('CWN2.controller.button.selectfeature: init');
+
+        this.control({
+            'cwn2-button-selectfeature': {
+                toggle: this.onButtonPress,
+                getfeatureinfo: this.onGetFeatureInfo
+            },
+            'button[action=selectfeature-submit]': {
+                click: this.onSubmitButtonClick
+            },
+            'button[action=selectfeature-cancel]': {
+                click: this.onCancelButtonClick
+            },
+            'cwn2-selectfeature-grid actioncolumn': {
+                click: this.onDeleteClick
+            }
+
+        });
+
+    },
+
+    onSubmitButtonClick: function() {
+        var button = this.getButton(),
+            items = this.getGrid().store.data.items;
+
+        if (items.length === 0) {
+            alert('Selezionare almeno un oggetto');
+            return;
+        }
+        if (button.config.options && button.config.options.callBacks && button.config.options.callBacks["submit"]) {
+            button.config.options.callBacks["submit"](items);
+        } else {
+            CWN2.Util.log("Funzione di callback 'submit' non definita", 1);
+        }
+    },
+
+    onCancelButtonClick: function() {
+        var button = this.getButton(),
+            items = this.getGrid().store.data.items;
+        if (button.config.options && button.config.options.callBacks && button.config.options.callBacks["cancel"]) {
+            button.config.options.callBacks["cancel"](items,this.getButton());
+        } else {
+            CWN2.Util.log("Funzione di callback 'cancel' non definita", 1);
+        }
+    },
+
+    onDeleteClick: function(view, cell, row, col, e) {
+        var me = this;
+        Ext.MessageBox.confirm(
+            CWN2.I18n.get('Conferma'),
+            CWN2.I18n.get('Sei sicuro?'),
+            function(btn) {
+                if (btn === "yes") {
+                    var store = Ext.ComponentQuery.query('cwn2-selectfeature-grid')[0].store;
+                    store.removeAt(row);
+                    me.updateHiliteLayer(store);
+                }
+            }
+        );
+    },
+
+    onGetFeatureInfo: function(event) {
+        this.updateList(event);
+    },
+
+    onButtonPress: function() {
+        var mapPanel = CWN2.app.layout.mapPanel,
+            win = this.getWin(),
+            button = this.getButton(),
+            me = this,
+            map = CWN2.app.map;
+
+        // costruisco la finestra
+        win = this.getWin() || Ext.create("CWN2.button.selectFeature.Window");
+
+        this.showHideWin(win, mapPanel);
+    },
+
+    showHideWin: function(win, mapPanel) {
+        if (!win.isVisible()) {
+            win.show();
+            win.alignTo(mapPanel.body, "tl-tl", [10, 10]);
+        } else {
+            win.hide();
+        }
+    },
+
+    updateList: function(event) {
+        var button = this.getButton(),
+            me = this;
+
+        Ext.each(button.layers, function(idLayer) {
+            var featureGroups = event.features;
+            Ext.each(featureGroups, function(featureGroup) {
+                var features = featureGroup.features;
+                Ext.each(features, function(feature) {
+                    if (feature.type === idLayer) {
+                        updateStore(feature.attributes, idLayer);
+                        return false; // forzo uscita da each
+                    }
+                });
+            });
+        });
+
+        function updateStore(attributes, idLayer) {
+            var record = buildRecordFromFeatureAttributes(attributes, idLayer);
+            var store = Ext.ComponentQuery.query('cwn2-selectfeature-grid')[0].store,
+                idValue = record["ID"],
+                recordIndex = store.findBy(
+                    function(record, id) {
+                        return record.get('ID') === idValue;
+                    }
+                );
+            // se già presente in store lo levo altrimenti lo aggiungo
+            (recordIndex !== -1) ? store.removeAt(recordIndex) : addRecordToStore(store, record);
+            // aggiorno il layer di evidenziazione
+            me.updateHiliteLayer(store);
+        }
+
+        // Aggiungo il record allo store
+        function addRecordToStore(store, rec) {
+            if (button.config.options.flagSelezioneSingola) {
+                store.removeAll();
+            }
+            store.add(rec);
+        }
+
+        // Costruisce un record da aggiungere alla lista delle feature trovate
+        // a partire dalla lista degli attributes della feature
+        function buildRecordFromFeatureAttributes(attributes, idLayer) {
+            var record = null;
+            // prendo idField e labelField da config layer
+            var layerConfig = CWN2.app.map.layerManager.getLayerConfigByName(idLayer);
+            var idField = layerConfig.infoOptions.infoIdAttr;
+            var labelField = layerConfig.infoOptions.infoLabelAttr;
+            // se idField non è impostato mando exception
+            if (!idField) {
+                var exception = {
+                    name: 'BadConfiguration',
+                    message: 'CWN2.button.selectFeature: infoOptions.infoIdAttr non impostato per layer ' + idLayer,
+                    level: 1
+                };
+                CWN2.util.handleException(exception);
+                return null;
+            }
+            // se labelField è nullo lo imposto a idField
+            if (!labelField) {
+                labelField = idField;
+            }
+            // imposto l'oggetto da restituire
+            if (attributes[idField]) {
+                record = {};
+                record.ID_LAYER = idLayer;
+                record.ID = attributes[idField];
+                if (attributes[labelField]) {
+                    record.LABEL = attributes[labelField];
+                } else {
+                    record.LABEL = attributes[idField];
+                    CWN2.Util.log("CWN2.button.selectFeature: valore non trovato per campo ID per layer " + idLayer);
+                }
+                record.LABEL = attributes[labelField];
+            } else {
+                CWN2.Util.log("CWN2.button.selectFeature: valore non trovato per campo ID per layer " + idLayer);
+            }
+            return record;
+        }
+    },
+
+    updateHiliteLayer: function(store) {
+        var elementiSelezionati = store.data.items,
+            button = this.getButton(),
+            me = this,
+            layers = button.layers;
+
+        for (var i = 0; i < layers.length; i++) {
+            var layerName = layers[i];
+            var layerConfig = CWN2.app.map.layerManager.getLayerConfigByName(layerName);
+            var values = [];
+            Ext.each(elementiSelezionati, function(record, ind) {
+                (record.data["ID_LAYER"] == layerName) ? values.push(record.data["ID"]) : null;
+            });
+            // Istanzio wmsSldFilter relativo al layer in oggetto
+            (values.length > 0 ) ?
+                button.wmsSldHiliter[layerName].hiliteFeature({
+                    layers: [layerConfig.name],
+                    fields: layerConfig.infoOptions.infoIdAttr,
+                    values: values
+                }) :
+                button.wmsSldHiliter[layerName].cleanHiliteLayer(layerName)
+        }
+    }
+
+});

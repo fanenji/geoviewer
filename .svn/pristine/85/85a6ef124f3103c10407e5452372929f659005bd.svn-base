@@ -1,0 +1,125 @@
+
+
+
+
+
+
+
+
+
+// GESTIONE getFeatureInfo
+map.on('click', function(e) {
+    // Build the URL for a GetFeatureInfo
+    var url = getFeatureInfoUrl(
+                    map,
+                    untiled,
+                    e.latlng,
+                    {
+                        'info_format': 'application/json',
+                        'propertyName': 'COD_PROV'
+                    }
+                );
+
+    // chiamata ajax
+    $.ajax({
+        url: url,
+        dataType: 'json',
+        success: loadData
+    });
+
+    function loadData(data) {
+      var feature = data.features[0];
+      if (feature) {
+        L.popup()
+        .setLatLng(e.latlng)
+        .setContent(L.Util.template("<h2>{COD_PROV}</h2>", feature.properties))
+        .openOn(map);
+      }
+    }
+});
+
+/**
+ * Return the WMS GetFeatureInfo URL for the passed map, layer and coordinate.
+ * Specific parameters can be passed as params which will override the
+ * calculated parameters of the same name.
+ */
+function getFeatureInfoUrl(map, layer, latlng, params) {
+
+    //TODO passare come parametro RDMap che contiene
+    // i parametri che adesso sono in layer
+    //
+    var point = map.latLngToContainerPoint(latlng, map.getZoom()),
+        size = map.getSize(),
+        bounds = map.getBounds(),
+        sw = map.options.crs.project(bounds.getSouthWest()),
+        ne = map.options.crs.project(bounds.getNorthEast());
+
+    var defaultParams = {
+        request: 'GetFeatureInfo',
+        service: 'WMS',
+        srs: 'EPSG:3857',
+        styles: '',
+        version: layer._wmsVersion,
+        format: layer.options.format,
+        bbox: sw.x + ',' + sw.y + ',' + ne.x + ',' + ne.y,
+        height: size.y,
+        width: size.x,
+        layers: layer.options.layers,
+        query_layers: layer.options.layers,
+        info_format: 'text/html'
+    };
+
+    params = L.Util.extend(defaultParams, params || {});
+    params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
+    params[params.version === '1.3.0' ? 'j' : 'y'] = point.y;
+
+    //TODO gestione PROXY
+    return '/geoservices/proxy/proxy.jsp?url=' + layer._url + L.Util.getParamString(params, layer._url, true);
+
+}
+
+
+
+function loadJson (options) {
+  var url = options.url,
+      layerName = options.layerName;
+
+  var layer;
+  if (layerName) {
+    var parameters = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        srsName: 'EPSG:4326',
+        outputFormat: 'text/javascript',
+        format_options: 'callback: getJson',
+        typeName: layerName
+    };
+    url += L.Util.getParamString(parameters)
+  }
+
+  $.ajax({
+      url: url,
+      dataType: 'jsonp',
+      jsonpCallback: 'getJson',
+      success: loadData
+  });
+
+  function loadData(data) {
+      layer = L.geoJson(data, {
+        //TODO gestione configurazione tooltip/popup
+        onEachFeature: function(feature, marker) {
+          var tooltipTemplate = '{DENOMINAZIONE}';
+          var popupTemplate = '<h2>{DENOMINAZIONE}</h2><p>{INDIRIZZO} <br />{CAP} {COMUNE}</p>';
+          marker.bindPopup(L.Util.template(popupTemplate, feature.properties));
+          marker.options.title = L.Util.template(tooltipTemplate, feature.properties);
+        }
+        //TODO gestione stile
+        //style: function (feature) {
+        //  return {color: feature.properties.color};
+        //},
+      }).addTo(map);
+      map.fitBounds(layer.getBounds());
+      jsonLayer = layer;
+  }
+}

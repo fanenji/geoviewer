@@ -1,0 +1,10 @@
+
+#testLogger {font-family:verdana;} 
+#testLogger .info {background-color:white;}
+#testLogger .warn {background-color:yellow;} 
+#testLogger .error {background-color:orange;} 
+#testLogger .fail {background-color:red;} 
+#testLogger .time {background-color:grey;} 
+#testLogger .pass {background-color:green;} 
+
+#testMap {position:absolute;left:500px;top:10px;width:500px;height:250px;} 

@@ -1,0 +1,802 @@
+Ext.define('CWN2.MapCatalogueLoader', {
+    singleton: true,
+
+    loadRequest: function (response, findOptions) {
+        CWN2.Util.log("CWN2.MapCatalogueLoader.loadRequest");
+        var agRequest = response.data;
+        var mapConfig = agRequest.map;
+        // memorizzo i dati della richiesta nella configurazione
+        CWN2.app.configuration.agRequest = agRequest;
+        // gestione find
+        if (agRequest.valori.length > 0) {
+            // impostazione findOptions
+            var values = [];
+            Ext.each(agRequest.valori, function (valore) {
+                if (valore.valorePkAlfa) {
+                    values.push(valore.valorePkAlfa);
+                }
+            });
+            if (values.length > 0) {
+                // unisco eventuali findOptions da initOptions (per esempio maxZoomLevel) con quelle della richiesta
+                findOptions = findOptions || {};
+                var layers = [];
+                Ext.each(agRequest.livelli, function (livello) {
+                    layers.push(livello.codiceLivello);
+                });
+                Ext.apply(findOptions, {
+                    flagFindQuery: agRequest.flagFindQuery,
+                    layers: layers,
+                    fields: agRequest.livelli[0].nomeFkVersoAlfa,
+                    values: values,
+                    tipoFind: agRequest.tipoFind,
+                    bounds: agRequest.bounds
+                });
+            }
+            // gestione find per coordinate
+            if (agRequest.valori[0].longitudine && agRequest.valori[0].latitudine) {
+                CWN2.FeatureLoader.loadMarker({
+                    x: agRequest.valori[0].longitudine,
+                    y: agRequest.valori[0].latitudine,
+                    map: CWN2.app.map,
+                    zoomLevel: 14,
+                    zoom: true,
+                    epsgCode: "EPSG:3003"
+                });
+            }
+        }
+        // gestione modalità (bottoniera)
+        if (agRequest.modalita && agRequest.modalita !== 'GENERICA') {
+            var buttons = CWN2.app.configuration.application.layout.ag_toolbar[agRequest.modalita];
+            if (!buttons) {
+                CWN2.Util.handleException({
+                    message: "Configurazione bottoni per modalità " + agRequest.modalita + " non presente",
+                    level: 1
+                });
+                return;
+            }
+            Ext.each(buttons, function (button) {
+                if (button.options && button.options.preProcessing && typeof(button.options.preProcessing) === "function") {
+                    button.options.preProcessing(button, agRequest);
+                }
+                CWN2.app.layout.mapPanel.toolbar.addButton(button);
+            });
+        }
+        return {mapConfig: mapConfig, findOptions: findOptions};
+    },
+
+    loadQPGRequest: function (response) {
+        CWN2.Util.log("CWN2.MapCatalogueLoader.loadQPGRequest");
+
+        var qpgRequest = response.data;
+        var mapConfig = qpgRequest.map;
+        mapConfig.name = qpgRequest.titolo;
+        // memorizzo i dati della richiesta nella configurazione
+        CWN2.app.configuration.qpgRequest = qpgRequest;
+        return {mapConfig: mapConfig, tematismi: qpgRequest.tematismi};
+    },
+
+    loadMap: function (initOptions) {
+        var me = this,
+            idMap = initOptions.idMap,
+            idRequest = initOptions.idRequest,
+            qpgRequest = initOptions.qpgRequest,
+            findOptions = initOptions.findOptions,
+            loadBaseLayers = initOptions.loadBaseLayers,
+            flagGeoserver = initOptions.flagGeoserver,
+            geoserverUrl = initOptions.geoserverUrl,
+            app = initOptions.app;
+
+        CWN2.Util.log("CWN2.MapCatalogueLoader.loadMap");
+
+        var layerConfigService = CWN2.Globals.RL_MAP_CONFIG_SERVICE + idMap + "?param=value";
+        if (idRequest) {
+            layerConfigService = CWN2.Globals.RL_AG_REQUEST_CONFIG_SERVICE + idRequest + "?map_projection=" + CWN2.app.map.projection;
+        }
+        if (qpgRequest) {
+            layerConfigService = CWN2.Globals.RL_QPG_REQUEST_CONFIG_SERVICE + qpgRequest + "?map_projection=" + CWN2.app.map.projection;
+        }
+
+        if (loadBaseLayers) {
+            layerConfigService += "&loadBaseLayers=true";
+        }
+
+        if (flagGeoserver) {
+            layerConfigService += "&geoserver=true";
+        }
+
+        if (geoserverUrl) {
+            layerConfigService += "&geoserverUrl=" + geoserverUrl;
+        }
+
+
+        layerConfigService += "&app=" + app
+
+        var calculateExtent = function (mapConfig) {
+            CWN2.Util.log("CWN2.MapCatalogueLoader.calculateExtent");
+            var transformedExtent = (mapConfig.projection !== CWN2.app.map.projection) ? CWN2.Util.transformStrBounds(mapConfig.projection, CWN2.app.map.projection, mapConfig.extent) : mapConfig.extent;
+            return transformedExtent.split(',');
+        };
+
+        CWN2.Util.ajaxRequest({
+            type: "JSON",
+            url: layerConfigService,
+            callBack: function (response) {
+                var mapConfig;
+                if (idRequest) {
+                    var req = me.loadRequest(response, findOptions);
+                    mapConfig = req.mapConfig;
+                    findOptions = req.findOptions;
+                } else {
+                    if (qpgRequest) {
+                        var req = me.loadQPGRequest(response);
+                        mapConfig = req.mapConfig;
+                    } else {
+                        mapConfig = response.data;
+                    }
+                }
+                // imposto il titolo
+                if (initOptions.setMapTitle) {
+                    var titleEl = Ext.fly(initOptions.setMapTitle);
+                    if (titleEl) {
+                        titleEl.update(mapConfig.name)
+                    }
+                } else {
+                    CWN2.app.layout.setMapTitle(mapConfig.name);
+                }
+                CWN2.app.layout.mapTitle = mapConfig.name;
+                // aggiungo i layer
+                CWN2.app.map.layerManager.addLayers(mapConfig.layers);
+                // aggiungo i layer dei tematismi QPG
+                if (qpgRequest) {
+                    CWN2.QPG.loadQPGLayers(CWN2.app.configuration.qpgRequest.tematismi);
+                    // rovescio ordine tematismi in modo tale che ordine tematismi in legenda sia uguale a quello nel bottone
+                    CWN2.app.configuration.qpgRequest.tematismi.reverse();
+                }
+                // imposto la displayProjection uguale a quella della mappa
+                if (initOptions.setDisplayProjection) {
+                    CWN2.app.map.displayProjection = new OpenLayers.Projection(mapConfig.projection)
+                }
+
+                // imposto extent
+                if (mapConfig.extent) {
+                    CWN2.app.map.initialExtent = calculateExtent(mapConfig);
+                }
+                CWN2.app.map.zoomToInitialExtent()
+
+                // se tipo mappa è raster imposto lo sfondo bianco
+                if (mapConfig.type && mapConfig.type == "R") {
+                    CWN2.app.map.setBaseLayerOnMap("no_base");
+                }
+                // se configurata find la effettuo
+                if ((findOptions && findOptions.values && findOptions.values !== "null") || (findOptions && findOptions.sldFilter)) {
+                    findOptions.setInitialExtent = true;
+                    me.findWMS(findOptions);
+                }
+                if (findOptions && findOptions.address) {
+                    findOptions.setInitialExtent = true;
+                    me.findAddress(findOptions);
+                }
+
+                // richiamo eventuale callback
+                CWN2.app.callback(initOptions);
+            }
+        });
+
+    },
+
+    loadLayers: function (initOptions) {
+        var idLayer = initOptions.idLayer,
+            me = this,
+            findOptions = initOptions.findOptions;
+
+        CWN2.Util.log("CWN2.MapCatalogueLoader.loadLayers");
+
+        if (!idLayer || idLayer === "null") {
+            var exception = {};
+            exception.message = "manca parametro layer";
+            exception.level = 1;
+            CWN2.Util.handleException(exception);
+            return;
+        }
+
+        var layerConfigService = CWN2.Globals.RL_LAYER_CONFIG_SERVICE + idLayer;
+
+        CWN2.Util.ajaxRequest({
+            type: "JSONP",
+            url: layerConfigService,
+            callBack: function (response) {
+                var layerConfig = response.data;
+                if (initOptions.sldUrl) {
+                    layerConfig[0].wmsParams.SLD = initOptions.sldUrl;
+                }
+                CWN2.app.map.layerManager.addLayers(layerConfig);
+                // se configurata find la effettuo
+                if (findOptions) {
+                    if ((findOptions.idList && findOptions.idList !== "null") || (findOptions.sldFilter)) {
+                        findOptions.setInitialExtent = true;
+                        me.findWMS(findOptions);
+                    } else {
+                        exception = {};
+                        exception.message = "Lista valori find non impostata";
+                        exception.level = 0;
+                        CWN2.Util.handleException(exception);
+                    }
+                }
+                // richiamo eventuale callback
+                CWN2.app.callback(initOptions);
+            }
+        });
+
+    },
+
+    /**
+     *
+     * Function: findAddress
+     *
+     * Effettua una find per indirizzo
+     *
+     *
+     * Parameters:
+     * findOptions - {Object} Oggetto di configurazione dell'hilite
+     *  - address - {String} Indirizzo
+     *
+     */
+    findAddress: function (findOptions) {
+        var address = findOptions.address,
+            me = this;
+
+        CWN2.Util.log("CWN2.MapCatalogueLoader.findAddress");
+
+        var googleSrvURL = CWN2.Globals.GOOGLE_GEOCODE_PROXY;
+        googleSrvURL += "&address=" + address;
+        CWN2.Util.ajaxRequest({
+            type: "JSON",
+            url: googleSrvURL,
+            callBack: function (response) {
+                var results = [];
+                if (response.results) {
+                    Ext.each(response.results, function (result) {
+                        results.push({
+                            label: result.formatted_address,
+                            x: result.geometry.location.lng,
+                            y: result.geometry.location.lat,
+                            rilevanza: result.types[0],
+                            trovato: result.formatted_address
+                        })
+                    });
+                }
+                if (results.length > 0) {
+                    CWN2.FeatureLoader.loadMarker(
+                        {
+                            x: results[0].x,
+                            y: results[0].y,
+                            map: CWN2.app.map,
+                            epsgCode: "EPSG:4326",
+                            label: '',
+                            zoomLevel: 17
+                        }
+                    );
+                } else {
+                    CWN2.Util.msgBox("Indirizzo non trovato", "INFO")
+                }
+            }
+        });
+
+
+    },
+    /**
+     *
+     * Function: findWMS
+     *
+     * Effettua una find con evidenziazione su layer WMS
+     *
+     *
+     * Parameters:
+     * findOptions - {Object} Oggetto di configurazione dell'hilite
+     *  - layerName - {String} Nome del layer
+     *  - idField - {String} Nome del campo ID su cui fare il filtro
+     *  - idList - {String} Lista dei valori separati da virgola
+     *  - zoomLevel - {String} Livello di zoom massimo
+     *  - bounds - {OpenLayers.Bounds} Bounds per find
+     *
+     */
+    findWMS: function (findOptions) {
+        var layers = findOptions.layers,
+            me = this;
+
+        CWN2.Util.log("CWN2.MapCatalogueLoader.findWMS");
+
+        var missingLayerConfig = [];
+        Ext.each(layers, function (layerName) {
+            if (!CWN2.app.map.layerManager.isLayerInConfig(layerName)) {
+                missingLayerConfig.push(layerName.replace("L", ""));
+            }
+        });
+        if (missingLayerConfig.length === 0) {
+            var layerConfig = CWN2.app.map.layerManager.getLayerConfigByName(layers[0])
+            me.findLayer(findOptions, layerConfig);
+        } else {
+            CWN2.Util.ajaxRequest({
+                type: "JSONP",
+                url: CWN2.Globals.RL_LAYER_CONFIG_SERVICE + missingLayerConfig.join(","),
+                callBack: function (response) {
+                    var layerConfig = response.data[0];
+                    CWN2.app.map.layerManager.addLayers(layerConfig);
+                    me.findLayer(findOptions, layerConfig);
+                }
+            });
+        }
+    },
+
+    findLayer: function find(findOptions, layerConfig) {
+        var me = this;
+
+        CWN2.Util.log("CWN2.MapCatalogueLoader.findLayer");
+
+        if (!Ext.isArray(findOptions.values)) {
+            findOptions.values = [findOptions.values];
+        }
+
+        if (!findOptions.sldFilter) {
+            findOptions.sldFilter = this.buildSldFilter(findOptions);
+        }
+
+        // funzione di callback richiamata da Util.getWFSBound
+        var hiliteFeature = function (bounds) {
+            // faccio il filtro su livello base (QUERY) solo se livello geoserver
+            if (findOptions.flagFindQuery === "QUERY") {
+                me.hiliteFeatureQuery(findOptions, bounds, layerConfig.flagGeoserver);
+            }
+            me.hiliteFeatureFind(findOptions, bounds);
+        };
+
+        // se ho già il bounds faccio hilitefeature altrimenti prendo bound da servizio WFS
+        if (findOptions.bounds) {
+            var bounds = (typeof findOptions.bounds === "string") ? OpenLayers.Bounds.fromString(findOptions.bounds) : findOptions.bounds;
+            hiliteFeature(bounds);
+        } else {
+            //TODO: NOTA getWFSBound funziona solo per find su singolo layer
+            if (findOptions.layers.length === 1) {
+                var typeName = findOptions.layers[0];
+                var bounds = this.getWFSBound({
+                    wfsUrl: CWN2.Globals.proxy + layerConfig.wmsParams.url + "VERSION=1.0.0&SERVICE=WFS&REQUEST=GetFeature&TYPENAME=" + typeName + "&Filter=" + findOptions.sldFilter,
+                    callback: hiliteFeature
+                });
+            }
+        }
+    },
+
+    buildSldFilter: function (findOptions) {
+        if (!findOptions.values || findOptions.values === "null") {
+            var exception = {};
+            exception.message = "manca parametro values";
+            exception.level = 0;
+            CWN2.Util.handleException(exception);
+            return;
+        }
+        // creo il filtro sld
+        return CWN2.WmsSldHiliter.getFilter(findOptions.fields, findOptions.values);
+    },
+
+    hiliteFeatureFind: function (findOptions, bounds) {
+        Ext.each(findOptions.layers, function (layer) {
+            var hilite = new CWN2.WmsSldHiliter(CWN2.app.map, "_findWMS_" + layer).hiliteFeature({
+                layers: [layer],
+                fields: findOptions.fields,
+                values: findOptions.values,
+                sldFilter: findOptions.sldFilter,
+                bounds: bounds,
+                zoomLevel: findOptions.zoomLevel,
+                maxZoomLevel: findOptions.maxZoomLevel,
+                callback: function () {
+                    if (findOptions.setInitialExtent) {
+                        CWN2.app.map.initialExtent = CWN2.app.map.getExtent();
+                    }
+                }
+            });
+
+        });
+    },
+
+    hiliteFeatureQuery: function (findOptions, bounds,flagGeoserver) {
+
+        if (flagGeoserver) {
+            // creo il file sld e imposto il parametro sld dei layer oggetto di query
+            CWN2.Util.ajaxRequest({
+                type: "JSON",
+                url: CWN2.Globals.RL_CREATE_SLD_SERVICE,
+                jsonData: {"layers": findOptions.layers, "sldFilter": findOptions.sldFilter},
+                callBack: function (response) {
+                    Ext.each(findOptions.layers, function (layer) {
+                        // Annullo parametri TILED e LAYERS
+                        CWN2.app.map.getLayerByName(layer).params.LAYERS = null;
+                        CWN2.app.map.getLayerByName(layer).params.TILED = false;
+                        var sldUrl = "http://srvcarto.regione.liguria.it/geoservices/temp/" + response.data.sldFile;
+                        CWN2.app.map.layerManager.applyWmsParam(layer, "SLD", sldUrl);
+                    });
+                    var maxZoomLevel = findOptions.maxZoomLevel || 18;
+                    CWN2.WmsSldHiliter.zoomToFeatures(bounds, findOptions.zoomLevel, maxZoomLevel);
+                },
+                disableException: true
+            });
+
+        } else {
+            var geomType = [];
+            Ext.each(findOptions.layers, function(layer) {
+                geomType.push(CWN2.app.map.layerManager.getFieldFromLayerConfig(layer,"geomSubType"));
+            });
+            var sldBody = (((findOptions.fields && findOptions.values && findOptions.values.length > 0) || findOptions.sldFilter) && geomType.length > 0) ?
+                CWN2.WmsSldHiliter.getStyle({
+                    layers: findOptions.layers,
+                    geomType: geomType,
+                    fields: findOptions.fields,
+                    values: findOptions.values,
+                    sldFilter: findOptions.sldFilter
+                }) :
+                null;
+            var sldCleanBody = CWN2.WmsSldHiliter.getStyle({
+                layers: findOptions.layers,
+                geomType: geomType,
+                fields: findOptions.fields,
+                values: null,
+                sldFilter: null
+            });
+            CWN2.Util.ajaxRequest({
+                type: "JSON",
+                url: CWN2.Globals.RL_CREATE_SLD_SERVICE,
+                jsonData: {"sldBody": sldBody,"sldCleanBody": sldCleanBody},
+                callBack: function (response) {
+                    Ext.each(findOptions.layers, function(layer) {
+                        CWN2.app.map.layerManager.applyWmsParam(layer,"sld",response.data.sldUrl)
+                    });
+                },
+                disableException: true
+            });
+            var maxZoomLevel = findOptions.maxZoomLevel || 18;
+            CWN2.WmsSldHiliter.zoomToFeatures(bounds,findOptions.zoomLevel,maxZoomLevel);
+        }
+
+
+
+
+
+
+    },
+
+    getGeoserverSldFile: function(layers,sldFilter,callBack) {
+        CWN2.Util.ajaxRequest({
+            type: "JSON",
+            //url: "/geoservices/REST/config/create_sld/",
+            url: CWN2.Globals.RL_CREATE_SLD_SERVICE,
+            callBack: callBack,
+            jsonData: {"layers": layers, "sldFilter": sldFilter},
+            disableException: true
+        });
+    },
+
+    /**
+     * Function: getWFSBound
+     *
+     * Ritorna il bound degli elementi attraverso un servizio WFS
+     *
+     * Parameters:
+     * wfsUrl - {string} URL del servizio WFS
+     * typeName - {string} nome della feature
+     * sldFilter - {string} Filtro SLD
+     * callback - {Function} Funzione di callback da richiamare
+     *
+     * Returns:
+     * {OpenLayers.Bound}
+     *
+     */
+    getWFSBound: function (initOptions) {
+        // URL di prova http://localhost:8080/geoservices/proxy/proxy.jsp?url=http://www.cartografiarl.regione.liguria.it/mapserver/mapserv.exe?MAP=E:/progetti/mapfiles/repertoriocartografico/CONFINI/56.map&VERSION=1.0.0&SERVICE=WFS&REQUEST=GetFeature&TYPENAME=L3&Filter=%3CFilter%3E%3COr%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3EID%3C/PropertyName%3E%3CLiteral%3E30%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3EID%3C/PropertyName%3E%3CLiteral%3E31%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Or%3E%3C/Filter%3E
+        var wfsUrl = initOptions.wfsUrl;
+        var callback = initOptions.callback;
+
+        CWN2.Util.log("CWN2.MapCatalogueLoader.getWFSBound");
+        CWN2.loadingScreen = Ext.getBody().mask('Interrogazione WFS', 'loadingscreen');
+
+        CWN2.Util.ajaxRequest({
+            type: "XML",
+            url: wfsUrl,
+            callBack: function (xml) {
+                var serviceException, boundedBy, bbox, coordinates, srs;
+                if (Ext.isIE) {
+                    // gestione service exception
+                    serviceException = Ext.DomQuery.selectValue('ServiceException', xml);
+                    if (serviceException) {
+                        CWN2.Util.handleException({
+                            message: "CWN2.Util.getWFSBound - Service Exception: " + serviceException,
+                            level: 2
+                        });
+                        return;
+                    }
+                    // calcolo bounds
+                    boundedBy = xml.childNodes[1].firstChild;
+                    if (!boundedBy) {
+                        CWN2.Util.handleException({
+                            message: "CWN2.Util.getWFSBound - bbox non ritornato dal servizio ",
+                            level: 2
+                        });
+                    }
+                    bbox = boundedBy.firstChild;
+                    if (!bbox) {  // Gestione not found
+                        CWN2.Util.handleException({
+                            message: "CWN2.Util.getWFSBound - elemento non trovato ",
+                            level: 2
+                        });
+                        return;
+                    }
+                    coordinates = (bbox.firstChild && bbox.firstChild.firstChild) ? bbox.firstChild.firstChild.data : null;
+                    if (!coordinates) {  // Gestione not found
+                        CWN2.Util.handleException({
+                            message: "CWN2.Util.getWFSBound - elemento non trovato ",
+                            level: 2
+                        });
+                        return;
+                    }
+                    srs = (bbox.attributes) ? bbox.attributes[0].text : null;
+                } else {
+                    // gestione service exception
+                    serviceException = Ext.DomQuery.selectValue('ServiceException', xml);
+                    if (serviceException) {
+                        CWN2.Util.handleException({
+                            message: "CWN2.getWFSBound - Service Exception: " + serviceException,
+                            level: 2
+                        });
+                        return;
+                    }
+                    // calcolo bounds
+                    boundedBy = Ext.DomQuery.select('gml|boundedBy', xml)[0];
+                    if (!boundedBy) {
+                        CWN2.Util.handleException({
+                            message: "CWN2.getWFSBound - elemento non trovato ",
+                            level: 2
+                        });
+                        return;
+                    }
+                    bbox = Ext.DomQuery.select('gml|Box', boundedBy)[0];
+                    if (!bbox) {
+                        CWN2.Util.handleException({
+                            message: "CWN2.getWFSBound - elemento non trovato ",
+                            level: 2
+                        });
+                        return;
+                    }
+                    coordinates = Ext.DomQuery.selectValue('gml|coordinates', bbox);
+                    if (!coordinates) {
+                        CWN2.Util.handleException({
+                            message: "CWN2.getWFSBound - elemento non trovato ",
+                            level: 2
+                        });
+                        return;
+                    }
+                    srs = Ext.DomQuery.selectValue('gml|Box/@srsName', boundedBy);
+                }
+
+                if (coordinates && srs) {
+                    if (coordinates === "-1,-1 0,0") {
+                        return;
+                    }
+                    srs = srs.replace('http://www.opengis.net/gml/srs/epsg.xml#','EPSG:');
+                    var bounds = (srs !== CWN2.app.map.projection) ?
+                        OpenLayers.Bounds.fromString(CWN2.Util.transformStrBounds(srs, CWN2.app.map.projection, coordinates.replace(" ", ","))) :
+                        OpenLayers.Bounds.fromString(coordinates.replace(" ", ","));
+                    callback(bounds);
+                }
+            }
+        });
+    },
+
+    ag_bottoni_coordinate: function (projection) {
+        var bottoni = [
+            {
+                "name": "coordinate",
+                "options": {
+                    "pressed": true,
+                    "projection": projection,
+                    "callBacks": {
+                        "submit": function(geom) {
+                            CWN2.MapCatalogueLoader.ag_insertCoordinate(geom.x,geom.y);
+                        },
+                        "cancel": function(geom) {
+                            Ext.MessageBox.confirm(
+                                CWN2.I18n.get('Conferma'),
+                                CWN2.I18n.get('Sei sicuro?'),
+                                function(btn) {
+                                    if (btn === "yes") {
+                                        CWN2.MapCatalogueLoader.ag_insertCoordinate("","");
+                                    }
+                                }
+                            );
+                        }
+                    }
+                }
+            }
+        ];
+        return bottoni;
+    },
+
+    ag_bottoni_filtro: function () {
+        var bottoni = [
+            {"name": "selectfeature",
+                "options": {
+                    "idLayer": "",
+                    "iconCls": "selezioneOggetti",
+                    "radius": 5,
+                    "preProcessing": function(button,agRequest) {
+                        var codLayers = [];
+                        Ext.each(agRequest.agLivelli, function(layer) {
+                            codLayers.push(layer.codiceLivello)
+                        });
+                        button.options.idLayer = codLayers.join(",");
+                    },
+                    "callBacks": {
+                        "submit": function(items,btn) {
+                            CWN2.MapCatalogueLoader.ag_insertFeature(items);
+                        },
+                        "cancel": function(items,btn) {
+                            btn.getEl().dom.click();
+                        }
+                    }
+                }
+            },
+            {
+                "name": "drawRegularPolygon",
+                "options": {
+                    "id": "drawCircle",
+                    "type": "circle",
+                    "tooltip": "Inserisci un cerchio",
+                    "iconCls": "selezioneCerchio",
+                    "singleFeature": true,
+                    "callback" :  function(geom,evt) {
+                        CWN2.MapCatalogueLoader.ag_confermaFiltro("circle",geom,evt);
+                    }
+                }
+            },
+            {
+                "name": "drawRegularPolygon",
+                "options": {
+                    "id": "drawRectangle",
+                    "type": "rectangle",
+                    "tooltip": "Inserisci un rettangolo",
+                    "iconCls": "selezioneRettangolo",
+                    "singleFeature": true,
+                    "callback" :  function(geom,evt) {
+                        CWN2.MapCatalogueLoader.ag_confermaFiltro("rectangle",geom,evt);
+                    }
+                }
+            },
+            {
+                "name": "drawPolygon",
+                "options": {
+                    "singleFeature": true,
+                    "iconCls": "selezionePoligono",
+                    "callback" :  function(geom,evt) {
+                        CWN2.MapCatalogueLoader.ag_confermaFiltro("polygon",geom,evt);
+                    }
+                }
+            },
+            {
+                "name": "generic",
+                "options": {
+                    "id": "annulla-filtro",
+                    "iconCls": "selezioneAnnulla",
+                    "tooltip": "Annulla",
+                    "callback" :  function() {
+                        CWN2.MapCatalogueLoader.ag_ritorna("");
+                    }
+                }
+            }
+        ];
+        return bottoni;
+    },
+
+
+    ag_ritorna: function (idRichiesta) {
+        var chiamante = CWN2.app.configuration.agRequest.chiamante;
+        if (chiamante.indexOf("?") > -1) {
+            chiamante += "&idRichiesta=" + idRichiesta;
+        } else {
+            chiamante += "?idRichiesta=" + idRichiesta;
+        }
+        window.location = chiamante;
+    },
+
+    ag_insertCoordinate: function (x, y) {
+        var data = {
+            "modalita": "COORDINATE",
+            "applicazione": CWN2.app.configuration.agRequest.applicazione,
+            "idAlfaGis": CWN2.app.configuration.agRequest.idAlfaGis,
+            "longitudine": x,
+            "latitudine": y
+        }
+        CWN2.MapCatalogueLoader.ag_callInsertService(data);
+    },
+
+    ag_confermaFiltro: function (type, geom, evt) {
+        Ext.MessageBox.show({
+            title: 'Conferma',
+            msg: 'Confermi?',
+            buttonText: {yes: "Conferma", no: "Annulla"},
+            fn: function (btn) {
+                switch (btn) {
+                    case "yes":
+                        CWN2.MapCatalogueLoader.ag_insertFiltro(type, geom, evt)
+                        break;
+                    case "no":
+                        evt.feature.layer.removeAllFeatures();
+                        break;
+                }
+            },
+            animateTarget: 'mb4',
+            icon: Ext.MessageBox.QUESTION
+        });
+    },
+
+    ag_insertFeature: function (items) {
+        var data = {
+            "modalita": "FILTRO",
+            "filterType": "feature",
+            "applicazione": CWN2.app.configuration.agRequest.applicazione,
+            "idAlfaGis": CWN2.app.configuration.agRequest.idAlfaGis
+        }
+        data.idField = CWN2.app.configuration.agRequest.agLivelli[0].idField;
+        data.valori = [];
+        Ext.each(items, function (item) {
+            data.valori.push(item.data.ID);
+        });
+        CWN2.MapCatalogueLoader.ag_callInsertService(data)
+    },
+
+    ag_insertFiltro: function (type, geom, evt) {
+        var data = {
+            "modalita": "FILTRO",
+            "filterType": type,
+            "applicazione": CWN2.app.configuration.agRequest.applicazione,
+            "idAlfaGis": CWN2.app.configuration.agRequest.idAlfaGis
+        }
+        if (type === "circle") {
+            data.points = [
+                [geom.bounds.getCenterLonLat().lon, geom.bounds.getCenterLonLat().lat]
+            ];
+            data.radius = geom.bounds.getWidth() / 2;
+        } else {
+            data.points = []
+            Ext.each(geom.components[0].components, function (point) {
+                data.points.push([parseInt(point.x), parseInt(point.y)]);
+            });
+            data.points[data.points.length - 1] = data.points[0];
+        }
+        CWN2.MapCatalogueLoader.ag_callInsertService(data)
+    },
+
+    ag_callInsertService: function (data) {
+        CWN2.loadingScreen = Ext.getBody().mask('Caricamento Filtro', 'loadingscreen');
+        CWN2.Util.ajaxRequest({
+            type: "JSON",
+            url: CWN2.Globals.RL_AG_REQUEST_CONFIG_SERVICE,
+            callBack: function (response) {
+                CWN2.app.removeLoadingScreen();
+                var exception = {};
+                if (!response) {
+                    exception.message = response.responseText;
+                    exception.level = 2;
+                    CWN2.Util.handleException(exception);
+                    return;
+                }
+                if (response.success === false) {
+                    exception.message = response.message;
+                    exception.level = 2;
+                    CWN2.Util.handleException(exception);
+                    return;
+                }
+                CWN2.MapCatalogueLoader.ag_ritorna(response.data.idRichiesta);
+            },
+            jsonData: data,
+            disableException: true
+        });
+    }
+});
+
