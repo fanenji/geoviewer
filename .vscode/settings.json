@@ -1,0 +1,12 @@
+// Inserire le impostazioni in questo file per sovrascrivere quelle utente e predefinite.
+{
+    "macros": {
+        "build": [
+            "workbench.action.files.saveAll",
+            {
+                "command": "workbench.action.tasks.runTask",
+                "args": "build"
+            }        
+        ]
+    }
+}
